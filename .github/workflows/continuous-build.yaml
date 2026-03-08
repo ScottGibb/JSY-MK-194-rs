@@ -1,0 +1,53 @@
+name: Continuous Build
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-sync:
+    name: Build with sync feature
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build (sync)
+        run: cargo build --no-default-features --features sync
+      - name: Build with advanced feature
+        run: cargo build --no-default-features --features "sync advanced"
+      - name: Build with defmt feature
+        run: cargo build --no-default-features --features "sync defmt"
+
+  build-async:
+    name: Build with async feature
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build
+        run: cargo build --no-default-features --features async
+      - name: Build with advanced feature
+        run: cargo build --no-default-features --features "async advanced"
+      - name: Build with defmt feature
+        run: cargo build --no-default-features --features "async defmt"
