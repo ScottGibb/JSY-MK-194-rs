@@ -15,7 +15,7 @@ compile_error!("You must enable either the sync or async feature. Please choose 
 #[cfg(feature = "sync")]
 mod hal {
     pub use embedded_io;
-    pub use embedded_io::Error;
+    // pub use embedded_io::Error;
     pub use embedded_io::ErrorKind;
 }
 
@@ -23,5 +23,6 @@ mod hal {
 #[cfg(feature = "async")]
 mod hal {
     pub use embedded_io_async;
-    pub use embedded_io_async::Error;
+    // pub use embedded_io_async::Error;
+    pub use embedded_io_async::ErrorKind;
 }
