@@ -1,5 +1,11 @@
-enum RegisterMap {
-    DeviceIDAndBaudRate = 0x0004,
+mod macros;
+pub mod measuring_electrical_paramaters;
+mod scalars;
+pub mod system_configuration_paramater;
+pub mod system_paramaters;
+pub enum RegisterMap {
+    SystemConfigurationParameter = 0x0004,
+
     ModelOne = 0x0000,
     ModelTwo = 0x0001,
     VoltageRange = 0x0002,
