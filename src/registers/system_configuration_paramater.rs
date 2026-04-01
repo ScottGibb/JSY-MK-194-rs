@@ -1,5 +1,7 @@
 use bitbybit::{bitenum, bitfield};
 
+use crate::{impl_read_register, impl_write_register, registers::RegisterAddress};
+
 #[bitfield(u16, default = 0x0105)]
 #[derive(Debug, PartialEq)]
 struct SystemConfigurationParamaterRegister {
@@ -19,5 +21,16 @@ pub enum Baudrate {
     _19200 = 7,
     _38400 = 8,
 }
+
+impl_read_register!(
+    SystemConfigurationParamaterRegister,
+    RegisterAddress::SystemConfigurationParameter,
+    u16
+);
+impl_write_register!(
+    SystemConfigurationParamaterRegister,
+    RegisterAddress::SystemConfigurationParameter,
+    u16
+);
 
 // Supports both Read and Write operations
