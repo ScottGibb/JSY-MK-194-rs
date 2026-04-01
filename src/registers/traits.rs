@@ -2,12 +2,12 @@ use crate::registers::RegisterAddress;
 
 pub trait WriteRegister<T: Sized> {
     fn raw_value(&self) -> T;
-    fn get_command(&self) -> RegisterAddress;
+    fn get_address(&self) -> RegisterAddress;
 }
 
 pub trait ReadRegister<T: Sized> {
     fn new_with_raw_value(raw_value: T) -> Self;
-    fn command() -> RegisterAddress;
+    fn address() -> RegisterAddress;
 }
 
 pub trait ToBeBytes {

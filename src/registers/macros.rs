@@ -60,7 +60,7 @@ macro_rules! impl_write_register {
             fn raw_value(&self) -> $data_type {
                 self.raw_value()
             }
-            fn get_command(&self) -> $crate::registers::RegisterAddress {
+            fn get_address(&self) -> $crate::registers::RegisterAddress {
                 $address
             }
         }
@@ -74,7 +74,7 @@ macro_rules! impl_read_register {
             fn new_with_raw_value(raw_value: $data_type) -> Self {
                 Self::new_with_raw_value(raw_value)
             }
-            fn command() -> $crate::registers::RegisterAddress {
+            fn address() -> $crate::registers::RegisterAddress {
                 $address
             }
         }

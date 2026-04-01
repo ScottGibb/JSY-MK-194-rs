@@ -1,5 +1,9 @@
 use crate::registers::RegisterAddress;
+use arbitrary_int::u48;
+use bitbybit::{bitenum, bitfield};
 
+#[derive(Debug)]
+#[bitenum(u8, exhaustive = false)]
 pub enum FunctionCode {
     ReadOneOrMoreRegisters = 0x03,
     WriteOneOrMoreRegisters = 0x10,
@@ -7,14 +11,22 @@ pub enum FunctionCode {
     WriteOutputStatus = 0x05,
 }
 
-pub struct DataFrame<'a> {
+#[derive(Debug)]
+pub struct WriteDataFrame<'a> {
     pub device_address: RegisterAddress,
     pub function_code: FunctionCode,
     pub data: &'a [u8],
     pub crc: CylicRedundanyCheck,
 }
 
-#[derive(Clone, Copy)]
+pub struct ReadDataFrame {
+    pub device_address: RegisterAddress,
+    pub function_code: FunctionCode,
+    pub num_bytes: u8,
+    pub crc: CylicRedundanyCheck,
+}
+
+#[derive(Debug)]
 pub struct CylicRedundanyCheck(pub u16);
 
 impl CylicRedundanyCheck {

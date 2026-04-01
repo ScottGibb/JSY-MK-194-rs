@@ -5,7 +5,8 @@ pub mod system_configuration_paramater;
 pub mod system_paramaters;
 pub mod traits;
 
-#[repr(u8)]
+#[repr(u16)]
+#[derive(Debug)]
 pub enum RegisterAddress {
     SystemConfigurationParameter = 0x0004,
 
@@ -30,4 +31,10 @@ pub enum RegisterAddress {
     SecondChannelPositiveActiveEnergy = 0x0053,
     SecondChannelPowerFactor = 0x0054,
     SecondChannelNegativeActiveEnergy = 0x0055,
+}
+
+impl From<RegisterAddress> for u16 {
+    fn from(value: RegisterAddress) -> Self {
+        value as u16
+    }
 }
