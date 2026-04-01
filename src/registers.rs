@@ -3,7 +3,10 @@ pub mod measuring_electrical_paramaters;
 mod scalars;
 pub mod system_configuration_paramater;
 pub mod system_paramaters;
-pub enum RegisterMap {
+pub mod traits;
+
+#[repr(u8)]
+pub enum RegisterAddress {
     SystemConfigurationParameter = 0x0004,
 
     ModelOne = 0x0000,
@@ -14,9 +17,9 @@ pub enum RegisterMap {
     FirstChannelVoltage = 0x0048,
     FirstChannelCurrent = 0x0049,
     FirstChannelActivePower = 0x004A,
-    FirstChannelPositiveEnergy = 0x004B,
+    FirstChannelPositiveActiveEnergy = 0x004B,
     FirstChannelPowerFactor = 0x004C,
-    FirstChannelNegativeEnergy = 0x004D,
+    FirstChannelNegativeActiveEnergy = 0x004D,
 
     PowerDirection = 0x004E,
     Frequency = 0x004F,
@@ -24,7 +27,7 @@ pub enum RegisterMap {
     SecondChannelVoltage = 0x0050,
     SecondChannelCurrent = 0x0051,
     SecondChannelActivePower = 0x0052,
-    SecondChannelPositiveEnergy = 0x0053,
+    SecondChannelPositiveActiveEnergy = 0x0053,
     SecondChannelPowerFactor = 0x0054,
-    SecondChannelNegativeEnergy = 0x0055,
+    SecondChannelNegativeActiveEnergy = 0x0055,
 }

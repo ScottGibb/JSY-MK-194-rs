@@ -1,8 +1,7 @@
-use uom::si::f32::{ElectricCurrent, ElectricPotential, Energy, Frequency, Power};
-
 use crate::registers::measuring_electrical_paramaters::PowerDirection;
+use crate::units::*;
 
-pub struct Channel {
+pub struct ChannelStatistics {
     pub voltage: ElectricPotential,
     pub current: ElectricCurrent,
     pub active_power: Power,
@@ -13,9 +12,14 @@ pub struct Channel {
 }
 
 pub struct Statistics {
-    pub channel_one: Channel,
-    pub channel_two: Channel,
+    pub channel_one: ChannelStatistics,
+    pub channel_two: ChannelStatistics,
 
     pub power_direction: PowerDirection,
     pub frequency: Frequency,
+}
+
+pub enum Channel {
+    One,
+    Two,
 }
