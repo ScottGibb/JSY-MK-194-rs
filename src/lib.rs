@@ -2,7 +2,9 @@
 #![deny(unsafe_code)]
 
 pub mod error;
-mod registers;
+mod modubus;
+pub mod registers;
+pub mod types;
 pub mod units;
 
 #[cfg(all(feature = "sync", feature = "async"))]
