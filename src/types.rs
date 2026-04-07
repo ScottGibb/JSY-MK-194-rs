@@ -1,4 +1,4 @@
-use crate::registers::measuring_electrical_paramaters::PowerDirection;
+use crate::registers::misc_registers::PowerDirection;
 use crate::units::*;
 
 pub struct ChannelStatistics {

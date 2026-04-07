@@ -17,8 +17,6 @@ advanced = []
 
 [dependencies]
 maybe-async = "0.2"
-arbitrary-int = "2"
-bitbybit = "2"
 uom = { version = "0.38",default-features = false, features = ["autoconvert", "si", "f32",]}
 visibility = "0.1"
 

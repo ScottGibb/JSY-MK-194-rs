@@ -1,81 +1,127 @@
 #[macro_export]
-macro_rules! define_four_byte_register {
-    // read-only
-    ($register_address:expr, $name:ident, $method:ident, $scale:expr, r $(,)?) => {
-        #[bitfield(u32)]
-        pub struct $name {
-            #[bits(0..=31, r)]
-            pub reading: u32,
-        }
+macro_rules! define_register {
+    // With explicit default
+    ($name:ident, $data_type:ty, $address:expr, $default:expr) => {
+        define_register!(@inner $name, $data_type, $address);
 
-        impl $name {
-            pub fn $method(&self) -> f32 {
-                self.reading() as f32 / ($scale as f32)
+        impl Default for $name {
+            fn default() -> Self {
+                Self($default)
             }
         }
-
-        $crate::impl_read_register!($name, $register_address, u32);
     };
 
-    // write-only
-    ($register_address:expr, $name:ident, $method:ident, $scale:expr, w $(,)?) => {
-        #[bitfield(u32)]
-        pub struct $name {
-            #[bits(0..=31, w)]
-            pub reading: u32,
-        }
+    // Without default → fallback to underlying type default
+    ($name:ident, $data_type:ty, $address:expr) => {
+        define_register!(@inner $name, $data_type, $address);
 
-        impl $name {
-            pub fn $method(&self) -> f32 {
-                self.reading() as f32 / ($scale as f32)
+        impl Default for $name {
+            fn default() -> Self {
+                Self(<$data_type as Default>::default())
             }
         }
-
-        $crate::impl_write_register!($name, $register_address, u32);
     };
 
-    // read-write
-    ($register_address:expr, $name:ident, $method:ident, $scale:expr, rw $(,)?) => {
-        #[bitfield(u32)]
-        pub struct $name {
-            #[bits(0..=31, rw)]
-            pub reading: u32,
-        }
+    // Shared implementation
+    (@inner $name:ident, $data_type:ty, $address:expr) => {
+        #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+        pub struct $name(pub $data_type);
 
-        impl $name {
-            pub fn $method(&self) -> f32 {
-                self.reading() as f32 / ($scale as f32)
+        impl From<$data_type> for $name {
+            fn from(value: $data_type) -> Self {
+                Self(value)
             }
         }
 
-        $crate::impl_write_register!($name, $register_address, u32);
-        $crate::impl_read_register!($name, $register_address, u32);
-    };
-}
-
-#[macro_export]
-macro_rules! impl_write_register {
-    ($type:ty, $address:expr, $data_type:ty) => {
-        impl $crate::registers::traits::WriteRegister<$data_type> for $type {
-            fn raw_value(&self) -> $data_type {
-                self.raw_value()
-            }
-            fn get_address(&self) -> $crate::registers::RegisterAddress {
-                $address
+        impl From<$name> for $data_type {
+            fn from(val: $name) -> $data_type {
+                val.0
             }
         }
+
+        impl $crate::registers::traits::Register for $name {
+            const ADDRESS: $crate::registers::RegisterAddress = $address;
+            const NUM_BYTES: usize = core::mem::size_of::<$data_type>();
+            fn from_bytes(bytes: &[u8]) -> Self {
+                let mut arr = [0u8; core::mem::size_of::<$data_type>()];
+                arr.copy_from_slice(bytes);
+                Self(<$data_type>::from_be_bytes(arr))
+            }
+            fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), crate::error::JSYMk194Error> {
+                let data_bytes = self.0.to_be_bytes();
+                if bytes.len() < data_bytes.len() {
+                    return Err(crate::error::JSYMk194Error::ConversionError);
+                }
+                bytes[..data_bytes.len()].copy_from_slice(&data_bytes);
+                Ok(())
+        }
+    }
+
     };
 }
 
 #[macro_export]
-macro_rules! impl_read_register {
-    ($type:ty, $address:expr, $data_type:ty) => {
-        impl $crate::registers::traits::ReadRegister<$data_type> for $type {
-            fn new_with_raw_value(raw_value: $data_type) -> Self {
-                Self::new_with_raw_value(raw_value)
+macro_rules! define_scaled_register {
+    // With explicit default
+    ($name:ident, $data_type:ty, $address:expr, $default:expr, $scale:expr) => {
+        define_scaled_register!(@inner $name, $data_type, $address, $scale);
+
+        impl Default for $name {
+            fn default() -> Self {
+                Self($default)
             }
-            fn address() -> $crate::registers::RegisterAddress {
-                $address
+        }
+    };
+
+    // Without default
+    ($name:ident, $data_type:ty, $address:expr, $scale:expr) => {
+        define_scaled_register!(@inner $name, $data_type, $address, $scale);
+
+        impl Default for $name {
+            fn default() -> Self {
+                Self(<$data_type as Default>::default())
+            }
+        }
+    };
+
+    // Shared implementation
+    (@inner $name:ident, $data_type:ty, $address:expr, $scale:expr) => {
+        #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+        pub struct $name(pub $data_type);
+
+        impl From<$data_type> for $name {
+            fn from(value: $data_type) -> Self {
+                Self(value)
+            }
+        }
+
+        impl From<$name> for $data_type {
+            fn from(val: $name) -> $data_type {
+                val.0
+            }
+        }
+
+        impl $crate::registers::traits::Register for $name {
+            const ADDRESS: $crate::registers::RegisterAddress = $address;
+            const NUM_BYTES: usize = core::mem::size_of::<$data_type>();
+            fn from_bytes(bytes: &[u8]) -> Self {
+                let mut arr = [0u8; core::mem::size_of::<$data_type>()];
+                arr.copy_from_slice(bytes);
+                Self(<$data_type>::from_be_bytes(arr))
+            }
+            fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), crate::error::JSYMk194Error> {
+                let data_bytes = self.0.to_be_bytes();
+                if bytes.len() < data_bytes.len() {
+                    return Err(crate::error::JSYMk194Error::ConversionError);
+                }
+                bytes[..data_bytes.len()].copy_from_slice(&data_bytes);
+                Ok(())
+        }
+    }
+
+        impl $name {
+            pub fn get_scaled_value(&self) -> f32 {
+                (self.0 as f32) * ($scale as f32)
             }
         }
     };
