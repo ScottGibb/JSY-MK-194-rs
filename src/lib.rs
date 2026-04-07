@@ -4,7 +4,7 @@
 pub mod error;
 pub mod getters;
 pub mod jsy_mk_194g;
-mod modubus;
+mod modbus;
 pub mod registers;
 pub mod setters;
 pub mod types;
