@@ -1,4 +1,4 @@
-use crate::hal;
+use crate::{hal, modbus::ErrorCode};
 
 #[derive(Debug)]
 pub enum JSYMk194Error {
@@ -11,6 +11,8 @@ pub enum JSYMk194Error {
     FailedToRead(usize),
 
     ConversionError,
+
+    DeviceError(ErrorCode),
 }
 
 impl<E: hal::Error> From<E> for JSYMk194Error {

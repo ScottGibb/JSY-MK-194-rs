@@ -14,3 +14,11 @@ impl From<FunctionCode> for u8 {
         value as u8
     }
 }
+
+#[derive(Debug, Clone)]
+#[repr(u8)]
+pub enum ErrorCode {
+    IllegalFunction = 0x81,
+    IllegalDataAddress = 0x82,
+    IllegalDataValue = 0x83,
+}
