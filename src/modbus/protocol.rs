@@ -1,11 +1,13 @@
-use crate::{error::JSYMk194Error, modbus::types::FunctionCode, registers::RegisterAddress};
+use crate::{
+    error::JSYMk194Error,
+    modbus::{ErrorCode, types::FunctionCode},
+    registers::RegisterAddress,
+};
 const SINGLE_READ_REQUEST_HEADER_SIZE: usize = 8;
 pub const SINGLE_READ_RESPONSE_HEADER_SIZE: usize = 7;
 
 pub const SINGLE_WRITE_REQUEST_HEADER_SIZE: usize = 10;
 pub const SINGLE_WRITE_RESPONSE_HEADER_SIZE: usize = 8;
-
-pub const ERROR_RESPONSE_HEADER_SIZE: usize = 5;
 
 pub fn create_request_modbus_header(
     device_address: u8,
@@ -62,4 +64,25 @@ fn calculate_crc(data: &[u8]) -> u16 {
 pub fn calculate_crc_bytes(data: &[u8]) -> [u8; 2] {
     let crc = calculate_crc(data);
     crc.to_le_bytes()
+}
+
+pub struct ModbusErrorResponse {
+    pub device_address: u8,
+    pub function_code: FunctionCode,
+    pub error_code: ErrorCode,
+}
+
+impl ModbusErrorResponse {
+    pub const ERROR_RESPONSE_HEADER_SIZE: usize = 5;
+    pub fn from_bytes(bytes: &[u8]) -> Result<Self, JSYMk194Error> {
+        if bytes.len() != Self::ERROR_RESPONSE_HEADER_SIZE {
+            return Err(JSYMk194Error::InvalidResponse);
+        }
+
+        Ok(Self {
+            device_address: bytes[0],
+            function_code: FunctionCode::try_from(bytes[1])?,
+            error_code: ErrorCode::try_from(bytes[2])?,
+        })
+    }
 }

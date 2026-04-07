@@ -3,7 +3,7 @@ use crate::error::JSYMk194Error;
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
 use crate::modbus::protocol::{
-    SINGLE_READ_RESPONSE_HEADER_SIZE, SINGLE_WRITE_REQUEST_HEADER_SIZE,
+    ModbusErrorResponse, SINGLE_READ_RESPONSE_HEADER_SIZE, SINGLE_WRITE_REQUEST_HEADER_SIZE,
     SINGLE_WRITE_RESPONSE_HEADER_SIZE, construct_single_read_request,
 };
 use crate::modbus::types::FunctionCode;
@@ -75,7 +75,7 @@ impl<Serial: Read + Write> JsyMk194g<Serial> {
     #[maybe_async::maybe_async]
     pub async fn write_buffer(&mut self, buffer: &[u8]) -> Result<(), JSYMk194Error> {
         let bytes_written = self.serial.write(buffer).await?;
-        if bytes_written != buffer.len() {
+        if bytes_written < buffer.len() {
             return Err(JSYMk194Error::FailedToWrite(bytes_written));
         }
         Ok(())
@@ -83,7 +83,11 @@ impl<Serial: Read + Write> JsyMk194g<Serial> {
     #[maybe_async::maybe_async]
     pub async fn read_buffer(&mut self, buffer: &mut [u8]) -> Result<(), JSYMk194Error> {
         let bytes_read = self.serial.read(buffer).await?;
-        if bytes_read != buffer.len() {
+        if bytes_read == ModbusErrorResponse::ERROR_RESPONSE_HEADER_SIZE {
+            let error_code = ModbusErrorResponse::from_bytes(buffer)?.error_code;
+            return Err(JSYMk194Error::DeviceError(error_code));
+        }
+        if bytes_read < buffer.len() {
             return Err(JSYMk194Error::FailedToRead(bytes_read));
         }
         Ok(())
