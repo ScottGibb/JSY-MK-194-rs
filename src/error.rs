@@ -1,5 +1,6 @@
 use crate::hal;
-use crate::hal::*;
+
+#[derive(Debug)]
 pub enum JSYMk194Error {
     /// An error occurred during I/O operations, such as reading from or writing to the device.
     Io(hal::ErrorKind),
@@ -7,6 +8,9 @@ pub enum JSYMk194Error {
     InvalidResponse,
     /// The Write failded to write the expected number of bytes to the device. The usize value indicates the number of bytes that were actually written.
     FailedToWrite(usize),
+    FailedToRead(usize),
+
+    ConversionError,
 }
 
 impl<E: hal::Error> From<E> for JSYMk194Error {

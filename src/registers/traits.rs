@@ -1,30 +1,18 @@
+use crate::error::JSYMk194Error;
 use crate::registers::RegisterAddress;
-
-pub trait WriteRegister<T: Sized> {
-    fn raw_value(&self) -> T;
-    fn get_address(&self) -> RegisterAddress;
-}
-
-pub trait ReadRegister<T: Sized> {
-    fn new_with_raw_value(raw_value: T) -> Self;
-    fn address() -> RegisterAddress;
-}
-
-pub trait ToBeBytes {
-    type Bytes: AsRef<[u8]>;
-    fn to_be_bytes(&self) -> Self::Bytes;
-}
-
-impl ToBeBytes for u16 {
-    type Bytes = [u8; 2];
-    fn to_be_bytes(&self) -> Self::Bytes {
-        u16::to_be_bytes(*self)
+pub trait Register {
+    const NUM_BYTES: usize;
+    const ADDRESS: RegisterAddress;
+    fn from_bytes(bytes: &[u8]) -> Self;
+    fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), JSYMk194Error>;
+    fn address(&self) -> RegisterAddress {
+        Self::ADDRESS
+    }
+    fn num_bytes(&self) -> usize {
+        Self::NUM_BYTES
     }
 }
 
-impl ToBeBytes for u32 {
-    type Bytes = [u8; 4];
-    fn to_be_bytes(&self) -> Self::Bytes {
-        u32::to_be_bytes(*self)
-    }
-}
+pub trait ReadRegister {}
+
+pub trait WriteRegister {}

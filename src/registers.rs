@@ -1,12 +1,14 @@
+pub mod channel_one_measuring_electrical_paramaters;
+pub mod channel_two_measuring_electrical_paramaters;
 mod macros;
-pub mod measuring_electrical_paramaters;
+pub mod misc_registers;
 mod scalars;
 pub mod system_configuration_paramater;
 pub mod system_paramaters;
 pub mod traits;
 
+#[derive(Debug, Clone)]
 #[repr(u16)]
-#[derive(Debug)]
 pub enum RegisterAddress {
     SystemConfigurationParameter = 0x0004,
 
