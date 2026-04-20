@@ -1,4 +1,3 @@
-use core::fmt::Write;
 
 use crate::{
     define_scaled_register,

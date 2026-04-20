@@ -1,4 +1,3 @@
-
 use crate::{
     define_register, define_scaled_register,
     registers::{
