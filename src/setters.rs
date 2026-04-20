@@ -1,9 +1,17 @@
 use crate::error::JSYMk194Error;
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
-use crate::registers::system_configuration_paramater::{
-    Baudrate, SystemConfigurationParamaterRegister,
+use crate::registers::channel_one_measuring_electrical_paramaters::{
+    FirstChannelNegativeActiveEnergyRegister, FirstChannelPositiveActiveEnergyRegister,
 };
+use crate::registers::channel_two_measuring_electrical_paramaters::{
+    SecondChannelNegativeActiveEnergyRegister, SecondChannelPositiveActiveEnergyRegister,
+};
+use crate::registers::system_configuration_paramater::{
+    Baudrate, Id, SystemConfigurationParamaterRegister,
+};
+use crate::types::Channel;
+use crate::units::*;
 impl<Serial: Read + Write> JsyMk194g<Serial> {
     #[maybe_async::maybe_async]
     pub async fn set_baudrate(&mut self, baudrate: Baudrate) -> Result<(), JSYMk194Error> {
@@ -16,5 +24,60 @@ impl<Serial: Read + Write> JsyMk194g<Serial> {
         };
         self.write_register(register).await?;
         Ok(())
+    }
+
+    #[maybe_async::maybe_async]
+    pub async fn set_id(&mut self, id: Id) -> Result<(), JSYMk194Error> {
+        let previous_register = self
+            .read_register::<SystemConfigurationParamaterRegister>()
+            .await?;
+        let register = SystemConfigurationParamaterRegister {
+            baudrate: previous_register.baudrate, // Keep the same baudrate as the previous register
+            id,
+        };
+        self.write_register(register).await?;
+        Ok(())
+    }
+
+    #[maybe_async::maybe_async]
+    pub async fn set_positive_active_energy(
+        &mut self,
+        channel: Channel,
+        energy: Energy,
+    ) -> Result<(), JSYMk194Error> {
+        let energy = energy.get::<kilowatt_hour>();
+        match channel {
+            Channel::One => {
+                let register = FirstChannelPositiveActiveEnergyRegister::from_scaled_value(energy);
+                self.write_register(register).await?;
+                Ok(())
+            }
+            Channel::Two => {
+                let register = SecondChannelPositiveActiveEnergyRegister::from_scaled_value(energy);
+                self.write_register(register).await?;
+                Ok(())
+            }
+        }
+    }
+
+    #[maybe_async::maybe_async]
+    pub async fn set_negative_active_energy(
+        &mut self,
+        channel: Channel,
+        energy: Energy,
+    ) -> Result<(), JSYMk194Error> {
+        let energy = energy.get::<kilowatt_hour>();
+        match channel {
+            Channel::One => {
+                let register = FirstChannelNegativeActiveEnergyRegister::from_scaled_value(energy);
+                self.write_register(register).await?;
+                Ok(())
+            }
+            Channel::Two => {
+                let register = SecondChannelNegativeActiveEnergyRegister::from_scaled_value(energy);
+                self.write_register(register).await?;
+                Ok(())
+            }
+        }
     }
 }
