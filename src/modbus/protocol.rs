@@ -43,7 +43,8 @@ pub fn construct_single_read_request(
         register_address,
     );
     buff[0..4].copy_from_slice(&header);
-    let num_bytes = u16::try_from(register_size).map_err(|_| JSYMk194Error::ConversionError)?; // Fix `This`
+    let num_bytes = u16::try_from(register_size)
+        .map_err(|_| JSYMk194Error::ConversionError("Invalid register size".into()))?; // Fix `This`
     let [num_bytes_high, num_bytes_low] = num_bytes.to_be_bytes();
     buff[4] = num_bytes_high;
     buff[5] = num_bytes_low;

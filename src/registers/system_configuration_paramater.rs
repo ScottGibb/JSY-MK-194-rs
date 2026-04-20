@@ -40,7 +40,7 @@ pub struct Id {
 impl Id {
     pub fn new(id: u8) -> Result<Self, JSYMk194Error> {
         if id == 0 {
-            return Err(JSYMk194Error::ConversionError);
+            return Err(JSYMk194Error::ConversionError("Invalid ID value: 0".into()));
         }
         Ok(Self { id })
     }
@@ -66,7 +66,10 @@ impl TryFrom<u8> for Baudrate {
             6 => Ok(Baudrate::_9600),
             7 => Ok(Baudrate::_19200),
             8 => Ok(Baudrate::_38400),
-            _ => Err(JSYMk194Error::ConversionError),
+            _ => Err(JSYMk194Error::ConversionError(format!(
+                "Invalid baudrate value: {}",
+                value
+            ))),
         }
     }
 }
@@ -81,7 +84,10 @@ impl TryFrom<u32> for Baudrate {
             9600 => Ok(Baudrate::_9600),
             19200 => Ok(Baudrate::_19200),
             38400 => Ok(Baudrate::_38400),
-            _ => Err(JSYMk194Error::ConversionError),
+            _ => Err(JSYMk194Error::ConversionError(format!(
+                "Invalid baudrate value: {}",
+                value
+            ))),
         }
     }
 }
@@ -115,7 +121,9 @@ impl Register for SystemConfigurationParamaterRegister {
 
     fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), JSYMk194Error> {
         if bytes.len() < Self::NUM_BYTES {
-            return Err(JSYMk194Error::ConversionError);
+            return Err(JSYMk194Error::ConversionError(
+                "Invalid byte length for SystemConfigurationParamaterRegister".into(),
+            ));
         }
         bytes[0] = self.id.value();
         bytes[1] = self.baudrate.clone() as u8;

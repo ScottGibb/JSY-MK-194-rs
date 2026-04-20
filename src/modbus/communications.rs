@@ -42,8 +42,8 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             FunctionCode::WriteOneOrMoreRegisters,
             register.address(),
         );
-        let num_bytes =
-            u16::try_from(register.num_bytes()).map_err(|_| JSYMk194Error::ConversionError)?; // Fix `This`
+        let num_bytes = u16::try_from(register.num_bytes())
+            .map_err(|_| JSYMk194Error::ConversionError("Invalid register size".into()))?; // Fix `This`
         let [num_bytes_high, num_bytes_low] = num_bytes.to_be_bytes();
         match num_bytes {
             2 => {
@@ -67,7 +67,11 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
                 buff[10..12].copy_from_slice(&crc);
                 self.write_buffer(&buff).await?;
             }
-            _ => return Err(JSYMk194Error::ConversionError),
+            _ => {
+                return Err(JSYMk194Error::ConversionError(
+                    "Invalid register size".into(),
+                ));
+            }
         };
         self.delay
             .delay_ms(REQUEST_RESPONSE_DELAY.as_millis() as u32)
@@ -89,7 +93,10 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     pub async fn read_buffer(&mut self, buffer: &mut [u8]) -> Result<(), JSYMk194Error> {
         let bytes_read = self.serial.read(buffer).await?;
         if bytes_read == ModbusErrorResponse::ERROR_RESPONSE_HEADER_SIZE {
-            let error_code = ModbusErrorResponse::from_bytes(buffer)?.error_code;
+            let error_code = ModbusErrorResponse::from_bytes(
+                &buffer[..ModbusErrorResponse::ERROR_RESPONSE_HEADER_SIZE],
+            )?
+            .error_code;
             return Err(JSYMk194Error::DeviceError(error_code));
         }
         if bytes_read < buffer.len() {
