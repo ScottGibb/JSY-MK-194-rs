@@ -14,9 +14,11 @@ impl<Serial: Read + Write> JsyMk194g<Serial> {
     }
     #[maybe_async::maybe_async]
     pub async fn new_default(serial: Serial) -> Result<Self, JSYMk194Error> {
-        Ok(Self {
+        // Check if device is on the bus
+        let device = Self {
             serial,
             device_address: 0,
-        })
+        };
+        Ok(device)
     }
 }

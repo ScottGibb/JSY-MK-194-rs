@@ -1,3 +1,4 @@
+use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
 use crate::registers::misc_registers::FrequencyRegister;
 use crate::registers::system_configuration_paramater::{
@@ -12,7 +13,6 @@ use crate::{
     error::JSYMk194Error,
     types::{Channel, ChannelStatistics, Statistics},
 };
-use crate::hal::*;
 impl<Serial: Read + Write> JsyMk194g<Serial> {
     #[maybe_async::maybe_async]
     pub async fn get_all_channels(&mut self) -> Result<Statistics, JSYMk194Error> {
