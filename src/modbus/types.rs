@@ -3,7 +3,6 @@
 use crate::error::JSYMk194Error;
 
 #[derive(Debug, Clone)]
-#[repr(u8)]
 pub enum FunctionCode {
     ReadOneOrMoreRegisters = 0x03,
     WriteOneOrMoreRegisters = 0x10,
@@ -35,7 +34,6 @@ impl TryFrom<u8> for FunctionCode {
 }
 
 #[derive(Debug, Clone)]
-#[repr(u8)]
 pub enum ErrorCode {
     IllegalFunction = 0x81,
     IllegalDataAddress = 0x82,

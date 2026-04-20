@@ -8,7 +8,6 @@ pub mod system_paramaters;
 pub mod traits;
 
 #[derive(Debug, Clone)]
-#[repr(u16)]
 pub enum RegisterAddress {
     SystemConfigurationParameter = 0x0004,
 
