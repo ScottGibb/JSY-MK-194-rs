@@ -9,7 +9,8 @@ repository = "https://github.com/ScottGibb/jsy-mk-194-rs"
 
 
 [features]
-default = ["sync"]
+default = ["std"]
+std = ["maybe-async/is_sync"]
 sync = ["maybe-async/is_sync", "dep:embedded-io"]
 async = ["dep:embedded-io-async"]
 defmt = ["dep:defmt"]
@@ -17,13 +18,16 @@ advanced = []
 
 [dependencies]
 maybe-async = "0.2"
-uom = { version = "0.38",default-features = false, features = ["autoconvert", "si", "f32",]}
+uom = { version = "0.38", default-features = false, features = [
+    "autoconvert",
+    "si",
+    "f32",
+] }
 visibility = "0.1"
 
-embedded-io = {version = "0.7", optional = true}
-embedded-io-async = {version = "0.7", optional = true}
-defmt = {version = "1", optional = true}
+embedded-io = { version = "0.7", optional = true }
+embedded-io-async = { version = "0.7", optional = true }
+defmt = { version = "1", optional = true }
 
-
-
-
+[dev-dependencies]
+serialport = "4.9.0"
