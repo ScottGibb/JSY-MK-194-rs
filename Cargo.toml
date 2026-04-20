@@ -6,7 +6,7 @@ authors = ["Scott Gibb <ssmgibb@yahoo.com>"]
 description = "A Rust driver for the JSY MK-194 power monitor IC, supporting both synchronous and asynchronous operation modes."
 license = "Apache-2.0"
 repository = "https://github.com/ScottGibb/jsy-mk-194-rs"
-
+rust-version = "1.85.1"
 
 [features]
 default = ["std"]
