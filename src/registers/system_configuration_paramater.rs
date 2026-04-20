@@ -12,11 +12,12 @@ pub struct SystemConfigurationParamaterRegister {
     pub baudrate: Baudrate,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Default)]
 #[repr(u8)]
 pub enum Baudrate {
     _1200 = 3,
     _2400 = 4,
+    #[default]
     _4800 = 5,
     _9600 = 6,
     _19200 = 7,
@@ -52,6 +53,34 @@ impl TryFrom<u8> for Baudrate {
             7 => Ok(Baudrate::_19200),
             8 => Ok(Baudrate::_38400),
             _ => Err(JSYMk194Error::ConversionError),
+        }
+    }
+}
+
+impl TryFrom<u32> for Baudrate {
+    type Error = JSYMk194Error;
+    fn try_from(value: u32) -> Result<Self, JSYMk194Error> {
+        match value {
+            1200 => Ok(Baudrate::_1200),
+            2400 => Ok(Baudrate::_2400),
+            4800 => Ok(Baudrate::_4800),
+            9600 => Ok(Baudrate::_9600),
+            19200 => Ok(Baudrate::_19200),
+            38400 => Ok(Baudrate::_38400),
+            _ => Err(JSYMk194Error::ConversionError),
+        }
+    }
+}
+
+impl From<Baudrate> for u32 {
+    fn from(baudrate: Baudrate) -> Self {
+        match baudrate {
+            Baudrate::_1200 => 1200,
+            Baudrate::_2400 => 2400,
+            Baudrate::_4800 => 4800,
+            Baudrate::_9600 => 9600,
+            Baudrate::_19200 => 19200,
+            Baudrate::_38400 => 38400,
         }
     }
 }
