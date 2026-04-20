@@ -5,3 +5,4 @@ pub const ENERGY_SCALAR: f32 = 1000.0;
 pub const FREQUENCY_SCALAR: f32 = 10.0;
 
 pub const CURRENT_RANGE_SCALAR: f32 = 10.0;
+pub const VOLTAGE_RANGE_SCALAR: f32 = 1.0;

@@ -1,6 +1,9 @@
 use crate::{
     error::JSYMk194Error,
-    registers::{RegisterAddress, traits::Register},
+    registers::{
+        RegisterAddress,
+        traits::{ReadRegister, Register},
+    },
 };
 
 #[derive(Debug, PartialEq)]
@@ -57,3 +60,5 @@ impl Register for SystemConfigurationParamaterRegister {
         Ok(())
     }
 }
+
+impl ReadRegister for SystemConfigurationParamaterRegister {}

@@ -49,10 +49,3 @@ define_scaled_register!(
     RegisterAddress::FirstChannelNegativeActiveEnergy,
     scalars::ENERGY_SCALAR
 );
-
-define_scaled_register!(
-    SecondChannelVoltageRegister,
-    u32,
-    RegisterAddress::SecondChannelVoltage,
-    VOLTAGE_SCALAR
-);
