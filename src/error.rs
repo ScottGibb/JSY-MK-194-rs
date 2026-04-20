@@ -8,10 +8,12 @@ pub enum JSYMk194Error {
     InvalidResponse,
     /// The Write failded to write the expected number of bytes to the device. The usize value indicates the number of bytes that were actually written.
     FailedToWrite(usize),
+    /// The Read failed to read the expected number of bytes from the device. The usize value indicates the number of bytes that were actually read.
     FailedToRead(usize),
-
+    /// An error occurred during a conversion process, this could mean data is corrupted, or this library has
+    /// not implemented the correct conversion for a specific type.
     ConversionError,
-
+    /// The device returned an error code in response to a Modbus request. The ErrorCode value indicates the specific error returned by the device.
     DeviceError(ErrorCode),
 }
 
