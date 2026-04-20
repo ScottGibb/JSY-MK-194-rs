@@ -13,7 +13,7 @@ use crate::{
     error::JSYMk194Error,
     types::{Channel, ChannelStatistics, Statistics},
 };
-impl<Serial: Read + Write> JsyMk194g<Serial> {
+impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub async fn get_all_channels(&mut self) -> Result<Statistics, JSYMk194Error> {
         // TODO: replace this with a custom read to get all registers at the same time
@@ -62,7 +62,7 @@ impl<Serial: Read + Write> JsyMk194g<Serial> {
     }
 }
 
-impl<Serial: Read + Write> JsyMk194g<Serial> {
+impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub async fn get_baudrate(&mut self) -> Result<Baudrate, JSYMk194Error> {
         let configuration_register = self

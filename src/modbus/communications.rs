@@ -3,13 +3,14 @@ use crate::error::JSYMk194Error;
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
 use crate::modbus::protocol::{
-    ModbusErrorResponse, SINGLE_READ_RESPONSE_HEADER_SIZE, SINGLE_WRITE_REQUEST_HEADER_SIZE,
-    SINGLE_WRITE_RESPONSE_HEADER_SIZE, construct_single_read_request,
+    ModbusErrorResponse, REQUEST_RESPONSE_DELAY, SINGLE_READ_RESPONSE_HEADER_SIZE,
+    SINGLE_WRITE_REQUEST_HEADER_SIZE, SINGLE_WRITE_RESPONSE_HEADER_SIZE,
+    construct_single_read_request,
 };
 use crate::modbus::types::FunctionCode;
 use crate::registers::traits::{self, Register};
 
-impl<Serial: Read + Write> JsyMk194g<Serial> {
+impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub async fn read_register<Register>(&mut self) -> Result<Register, JSYMk194Error>
     where
@@ -21,7 +22,9 @@ impl<Serial: Read + Write> JsyMk194g<Serial> {
             Register::NUM_BYTES,
         )?;
         self.write_buffer(&buff).await?;
-
+        self.delay
+            .delay_ms(REQUEST_RESPONSE_DELAY.as_millis() as u32)
+            .await;
         let mut response_buff = [0u8; SINGLE_READ_RESPONSE_HEADER_SIZE];
         self.read_buffer(&mut response_buff).await?;
 
@@ -66,6 +69,9 @@ impl<Serial: Read + Write> JsyMk194g<Serial> {
             }
             _ => return Err(JSYMk194Error::ConversionError),
         };
+        self.delay
+            .delay_ms(REQUEST_RESPONSE_DELAY.as_millis() as u32)
+            .await;
         let mut response_buff = [0u8; SINGLE_WRITE_RESPONSE_HEADER_SIZE]; // Error response is smaller than normal response, so this will work for both
         self.read_buffer(&mut response_buff).await?;
         Ok(())

@@ -1,3 +1,5 @@
+use core::time::Duration;
+
 use crate::{
     error::JSYMk194Error,
     modbus::{ErrorCode, types::FunctionCode},
@@ -9,6 +11,12 @@ pub const SINGLE_READ_RESPONSE_HEADER_SIZE: usize = 7;
 pub const SINGLE_WRITE_REQUEST_HEADER_SIZE: usize = 10;
 pub const SINGLE_WRITE_RESPONSE_HEADER_SIZE: usize = 8;
 
+pub const REQUEST_RESPONSE_DELAY: Duration = Duration::from_millis(100);
+// Verify that REQUEST_RESPONSE_DELAY can fit in a u32 when converted to milliseconds, since that's the type used in the driver implementation. This is important to prevent overflow issues when converting the duration to milliseconds.
+const _: () = assert!(
+    REQUEST_RESPONSE_DELAY.as_millis() <= u32::MAX as u128,
+    "REQUEST_RESPONSE_DELAY must be less than or equal to u32::MAX milliseconds"
+);
 pub fn create_request_modbus_header(
     device_address: u8,
     function_code: FunctionCode,

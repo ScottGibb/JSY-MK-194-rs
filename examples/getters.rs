@@ -17,7 +17,10 @@ fn main() {
         .open()
         .expect("Failed to open port");
 
-    let mut driver = JsyMk194g::new_default(port).expect(" The Device shoudl be on the port");
+    let delay = utils::StdDelay;
+
+    let mut driver =
+        JsyMk194g::new_default(port, delay).expect(" The Device shoudl be on the port");
 
     let system_parameters = driver
         .get_system_parameters()
