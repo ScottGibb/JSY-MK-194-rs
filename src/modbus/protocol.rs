@@ -3,7 +3,7 @@ use core::time::Duration;
 use crate::{
     error::JSYMk194Error,
     modbus::{ErrorCode, types::FunctionCode},
-    registers::RegisterAddress,
+    registers::{RegisterAddress, system_configuration_paramater::Id},
 };
 const SINGLE_READ_REQUEST_HEADER_SIZE: usize = 8;
 pub const SINGLE_READ_RESPONSE_HEADER_SIZE: usize = 7;
@@ -18,13 +18,13 @@ const _: () = assert!(
     "REQUEST_RESPONSE_DELAY must be less than or equal to u32::MAX milliseconds"
 );
 pub fn create_request_modbus_header(
-    device_address: u8,
+    device_address: Id,
     function_code: FunctionCode,
     starting_address: RegisterAddress,
 ) -> [u8; 4] {
     let [starting_address_high, starting_address_low] = u16::from(starting_address).to_be_bytes();
     [
-        device_address,
+        u8::from(device_address),
         u8::from(function_code),
         starting_address_high,
         starting_address_low,
@@ -32,7 +32,7 @@ pub fn create_request_modbus_header(
 }
 
 pub fn construct_single_read_request(
-    device_address: u8,
+    device_address: Id,
     register_address: RegisterAddress,
     register_size: usize,
 ) -> Result<[u8; SINGLE_READ_REQUEST_HEADER_SIZE], JSYMk194Error> {

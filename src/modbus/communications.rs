@@ -17,7 +17,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         Register: traits::Register + traits::ReadRegister,
     {
         let buff = construct_single_read_request(
-            self.device_address,
+            self.device_address.clone(),
             Register::ADDRESS,
             Register::NUM_BYTES,
         )?;
@@ -38,7 +38,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         register: impl Register + traits::WriteRegister,
     ) -> Result<(), JSYMk194Error> {
         let address_header = create_request_modbus_header(
-            self.device_address,
+            self.device_address.clone(),
             FunctionCode::WriteOneOrMoreRegisters,
             register.address(),
         );
