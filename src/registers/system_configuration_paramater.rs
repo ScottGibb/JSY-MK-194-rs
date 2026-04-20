@@ -11,6 +11,14 @@ pub struct SystemConfigurationParamaterRegister {
     pub id: Id,
     pub baudrate: Baudrate,
 }
+impl Default for SystemConfigurationParamaterRegister {
+    fn default() -> Self {
+        Self {
+            id: Id::default(),
+            baudrate: Baudrate::default(),
+        }
+    }
+}
 
 #[derive(Debug, PartialEq, Clone, Default)]
 #[repr(u8)]
@@ -39,6 +47,12 @@ impl Id {
 
     pub fn value(&self) -> u8 {
         self.id
+    }
+}
+
+impl Default for Id {
+    fn default() -> Self {
+        Self { id: 1 }
     }
 }
 
