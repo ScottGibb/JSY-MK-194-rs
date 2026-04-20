@@ -11,8 +11,8 @@ pub enum JSYMk194Error {
     /// The Read failed to read the expected number of bytes from the device. The usize value indicates the number of bytes that were actually read.
     FailedToRead(usize),
     /// An error occurred during a conversion process, this could mean data is corrupted, or this library has
-    /// not implemented the correct conversion for a specific type.
-    ConversionError,
+    /// not implemented the correct conversion for a specific type. That type should then be seen in the error string.
+    ConversionError(String),
     /// The device returned an error code in response to a Modbus request. The ErrorCode value indicates the specific error returned by the device.
     DeviceError(ErrorCode),
 }
