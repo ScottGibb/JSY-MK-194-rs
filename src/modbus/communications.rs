@@ -24,7 +24,7 @@ impl<Serial: Read + Write> JsyMk194g<Serial> {
 
         let mut response_buff = [0u8; SINGLE_READ_RESPONSE_HEADER_SIZE];
         self.read_buffer(&mut response_buff).await?;
-        //TODO: Check for error response and handle it
+
         let register_buff = &response_buff[3..(3 + Register::NUM_BYTES)];
         Ok(Register::from_bytes(register_buff))
     }
@@ -54,7 +54,8 @@ impl<Serial: Read + Write> JsyMk194g<Serial> {
                 self.write_buffer(&buff).await?;
             }
             4 => {
-                let mut buff = [0u8; SINGLE_WRITE_REQUEST_HEADER_SIZE + 2]; // Extra 2 bytes for CRC
+                let mut buff = [0u8; SINGLE_WRITE_REQUEST_HEADER_SIZE + 2];
+                // Extra 2 bytes for CRC
                 buff[0..4].copy_from_slice(&address_header);
                 buff[4] = num_bytes_high;
                 buff[5] = num_bytes_low;
@@ -67,8 +68,6 @@ impl<Serial: Read + Write> JsyMk194g<Serial> {
         };
         let mut response_buff = [0u8; SINGLE_WRITE_RESPONSE_HEADER_SIZE]; // Error response is smaller than normal response, so this will work for both
         self.read_buffer(&mut response_buff).await?;
-        //TODO: Check for error response and handle it
-
         Ok(())
     }
 
