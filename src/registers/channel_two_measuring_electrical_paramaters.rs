@@ -1,8 +1,11 @@
+use core::fmt::Write;
+
 use crate::{
     define_scaled_register,
     registers::{
         RegisterAddress,
         scalars::{self, VOLTAGE_SCALAR},
+        traits::WriteRegister,
     },
 };
 
@@ -31,8 +34,10 @@ define_scaled_register!(
     SecondChannelPositiveActiveEnergyRegister,
     u32,
     RegisterAddress::SecondChannelPositiveActiveEnergy,
+    0,
     scalars::ENERGY_SCALAR
 );
+impl WriteRegister for SecondChannelPositiveActiveEnergyRegister {}
 
 define_scaled_register!(
     SecondChannelPowerFactorRegister,
@@ -45,5 +50,7 @@ define_scaled_register!(
     SecondChannelNegativeActiveEnergyRegister,
     u32,
     RegisterAddress::SecondChannelNegativeActiveEnergy,
+    0,
     scalars::ENERGY_SCALAR
 );
+impl WriteRegister for SecondChannelNegativeActiveEnergyRegister {}

@@ -123,6 +123,11 @@ macro_rules! define_scaled_register {
             pub fn get_scaled_value(&self) -> f32 {
                 (self.0 as f32) * ($scale as f32)
             }
+
+            pub fn from_scaled_value(scaled_value: f32) -> Self {
+                let raw_value = (scaled_value / ($scale as f32)) as $data_type;
+                Self(raw_value)
+            }
         }
     };
 }
