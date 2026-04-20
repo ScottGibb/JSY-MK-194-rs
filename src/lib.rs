@@ -18,6 +18,7 @@ compile_error!("Choose std OR embedded mode, not both.");
 /// Sync Based HAL Imports
 #[cfg(feature = "sync")]
 mod hal {
+    pub use embedded_hal::delay::DelayNs;
     pub use embedded_io::Error;
     pub use embedded_io::ErrorKind;
     pub use embedded_io::Read;
@@ -27,6 +28,7 @@ mod hal {
 /// Async Based HAL Imports
 #[cfg(feature = "async")]
 mod hal {
+    pub use embedded_hal_async::delay::DelayNs;
     pub use embedded_io_async::Error;
     pub use embedded_io_async::ErrorKind;
     pub use embedded_io_async::Read;
@@ -35,8 +37,8 @@ mod hal {
 
 #[cfg(feature = "std")]
 mod hal {
+    pub use embedded_hal::delay::DelayNs;
     pub use std::io::{ErrorKind, Read, Write};
-
     pub trait Error {
         fn kind(&self) -> ErrorKind;
     }

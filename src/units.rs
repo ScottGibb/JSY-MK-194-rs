@@ -27,7 +27,6 @@
 //! // Create measurements using unit constants
 //! let voltage = ElectricPotential::new::<volt>(5.0);
 //! let current = ElectricCurrent::new::<milliampere>(1500.0);
-//! let temp = ThermodynamicTemperature::new::<degree_celsius>(25.0);
 //!
 //! // Convert between units
 //! let voltage_mv = voltage.get::<millivolt>(); // 5000.0

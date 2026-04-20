@@ -37,7 +37,7 @@ define_scaled_register!(
     u16,
     crate::registers::RegisterAddress::CurrentRange,
     0x0320, // Default value is 800 (80A)
-    CURRENT_RANGE_SCALAR
+    10.0
 );
 
 impl ReadRegister for CurrentRangeRegister {}

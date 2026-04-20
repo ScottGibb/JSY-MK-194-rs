@@ -10,12 +10,13 @@ use jsy_mk_194_rs::{
 use serialport::SerialPort;
 
 const TEST_PORT: &str = "/dev/tty.usbserial-0001";
-fn setup_device() -> JsyMk194g<Box<dyn SerialPort>> {
+fn setup_device() -> JsyMk194g<Box<dyn SerialPort>, utils::StdDelay> {
     let port = serialport::new(TEST_PORT, u32::from(Baudrate::default()))
         .timeout(Duration::from_secs(1))
         .open()
         .expect("Failed to open port");
-    JsyMk194g::new(port, 0)
+    let delay = utils::StdDelay;
+    JsyMk194g::new_default(port, delay).expect("Device should initialise")
 }
 
 #[test]

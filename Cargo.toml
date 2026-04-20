@@ -10,9 +10,12 @@ rust-version = "1.85.1"
 
 [features]
 default = ["std"]
-std = ["maybe-async/is_sync"]
-sync = ["maybe-async/is_sync", "dep:embedded-io"]
-async = ["dep:embedded-io-async"]
+# Required embedded-hal for the Delay construct
+std = ["maybe-async/is_sync", "dep:embedded-hal"]
+
+
+sync = ["maybe-async/is_sync", "dep:embedded-io", "dep:embedded-hal"]
+async = ["dep:embedded-io-async", "dep:embedded-hal-async"]
 defmt = ["dep:defmt"]
 advanced = []
 
@@ -28,6 +31,9 @@ visibility = "0.1"
 embedded-io = { version = "0.7", optional = true }
 embedded-io-async = { version = "0.7", optional = true }
 defmt = { version = "1", optional = true }
+embedded-hal = { version = "1", optional = true }
+embedded-hal-async = { version = "1", optional = true }
 
 [dev-dependencies]
 serialport = "4.9.0"
+utils = { path = "./utils" }
