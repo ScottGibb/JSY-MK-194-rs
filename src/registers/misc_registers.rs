@@ -1,6 +1,6 @@
 use crate::{
     define_scaled_register,
-    registers::{RegisterAddress, scalars},
+    registers::{RegisterAddress, scalars, traits::ReadRegister},
 };
 
 #[derive(Debug, PartialEq)]
@@ -33,3 +33,5 @@ define_scaled_register!(
     RegisterAddress::Frequency,
     scalars::FREQUENCY_SCALAR
 );
+
+impl ReadRegister for FrequencyRegister {}

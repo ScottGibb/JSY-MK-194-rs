@@ -25,7 +25,8 @@ pub enum Channel {
 }
 
 pub struct SystemParameters {
-    pub ModelOne: u16,
+    pub model_one: u16,
+    // pub model_two: u16, // Left out due to Datasheet saying its reserved
     pub voltage_range: ElectricPotential,
     pub current_range: ElectricCurrent,
 }

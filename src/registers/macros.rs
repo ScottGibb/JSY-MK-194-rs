@@ -47,10 +47,10 @@ macro_rules! define_register {
                 arr.copy_from_slice(bytes);
                 Self(<$data_type>::from_be_bytes(arr))
             }
-            fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), crate::error::JSYMk194Error> {
+            fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), $crate::error::JSYMk194Error> {
                 let data_bytes = self.0.to_be_bytes();
                 if bytes.len() < data_bytes.len() {
-                    return Err(crate::error::JSYMk194Error::ConversionError);
+                    return Err($crate::error::JSYMk194Error::ConversionError);
                 }
                 bytes[..data_bytes.len()].copy_from_slice(&data_bytes);
                 Ok(())
@@ -109,10 +109,10 @@ macro_rules! define_scaled_register {
                 arr.copy_from_slice(bytes);
                 Self(<$data_type>::from_be_bytes(arr))
             }
-            fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), crate::error::JSYMk194Error> {
+            fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), $crate::error::JSYMk194Error> {
                 let data_bytes = self.0.to_be_bytes();
                 if bytes.len() < data_bytes.len() {
-                    return Err(crate::error::JSYMk194Error::ConversionError);
+                    return Err($crate::error::JSYMk194Error::ConversionError);
                 }
                 bytes[..data_bytes.len()].copy_from_slice(&data_bytes);
                 Ok(())
