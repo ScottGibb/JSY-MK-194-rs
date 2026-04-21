@@ -2,7 +2,7 @@ use crate::{
     define_scaled_register,
     registers::{
         RegisterAddress, scalars,
-        traits::{ReadRegister, Register, WriteRegister},
+        traits::{ReadRegister, Register},
     },
 };
 
