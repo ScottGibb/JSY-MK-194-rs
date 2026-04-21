@@ -54,12 +54,29 @@ fn test_set_system_configuration_register() {
             .write_register(new_system_configuration)
             .expect("Failed to write new System Configuration register");
     }
-    let mut device = setup_device(new_id.clone(), new_baudrate.clone());
+    {
+        let mut device = setup_device(new_id.clone(), new_baudrate.clone());
+        let system_configuration = device
+            .read_register::<SystemConfigurationParamaterRegister>()
+            .expect("Failed to read System Configuration register after update");
+
+        println!("Updated System Configuration: {:?}", system_configuration);
+        assert_eq!(system_configuration.baudrate, new_baudrate);
+        assert_eq!(system_configuration.id, new_id);
+
+        // Reset the register back to the default values so it doesn't affect other tests
+        device
+            .write_register(SystemConfigurationParamaterRegister::default())
+            .expect("Failed to reset System Configuration register");
+    }
+    let mut device = setup_device(Id::default(), Baudrate::default());
     let system_configuration = device
         .read_register::<SystemConfigurationParamaterRegister>()
-        .expect("Failed to read System Configuration register after update");
+        .expect("Failed to read System Configuration register after reset");
 
-    println!("Updated System Configuration: {:?}", system_configuration);
-    assert_eq!(system_configuration.baudrate, new_baudrate);
-    assert_eq!(system_configuration.id, new_id);
+    println!("Reset System Configuration: {:?}", system_configuration);
+    assert_eq!(
+        system_configuration,
+        SystemConfigurationParamaterRegister::default()
+    );
 }

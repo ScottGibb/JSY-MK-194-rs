@@ -43,11 +43,17 @@ pub fn construct_single_read_request(
         register_address,
     );
     buff[0..4].copy_from_slice(&header);
-    let num_bytes = u16::try_from(register_size)
-        .map_err(|_| JSYMk194Error::ConversionError("Invalid register size".into()))?; // Fix `This`
-    let [num_bytes_high, num_bytes_low] = num_bytes.to_be_bytes();
-    buff[4] = num_bytes_high;
-    buff[5] = num_bytes_low;
+    if register_size % 2 != 0 {
+        return Err(JSYMk194Error::ConversionError(
+            "Invalid register size: must be a multiple of 2 bytes".into(),
+        ));
+    }
+
+    let num_registers = u16::try_from(register_size / 2)
+        .map_err(|_| JSYMk194Error::ConversionError("Invalid register size".into()))?;
+    let [num_registers_high, num_registers_low] = num_registers.to_be_bytes();
+    buff[4] = num_registers_high;
+    buff[5] = num_registers_low;
     let crc = calculate_crc_bytes(&buff[0..6]);
     buff[6] = crc[0];
     buff[7] = crc[1];
