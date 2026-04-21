@@ -5,6 +5,7 @@ pub mod error;
 pub mod getters;
 pub mod jsy_mk_194g;
 mod modbus;
+pub use modbus::REQUEST_RESPONSE_DELAY;
 pub mod registers;
 pub mod setters;
 pub mod types;
