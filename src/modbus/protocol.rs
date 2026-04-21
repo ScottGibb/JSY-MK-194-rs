@@ -76,7 +76,7 @@ pub fn calculate_crc_bytes(data: &[u8]) -> [u8; 2] {
 }
 
 pub struct ModbusErrorResponse {
-    pub device_address: u8,
+    pub id: Id,
     pub function_code: FunctionCode,
     pub error_code: ErrorCode,
 }
@@ -89,7 +89,7 @@ impl ModbusErrorResponse {
         }
 
         Ok(Self {
-            device_address: bytes[0],
+            id: Id::new(bytes[0])?,
             function_code: FunctionCode::try_from(bytes[1])?,
             error_code: ErrorCode::try_from(bytes[2])?,
         })
