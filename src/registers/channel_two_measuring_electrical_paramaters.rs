@@ -3,7 +3,7 @@ use crate::{
     registers::{
         RegisterAddress,
         scalars::{self, VOLTAGE_SCALAR},
-        traits::WriteRegister,
+        traits::{ReadRegister, WriteRegister},
     },
 };
 
@@ -34,6 +34,7 @@ define_scaled_register!(
     RegisterAddress::SecondChannelPositiveActiveEnergy,
     scalars::ENERGY_SCALAR
 );
+impl ReadRegister for SecondChannelPositiveActiveEnergyRegister {}
 impl WriteRegister for SecondChannelPositiveActiveEnergyRegister {}
 
 define_scaled_register!(
@@ -49,4 +50,6 @@ define_scaled_register!(
     RegisterAddress::SecondChannelNegativeActiveEnergy,
     scalars::ENERGY_SCALAR
 );
+
+impl ReadRegister for SecondChannelNegativeActiveEnergyRegister {}
 impl WriteRegister for SecondChannelNegativeActiveEnergyRegister {}

@@ -36,6 +36,7 @@ define_scaled_register!(
     scalars::ENERGY_SCALAR
 );
 impl WriteRegister for FirstChannelPositiveActiveEnergyRegister {}
+impl ReadRegister for FirstChannelPositiveActiveEnergyRegister {}
 
 define_scaled_register!(
     FirstChannelPowerFactorRegister,
@@ -50,4 +51,6 @@ define_scaled_register!(
     RegisterAddress::FirstChannelNegativeActiveEnergy,
     scalars::ENERGY_SCALAR
 );
+
+impl ReadRegister for FirstChannelNegativeActiveEnergyRegister {}
 impl WriteRegister for FirstChannelNegativeActiveEnergyRegister {}
