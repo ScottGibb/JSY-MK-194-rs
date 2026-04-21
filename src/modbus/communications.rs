@@ -44,27 +44,35 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         );
         let num_bytes = u16::try_from(register.num_bytes())
             .map_err(|_| JSYMk194Error::ConversionError("Invalid register size".into()))?; // Fix `This`
+        if num_bytes % 2 != 0 {
+            return Err(JSYMk194Error::ConversionError(
+                "Invalid register size: must be a multiple of 2 bytes".into(),
+            ));
+        }
+        let num_registers = num_bytes / 2;
         let [num_bytes_high, num_bytes_low] = num_bytes.to_be_bytes();
+        let [num_registers_high, num_registers_low] = num_registers.to_be_bytes();
         match num_bytes {
             2 => {
-                let mut buff = [0u8; SINGLE_WRITE_REQUEST_HEADER_SIZE];
+                let mut buff = [0u8; SINGLE_WRITE_REQUEST_HEADER_SIZE + 1];
                 buff[0..4].copy_from_slice(&address_header);
-                buff[4] = num_bytes_high;
-                buff[5] = num_bytes_low;
-                register.to_bytes(&mut buff[6..8])?;
-                let crc = calculate_crc_bytes(&buff[0..8]);
-                buff[8..10].copy_from_slice(&crc);
+                buff[4] = num_registers_high;
+                buff[5] = num_registers_low;
+                buff[6] = num_bytes_low as u8;
+                register.to_bytes(&mut buff[7..9])?;
+                let crc = calculate_crc_bytes(&buff[0..9]);
+                buff[9..11].copy_from_slice(&crc);
                 self.write_buffer(&buff).await?;
             }
             4 => {
-                let mut buff = [0u8; SINGLE_WRITE_REQUEST_HEADER_SIZE + 2];
-                // Extra 2 bytes for CRC
+                let mut buff = [0u8; SINGLE_WRITE_REQUEST_HEADER_SIZE + 3];
                 buff[0..4].copy_from_slice(&address_header);
-                buff[4] = num_bytes_high;
-                buff[5] = num_bytes_low;
-                register.to_bytes(&mut buff[6..10])?;
-                let crc = calculate_crc_bytes(&buff[0..10]);
-                buff[10..12].copy_from_slice(&crc);
+                buff[4] = num_registers_high;
+                buff[5] = num_registers_low;
+                buff[6] = num_bytes_low as u8;
+                register.to_bytes(&mut buff[7..11])?;
+                let crc = calculate_crc_bytes(&buff[0..11]);
+                buff[11..13].copy_from_slice(&crc);
                 self.write_buffer(&buff).await?;
             }
             _ => {
