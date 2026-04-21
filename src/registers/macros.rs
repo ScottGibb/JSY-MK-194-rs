@@ -78,12 +78,8 @@ macro_rules! define_scaled_register {
     // Without default
     ($name:ident, $data_type:ty, $address:expr, $scale:expr) => {
         define_scaled_register!(@inner $name, $data_type, $address, $scale);
+        // No default implementation, so default() cannot be called
 
-        impl Default for $name {
-            fn default() -> Self {
-                Self(<$data_type as Default>::default())
-            }
-        }
     };
 
     // Shared implementation
