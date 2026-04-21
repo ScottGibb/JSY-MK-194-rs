@@ -32,7 +32,7 @@ pub enum Baudrate {
     _38400 = 8,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Id {
     id: u8,
 }
@@ -44,9 +44,11 @@ impl Id {
         }
         Ok(Self { id })
     }
+}
 
-    pub fn value(&self) -> u8 {
-        self.id
+impl From<Id> for u8 {
+    fn from(value: Id) -> Self {
+        value.id
     }
 }
 
@@ -92,6 +94,12 @@ impl TryFrom<u32> for Baudrate {
     }
 }
 
+impl From<Baudrate> for u8 {
+    fn from(baudrate: Baudrate) -> Self {
+        baudrate as u8
+    }
+}
+
 impl From<Baudrate> for u32 {
     fn from(baudrate: Baudrate) -> Self {
         match baudrate {
@@ -125,8 +133,8 @@ impl Register for SystemConfigurationParamaterRegister {
                 "Invalid byte length for SystemConfigurationParamaterRegister".into(),
             ));
         }
-        bytes[0] = self.id.value();
-        bytes[1] = self.baudrate.clone() as u8;
+        bytes[0] = u8::from(self.id.clone());
+        bytes[1] = u8::from(self.baudrate.clone());
         Ok(())
     }
 }
