@@ -6,10 +6,10 @@ pub enum JSYMk194Error {
     Io(hal::ErrorKind),
     /// The device returned an unexpected response or data format.
     InvalidResponse,
-    /// The Write failded to write the expected number of bytes to the device. The usize value indicates the number of bytes that were actually written.
-    FailedToWrite(usize),
-    /// The Read failed to read the expected number of bytes from the device. The usize value indicates the number of bytes that were actually read.
-    FailedToRead(usize),
+    /// The Write failded to write the expected number of bytes to the device.
+    FailedToWrite { written: usize, expected: usize },
+    /// The Read failed to read the expected number of bytes from the device.
+    FailedToRead { read: usize, expected: usize },
     /// An error occurred during a conversion process, this could mean data is corrupted, or this library has
     /// not implemented the correct conversion for a specific type. That type should then be seen in the error string.
     ConversionError(String),

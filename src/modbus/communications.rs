@@ -93,7 +93,10 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     pub async fn write_buffer(&mut self, buffer: &[u8]) -> Result<(), JSYMk194Error> {
         let bytes_written = self.serial.write(buffer).await?;
         if bytes_written < buffer.len() {
-            return Err(JSYMk194Error::FailedToWrite(bytes_written));
+            return Err(JSYMk194Error::FailedToWrite {
+                written: bytes_written,
+                expected: buffer.len(),
+            });
         }
         Ok(())
     }
@@ -108,7 +111,10 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             return Err(JSYMk194Error::DeviceError(error_code));
         }
         if bytes_read < buffer.len() {
-            return Err(JSYMk194Error::FailedToRead(bytes_read));
+            return Err(JSYMk194Error::FailedToRead {
+                read: bytes_read,
+                expected: buffer.len(),
+            });
         }
         Ok(())
     }
