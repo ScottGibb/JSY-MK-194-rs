@@ -33,7 +33,6 @@ define_scaled_register!(
     FirstChannelPositiveActiveEnergyRegister,
     u32,
     RegisterAddress::FirstChannelPositiveActiveEnergy,
-    0,
     scalars::ENERGY_SCALAR
 );
 impl WriteRegister for FirstChannelPositiveActiveEnergyRegister {}
@@ -49,7 +48,6 @@ define_scaled_register!(
     FirstChannelNegativeActiveEnergyRegister,
     u32,
     RegisterAddress::FirstChannelNegativeActiveEnergy,
-    0,
     scalars::ENERGY_SCALAR
 );
 impl WriteRegister for FirstChannelNegativeActiveEnergyRegister {}
