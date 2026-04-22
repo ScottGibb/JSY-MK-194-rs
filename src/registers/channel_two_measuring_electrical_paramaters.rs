@@ -13,6 +13,7 @@ define_scaled_register!(
     RegisterAddress::SecondChannelVoltage,
     VOLTAGE_SCALAR
 );
+impl ReadRegister for SecondChannelVoltageRegister {}
 
 define_scaled_register!(
     SecondChannelCurrentRegister,
@@ -20,6 +21,7 @@ define_scaled_register!(
     RegisterAddress::SecondChannelCurrent,
     scalars::CURRENT_SCALAR
 );
+impl ReadRegister for SecondChannelCurrentRegister {}
 
 define_scaled_register!(
     SecondChannelActivePowerRegister,
@@ -27,6 +29,7 @@ define_scaled_register!(
     RegisterAddress::SecondChannelActivePower,
     scalars::POWER_FACTOR_SCALAR
 );
+impl ReadRegister for SecondChannelActivePowerRegister {}
 
 define_scaled_register!(
     SecondChannelPositiveActiveEnergyRegister,
@@ -43,6 +46,7 @@ define_scaled_register!(
     RegisterAddress::SecondChannelPowerFactor,
     scalars::POWER_FACTOR_SCALAR
 );
+impl ReadRegister for SecondChannelPowerFactorRegister {}
 
 define_scaled_register!(
     SecondChannelNegativeActiveEnergyRegister,
