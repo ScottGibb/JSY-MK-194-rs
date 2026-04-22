@@ -37,6 +37,7 @@ pub use uom::si::electric_current::milliampere;
 pub use uom::si::electric_potential::millivolt;
 pub use uom::si::electric_potential::volt;
 pub use uom::si::energy::kilowatt_hour;
+pub use uom::si::energy::watt_hour;
 pub use uom::si::f32::ElectricCurrent;
 pub use uom::si::f32::ElectricPotential;
 pub use uom::si::f32::Energy;
