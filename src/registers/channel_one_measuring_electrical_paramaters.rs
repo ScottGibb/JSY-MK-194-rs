@@ -13,6 +13,7 @@ define_scaled_register!(
     RegisterAddress::FirstChannelVoltage,
     VOLTAGE_SCALAR
 );
+impl ReadRegister for FirstChannelVoltageRegister {}
 
 define_scaled_register!(
     FirstChannelCurrentRegister,
@@ -20,6 +21,7 @@ define_scaled_register!(
     RegisterAddress::FirstChannelCurrent,
     scalars::CURRENT_SCALAR
 );
+impl ReadRegister for FirstChannelCurrentRegister {}
 
 define_scaled_register!(
     FirstChannelActivePowerRegister,
@@ -44,6 +46,7 @@ define_scaled_register!(
     RegisterAddress::FirstChannelPowerFactor,
     scalars::POWER_FACTOR_SCALAR
 );
+impl ReadRegister for FirstChannelPowerFactorRegister {}
 
 define_scaled_register!(
     FirstChannelNegativeActiveEnergyRegister,
