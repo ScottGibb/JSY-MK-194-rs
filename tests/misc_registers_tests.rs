@@ -1,0 +1,77 @@
+use std::time::Duration;
+
+use jsy_mk_194_rs::{
+    jsy_mk_194g::JsyMk194g,
+    registers::{
+        misc_registers::{FrequencyRegister, PowerDirection, PowerDirectionRegister},
+        system_configuration_paramater::Baudrate,
+    },
+};
+use serialport::SerialPort;
+
+const TEST_PORT: &str = "/dev/tty.usbserial-0001";
+fn setup_device() -> JsyMk194g<Box<dyn SerialPort>, utils::StdDelay> {
+    let port = serialport::new(TEST_PORT, u32::from(Baudrate::default()))
+        .timeout(Duration::from_secs(1))
+        .open()
+        .expect("Failed to open port");
+    let delay = utils::StdDelay;
+    JsyMk194g::new_default(port, delay).expect("Device should initialise")
+}
+
+#[test]
+fn test_power_direction_register() {
+    let mut device = setup_device();
+    let power_direction = device
+        .read_register::<PowerDirectionRegister>()
+        .expect("Failed to read Power Direction register");
+    println!("Power Direction: {:?}", power_direction);
+    // There is no default value for this register, so we can't assert against it.
+    // Just check that it can be read without error.
+
+    // When running this, it shows positive, so an unoffical positive can be used
+    assert_eq!(
+        power_direction,
+        PowerDirectionRegister {
+            first_channel: PowerDirection::Positive,
+            second_channel: PowerDirection::Positive,
+        }
+    );
+}
+
+#[test]
+fn test_frequency_register_mains_uk() {
+    let mut device = setup_device();
+    let frequency_register = device
+        .read_register::<FrequencyRegister>()
+        .expect("Failed to read Frequency register");
+    let frequency = frequency_register.get_scaled_value();
+    println!("Frequency: {} Hz", frequency);
+
+    //The frequency should be around 50 or 60 Hz, depending on the region.
+    //We can allow for some variation, but it shouldn't be wildly off.
+    const MIN_FREQUENCY: f32 = 45.0;
+    const MAX_FREQUENCY: f32 = 65.0;
+    assert!(
+        frequency >= MIN_FREQUENCY && frequency <= MAX_FREQUENCY,
+        "Frequency {} Hz is out of expected range ({} - {} Hz)",
+        frequency,
+        MIN_FREQUENCY,
+        MAX_FREQUENCY
+    );
+}
+
+#[test]
+fn test_frequency_register_no_mains() {
+    let mut device = setup_device();
+    let frequency_register = device
+        .read_register::<FrequencyRegister>()
+        .expect("Failed to read Frequency register");
+    let frequency = frequency_register.get_scaled_value();
+    println!("Frequency: {} Hz", frequency);
+    // If there is no mains power, the frequency should be 0 Hz.
+    assert_eq!(
+        frequency, 0.0,
+        "Frequency should be 0 Hz when there is no mains power"
+    );
+}
