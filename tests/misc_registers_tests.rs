@@ -5,7 +5,6 @@ use jsy_mk_194_rs::{
     registers::{
         misc_registers::{FrequencyRegister, PowerDirection, PowerDirectionRegister},
         system_configuration_paramater::Baudrate,
-        system_paramaters::{CurrentRangeRegister, ModelOneRegister, VoltageRangeRegister},
     },
 };
 use serialport::SerialPort;
