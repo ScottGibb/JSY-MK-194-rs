@@ -48,8 +48,11 @@ impl TryFrom<u8> for FunctionCode {
 #[derive(Debug, Clone)]
 #[non_exhaustive]
 pub enum ErrorCode {
+    /// Illegal function code, that is, the received function code module is not supported.
     IllegalFunction = 0x81,
+    /// Read or write illegal data addresses, that is, the data location exceeds the readable or writable address range of the module
     IllegalDataAddress = 0x82,
+    /// Illegal data value, that is, the data value sent by the host received by the module exceeds the data range of the corresponding address.
     IllegalDataValue = 0x83,
 }
 
