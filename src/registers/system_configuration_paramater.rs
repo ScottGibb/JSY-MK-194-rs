@@ -6,18 +6,10 @@ use crate::{
     },
 };
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Default)]
 pub struct SystemConfigurationParamaterRegister {
     pub id: Id,
     pub baudrate: Baudrate,
-}
-impl Default for SystemConfigurationParamaterRegister {
-    fn default() -> Self {
-        Self {
-            id: Id::default(),
-            baudrate: Baudrate::default(),
-        }
-    }
 }
 
 #[derive(Debug, PartialEq, Clone, Default)]
