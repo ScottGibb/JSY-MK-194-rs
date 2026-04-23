@@ -23,12 +23,17 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         )?;
         self.write_buffer(&buff).await?;
         self.delay
-            .delay_ms(REQUEST_RESPONSE_DELAY.as_millis() as u32)
+            .delay_ms(
+                u32::try_from(REQUEST_RESPONSE_DELAY.as_millis())
+                    .expect("This should not fail to convert"),
+            )
             .await;
         let mut response_buff = [0u8; SINGLE_READ_RESPONSE_HEADER_SIZE];
         self.read_buffer(&mut response_buff).await?;
 
-        let register_buff = &response_buff[3..(3 + Register::NUM_BYTES)];
+        let register_buff = response_buff
+            .get(3..(3 + Register::NUM_BYTES))
+            .ok_or(JSYMk194Error::InvalidResponse)?;
         Ok(Register::from_bytes(register_buff))
     }
 
@@ -83,7 +88,10 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             }
         };
         self.delay
-            .delay_ms(REQUEST_RESPONSE_DELAY.as_millis() as u32)
+            .delay_ms(
+                u32::try_from(REQUEST_RESPONSE_DELAY.as_millis())
+                    .expect("This should not fail to convert"),
+            )
             .await;
         let mut response_buff = [0u8; SINGLE_WRITE_RESPONSE_HEADER_SIZE]; // Error response is smaller than normal response, so this will work for both
         self.read_buffer(&mut response_buff).await?;
