@@ -58,7 +58,8 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
                 buff[0..4].copy_from_slice(&address_header);
                 buff[4] = num_registers_high;
                 buff[5] = num_registers_low;
-                buff[6] = num_bytes_low as u8;
+                buff[6] = num_bytes_low;
+                buff[7] = num_bytes_high;
                 register.to_bytes(&mut buff[7..9])?;
                 let crc = calculate_crc_bytes(&buff[0..9]);
                 buff[9..11].copy_from_slice(&crc);
@@ -69,7 +70,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
                 buff[0..4].copy_from_slice(&address_header);
                 buff[4] = num_registers_high;
                 buff[5] = num_registers_low;
-                buff[6] = num_bytes_low as u8;
+                buff[6] = num_bytes_low;
                 register.to_bytes(&mut buff[7..11])?;
                 let crc = calculate_crc_bytes(&buff[0..11]);
                 buff[11..13].copy_from_slice(&crc);
