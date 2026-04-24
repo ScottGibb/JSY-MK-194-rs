@@ -1,27 +1,13 @@
-use std::time::Duration;
-
 use jsy_mk_194_rs::{
-    jsy_mk_194g::JsyMk194g,
-    registers::{
-        system_configuration_paramater::Baudrate,
-        system_paramaters::{CurrentRangeRegister, ModelOneRegister, VoltageRangeRegister},
-    },
+    registers::system_paramaters::{CurrentRangeRegister, ModelOneRegister, VoltageRangeRegister},
+    types::{Baudrate, Id},
 };
-use serialport::SerialPort;
 
-const TEST_PORT: &str = "/dev/tty.usbserial-0001";
-fn setup_device() -> JsyMk194g<Box<dyn SerialPort>, utils::StdDelay> {
-    let port = serialport::new(TEST_PORT, u32::from(Baudrate::default()))
-        .timeout(Duration::from_secs(1))
-        .open()
-        .expect("Failed to open port");
-    let delay = utils::StdDelay;
-    JsyMk194g::new_default(port, delay).expect("Device should initialise")
-}
-
+mod common;
+use common::setup_device;
 #[test]
 fn test_model_one_register() {
-    let mut device = setup_device();
+    let mut device = setup_device(Id::default(), Baudrate::default());
     let model_one = device
         .read_register::<ModelOneRegister>()
         .expect("Failed to read Model One register");
@@ -31,7 +17,7 @@ fn test_model_one_register() {
 
 #[test]
 fn test_voltage_range_register() {
-    let mut device = setup_device();
+    let mut device = setup_device(Id::default(), Baudrate::default());
     let voltage_range = device
         .read_register::<VoltageRangeRegister>()
         .expect("Failed to read Voltage Range register");
@@ -44,7 +30,7 @@ fn test_voltage_range_register() {
 
 #[test]
 fn test_current_range_register() {
-    let mut device = setup_device();
+    let mut device = setup_device(Id::default(), Baudrate::default());
     let current_range = device
         .read_register::<CurrentRangeRegister>()
         .expect("Failed to read Current Range register");

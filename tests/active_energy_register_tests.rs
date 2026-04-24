@@ -1,8 +1,5 @@
-use std::time::Duration;
-
 use jsy_mk_194_rs::{
     REQUEST_RESPONSE_DELAY,
-    jsy_mk_194g::JsyMk194g,
     registers::{
         channel_one_measuring_electrical_paramaters::{
             FirstChannelNegativeActiveEnergyRegister, FirstChannelPositiveActiveEnergyRegister,
@@ -10,26 +7,16 @@ use jsy_mk_194_rs::{
         channel_two_measuring_electrical_paramaters::{
             SecondChannelNegativeActiveEnergyRegister, SecondChannelPositiveActiveEnergyRegister,
         },
-        system_configuration_paramater::Baudrate,
     },
+    types::{Baudrate, Id},
     units::{Energy, watt_hour},
 };
-use serialport::SerialPort;
-
-const TEST_PORT: &str = "/dev/tty.usbserial-0001";
-fn setup_device() -> JsyMk194g<Box<dyn SerialPort>, utils::StdDelay> {
-    let port = serialport::new(TEST_PORT, u32::from(Baudrate::default()))
-        .timeout(Duration::from_secs(1))
-        .open()
-        .expect("Failed to open port");
-    let delay = utils::StdDelay;
-    JsyMk194g::new_default(port, delay).expect("Device should initialise")
-}
-
+mod common;
+use common::setup_device;
 #[ignore = "  This test is only used to reset the device in order to do other tests"]
 #[test]
 fn reset_active_energy_registers() {
-    let mut device = setup_device();
+    let mut device = setup_device(Id::default(), Baudrate::default());
     let zero_energy = Energy::new::<watt_hour>(0.0);
     let zero_first_channel_positive_active_energy_register =
         FirstChannelPositiveActiveEnergyRegister::from_scaled_value(zero_energy.get::<watt_hour>());
@@ -70,7 +57,7 @@ mod fresh_device_tests {
     use super::*;
     #[test]
     fn test_get_channel_one_positive_active_energy_register_fresh_device() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         // device.write_register(FirstChannelPositiveActiveEnergyRegister::from_scaled_value(0.0)).expect(
         //     "Failed to reset Channel One Positive Active Energy register to default value before test",
         // );
@@ -91,7 +78,7 @@ mod fresh_device_tests {
 
     #[test]
     fn test_get_channel_one_negative_active_energy_register_fresh_device() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let first_channel_negative_active_energy_register = device
             .read_register::<FirstChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read Channel One Negative Active Energy register");
@@ -108,7 +95,7 @@ mod fresh_device_tests {
     }
     #[test]
     fn test_get_channel_two_positive_active_energy_register_fresh_device() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let second_channel_positive_active_energy_register = device
             .read_register::<SecondChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read Channel Two Positive Active Energy register");
@@ -127,7 +114,7 @@ mod fresh_device_tests {
     /// TODO: This always fails
     #[test]
     fn test_get_channel_two_negative_active_energy_register_fresh_device() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let second_channel_negative_active_energy_register = device
             .read_register::<SecondChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read Channel Two Negative Active Energy register");
@@ -148,7 +135,7 @@ mod set_register_tests {
     use super::*;
     #[test]
     fn test_set_channel_one_positive_active_energy_register() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let old_energy_register = device
             .read_register::<FirstChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read Channel One Positive Active Energy register");
@@ -204,7 +191,7 @@ mod set_register_tests {
 
     #[test]
     fn test_set_channel_two_positive_active_energy_register() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let old_energy_register = device
             .read_register::<SecondChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read Channel Two Positive Active Energy register");
@@ -260,7 +247,7 @@ mod set_register_tests {
 
     #[test]
     fn test_set_channel_one_negative_active_energy_register() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let old_energy_register = device
             .read_register::<FirstChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read Channel One Negative Active Energy register");
@@ -317,7 +304,7 @@ mod set_register_tests {
     /// TODO: This always fails
     #[test]
     fn test_set_channel_two_negative_active_energy_register() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let old_energy_register = device
             .read_register::<SecondChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read Channel Two Negative Active Energy register");

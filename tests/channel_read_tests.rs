@@ -1,7 +1,4 @@
-use std::time::Duration;
-
 use jsy_mk_194_rs::{
-    jsy_mk_194g::JsyMk194g,
     registers::{
         channel_one_measuring_electrical_paramaters::{
             FirstChannelCurrentRegister, FirstChannelVoltageRegister,
@@ -9,26 +6,18 @@ use jsy_mk_194_rs::{
         channel_two_measuring_electrical_paramaters::{
             SecondChannelCurrentRegister, SecondChannelVoltageRegister,
         },
-        system_configuration_paramater::Baudrate,
     },
+    types::{Baudrate, Id},
 };
-use serialport::SerialPort;
 
-const TEST_PORT: &str = "/dev/tty.usbserial-0001";
-fn setup_device() -> JsyMk194g<Box<dyn SerialPort>, utils::StdDelay> {
-    let port = serialport::new(TEST_PORT, u32::from(Baudrate::default()))
-        .timeout(Duration::from_secs(1))
-        .open()
-        .expect("Failed to open port");
-    let delay = utils::StdDelay;
-    JsyMk194g::new_default(port, delay).expect("Device should initialise")
-}
+mod common;
+use common::setup_device;
 
 mod mains_tests {
     use super::*;
     #[test]
     fn test_get_first_channel_voltage_register_mains_uk() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let first_channel_voltage_register = device
             .read_register::<FirstChannelVoltageRegister>()
             .expect("Failed to read First Channel Voltage register");
@@ -51,7 +40,7 @@ mod mains_tests {
 
     #[test]
     fn test_get_second_channel_voltage_register_mains_uk() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let second_channel_voltage_register = device
             .read_register::<SecondChannelVoltageRegister>()
             .expect("Failed to read Second Channel Voltage register");
@@ -86,7 +75,7 @@ mod no_load_tests {
     use super::*;
     #[test]
     fn test_get_first_channel_voltage_register_no_mains() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let first_channel_voltage_register = device
             .read_register::<FirstChannelVoltageRegister>()
             .expect("Failed to read First Channel Voltage register");
@@ -104,7 +93,7 @@ mod no_load_tests {
 
     #[test]
     fn test_get_first_channel_current_register_no_load() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let first_channel_current_register = device
             .read_register::<FirstChannelCurrentRegister>()
             .expect("Failed to read First Channel Current register");
@@ -122,7 +111,7 @@ mod no_load_tests {
 
     #[test]
     fn test_get_first_channel_active_power_no_load() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let first_channel_active_power_register = device
             .read_register::<FirstChannelActivePowerRegister>()
             .expect("Failed to read First Channel Active Power register");
@@ -140,7 +129,7 @@ mod no_load_tests {
 
     #[test]
     fn test_get_first_channel_power_factor_no_load() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let first_channel_power_factor_register = device
             .read_register::<FirstChannelPowerFactorRegister>()
             .expect("Failed to read First Channel Power Factor register");
@@ -158,7 +147,7 @@ mod no_load_tests {
 
     #[test]
     fn test_get_second_channel_voltage_register_no_mains() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let second_channel_voltage_register = device
             .read_register::<SecondChannelVoltageRegister>()
             .expect("Failed to read Second Channel Voltage register");
@@ -176,7 +165,7 @@ mod no_load_tests {
 
     #[test]
     fn test_get_second_channel_current_register_no_load() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let second_channel_current_register = device
             .read_register::<SecondChannelCurrentRegister>()
             .expect("Failed to read Second Channel Current register");
@@ -194,7 +183,7 @@ mod no_load_tests {
 
     #[test]
     fn test_get_second_channel_active_power_no_load() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let second_channel_active_power_register = device
             .read_register::<SecondChannelActivePowerRegister>()
             .expect("Failed to read Second Channel Active Power register");
@@ -212,7 +201,7 @@ mod no_load_tests {
 
     #[test]
     fn test_get_second_channel_power_factor_no_load() {
-        let mut device = setup_device();
+        let mut device = setup_device(Id::default(), Baudrate::default());
         let second_channel_power_factor_register = device
             .read_register::<SecondChannelPowerFactorRegister>()
             .expect("Failed to read Second Channel Power Factor register");
