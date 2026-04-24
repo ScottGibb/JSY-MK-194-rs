@@ -1,6 +1,6 @@
 use crate::registers::misc_registers::PowerDirection;
+pub use crate::registers::system_configuration_paramater::{Baudrate, Id};
 use crate::units::*;
-
 #[derive(Debug)]
 pub struct ChannelStatistics {
     pub voltage: ElectricPotential,

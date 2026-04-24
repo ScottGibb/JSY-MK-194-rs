@@ -1,27 +1,12 @@
-use std::time::Duration;
-
 use jsy_mk_194_rs::{
-    jsy_mk_194g::JsyMk194g,
-    registers::{
-        misc_registers::{FrequencyRegister, PowerDirection, PowerDirectionRegister},
-        system_configuration_paramater::Baudrate,
-    },
+    registers::misc_registers::{FrequencyRegister, PowerDirection, PowerDirectionRegister},
+    types::{Baudrate, Id},
 };
-use serialport::SerialPort;
-
-const TEST_PORT: &str = "/dev/tty.usbserial-0001";
-fn setup_device() -> JsyMk194g<Box<dyn SerialPort>, utils::StdDelay> {
-    let port = serialport::new(TEST_PORT, u32::from(Baudrate::default()))
-        .timeout(Duration::from_secs(1))
-        .open()
-        .expect("Failed to open port");
-    let delay = utils::StdDelay;
-    JsyMk194g::new_default(port, delay).expect("Device should initialise")
-}
-
+mod common;
+use common::setup_device;
 #[test]
 fn test_power_direction_register() {
-    let mut device = setup_device();
+    let mut device = setup_device(Id::default(), Baudrate::default());
     let power_direction = device
         .read_register::<PowerDirectionRegister>()
         .expect("Failed to read Power Direction register");
@@ -41,7 +26,7 @@ fn test_power_direction_register() {
 
 #[test]
 fn test_frequency_register_mains_uk() {
-    let mut device = setup_device();
+    let mut device = setup_device(Id::default(), Baudrate::default());
     let frequency_register = device
         .read_register::<FrequencyRegister>()
         .expect("Failed to read Frequency register");
@@ -63,7 +48,7 @@ fn test_frequency_register_mains_uk() {
 
 #[test]
 fn test_frequency_register_no_mains() {
-    let mut device = setup_device();
+    let mut device = setup_device(Id::default(), Baudrate::default());
     let frequency_register = device
         .read_register::<FrequencyRegister>()
         .expect("Failed to read Frequency register");

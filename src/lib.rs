@@ -1,13 +1,16 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![deny(unsafe_code)]
 
-pub mod error;
-pub mod getters;
-pub mod jsy_mk_194g;
 mod modbus;
 pub use modbus::REQUEST_RESPONSE_DELAY;
 pub mod registers;
+
+pub mod error;
+pub mod jsy_mk_194g;
+
+pub mod getters;
 pub mod setters;
+
 pub mod types;
 pub mod units;
 
