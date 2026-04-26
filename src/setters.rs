@@ -33,9 +33,10 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             .await?;
         let register = SystemConfigurationParamaterRegister {
             baudrate: previous_register.baudrate, // Keep the same baudrate as the previous register
-            id,
+            id: id.clone(),                       // Use the new ID provided as an argument
         };
         self.write_register(register).await?;
+        self.device_address = id; // Update the device's ID in the struct to reflect the change
         Ok(())
     }
 
