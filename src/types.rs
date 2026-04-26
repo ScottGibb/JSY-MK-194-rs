@@ -1,7 +1,12 @@
-use crate::registers::misc_registers::PowerDirection;
 pub use crate::registers::system_configuration_paramater::{Baudrate, Id};
+use crate::registers::system_paramaters::{CurrentRangeRegister, VoltageRangeRegister};
+use crate::registers::{
+    misc_registers::PowerDirection,
+    system_configuration_paramater::SystemConfigurationParamaterRegister,
+    system_paramaters::ModelOneRegister,
+};
 use crate::units::*;
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct ChannelStatistics {
     pub voltage: ElectricPotential,
     pub current: ElectricCurrent,
@@ -29,7 +34,7 @@ impl core::fmt::Display for ChannelStatistics {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Statistics {
     pub channel_one: ChannelStatistics,
     pub channel_two: ChannelStatistics,
@@ -55,7 +60,7 @@ pub enum Channel {
     Two,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct SystemParameters {
     pub model_one: u16,
     // pub model_two: u16, // Left out due to Datasheet saying its reserved
@@ -72,5 +77,19 @@ impl core::fmt::Display for SystemParameters {
             self.voltage_range.get::<volt>(),
             self.current_range.get::<ampere>()
         )
+    }
+}
+
+impl Default for SystemParameters {
+    fn default() -> Self {
+        Self {
+            model_one: ModelOneRegister::default().0,
+            voltage_range: ElectricPotential::new::<volt>(
+                VoltageRangeRegister::default().get_scaled_value(),
+            ),
+            current_range: ElectricCurrent::new::<ampere>(
+                CurrentRangeRegister::default().get_scaled_value(),
+            ),
+        }
     }
 }
