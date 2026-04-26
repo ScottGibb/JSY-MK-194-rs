@@ -7,12 +7,22 @@ use crate::registers::system_configuration_paramater::{
 use crate::registers::system_paramaters::{
     CurrentRangeRegister, ModelOneRegister, VoltageRangeRegister,
 };
-use crate::types::SystemParameters;
+use crate::types::{Id, SystemParameters};
 use crate::units::*;
 use crate::{
     error::JSYMk194Error,
     types::{Channel, ChannelStatistics, Statistics},
 };
+impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
+    #[maybe_async::maybe_async]
+    pub async fn get_id(&mut self) -> Result<Id, JSYMk194Error> {
+        let configuration_register = self
+            .read_register::<SystemConfigurationParamaterRegister>()
+            .await?;
+        let id = configuration_register.id;
+        Ok(id)
+    }
+}
 impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub async fn get_all_channels(&mut self) -> Result<Statistics, JSYMk194Error> {
