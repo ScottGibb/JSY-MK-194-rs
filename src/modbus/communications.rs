@@ -312,6 +312,8 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         Ok(statistics)
     }
 
+    // TODO: this function has a lot of repeated code that could be cleaned up, but I want to get it working first before I refactor it
+    // Generics might be a good way to fix it
     #[maybe_async::maybe_async]
     async fn extract_channel_statistics(
         &mut self,
