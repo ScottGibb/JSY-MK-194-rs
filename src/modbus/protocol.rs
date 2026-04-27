@@ -2,7 +2,15 @@ use core::time::Duration;
 
 use crate::{
     error::JSYMk194Error,
-    modbus::{ErrorCode, types::FunctionCode},
+    modbus::{
+        ErrorCode,
+        offsets::{
+            CHANNEL_READ_REQUEST_HEADER_SIZE, FULL_READ_REQUEST_HEADER_SIZE,
+            MODBUS_DATA_START_OFFSET, MODBUS_DEVICE_ADDRESS_OFFSET, MODBUS_FUNCTION_CODE_OFFSET,
+            NUM_CHANNEL_REGISTERS, SINGLE_READ_REQUEST_HEADER_SIZE,
+        },
+        types::FunctionCode,
+    },
     registers::{
         RegisterAddress, channel_one_measuring_electrical_paramaters::FirstChannelVoltageRegister,
         channel_two_measuring_electrical_paramaters::SecondChannelVoltageRegister,
@@ -10,23 +18,6 @@ use crate::{
     },
     types::Channel,
 };
-const SINGLE_READ_REQUEST_HEADER_SIZE: usize = 8;
-pub const SINGLE_READ_RESPONSE_HEADER_SIZE: usize = 7;
-
-pub const SINGLE_WRITE_REQUEST_HEADER_SIZE: usize = 10;
-pub const SINGLE_WRITE_RESPONSE_HEADER_SIZE: usize = 8;
-
-pub const FULL_READ_REQUEST_HEADER_SIZE: usize = 8;
-// 1 byte for device address, 1 byte for function code, 1 byte for byte count,
-// 14 registers * 4 bytes each = 56 bytes for register data, and 2 bytes for CRC.
-pub const FULL_READ_RESPONSE_HEADER_SIZE: usize = 61;
-
-pub const CHANNEL_READ_REQUEST_HEADER_SIZE: usize = 8;
-
-// 1 byte for device address, 1 byte for function code, 1 byte for byte count,
-// 7 registers * 4 bytes each = 28 bytes for register data, and 2 bytes for CRC.
-pub const CHANNEL_READ_RESPONSE_HEADER_SIZE: usize = 33;
-pub const NUM_CHANNEL_REGISTERS: usize = 7;
 
 pub const REQUEST_RESPONSE_DELAY: Duration = Duration::from_millis(100);
 // Verify that REQUEST_RESPONSE_DELAY can fit in a u32 when converted to milliseconds, since that's the type used in the driver implementation. This is important to prevent overflow issues when converting the duration to milliseconds.
@@ -157,9 +148,18 @@ impl ModbusErrorResponse {
         }
 
         Ok(Self {
-            _id: Id::new(bytes[0])?,
-            _function_code: FunctionCode::try_from(bytes[1])?,
-            error_code: ErrorCode::try_from(bytes[2])?,
+            _id: Id::new(bytes[MODBUS_DEVICE_ADDRESS_OFFSET])?,
+            _function_code: FunctionCode::try_from(bytes[MODBUS_FUNCTION_CODE_OFFSET])?,
+            error_code: ErrorCode::try_from(bytes[MODBUS_DATA_START_OFFSET])?,
         })
     }
+}
+
+pub fn extract_modbus_response_header(buffer: &[u8]) -> Result<(Id, FunctionCode), JSYMk194Error> {
+    if buffer.len() < 2 {
+        return Err(JSYMk194Error::InvalidResponse);
+    }
+    let id = Id::new(buffer[MODBUS_DEVICE_ADDRESS_OFFSET])?;
+    let function_code = FunctionCode::try_from(buffer[MODBUS_FUNCTION_CODE_OFFSET])?;
+    Ok((id, function_code))
 }
