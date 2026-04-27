@@ -15,6 +15,8 @@ pub enum JSYMk194Error {
     ConversionError(String),
     /// The device returned an error code in response to a Modbus request. The ErrorCode value indicates the specific error returned by the device.
     DeviceError(ErrorCode),
+    /// The CRC check failed, indicating that the data received from the device may be corrupted or tampered with.
+    CrcError,
 }
 
 impl<E: hal::Error> From<E> for JSYMk194Error {
