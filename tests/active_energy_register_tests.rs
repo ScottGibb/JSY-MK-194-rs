@@ -65,8 +65,7 @@ mod fresh_device_tests {
             .read_register::<FirstChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read Channel One Positive Active Energy register");
         println!(
-            "Channel One Positive Active Energy: {:?}",
-            first_channel_positive_active_energy_register
+            "Channel One Positive Active Energy: {first_channel_positive_active_energy_register:?}"
         );
 
         // This register can change and has no default value assume, fresh device here
@@ -83,8 +82,7 @@ mod fresh_device_tests {
             .read_register::<FirstChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read Channel One Negative Active Energy register");
         println!(
-            "Channel One Negative Active Energy: {:?}",
-            first_channel_negative_active_energy_register
+            "Channel One Negative Active Energy: {first_channel_negative_active_energy_register:?}"
         );
 
         // This register can change and has no default value assume, fresh device here
@@ -100,8 +98,7 @@ mod fresh_device_tests {
             .read_register::<SecondChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read Channel Two Positive Active Energy register");
         println!(
-            "Channel Two Positive Active Energy: {:?}",
-            second_channel_positive_active_energy_register
+            "Channel Two Positive Active Energy: {second_channel_positive_active_energy_register:?}"
         );
 
         // This register can change and has no default value assume, fresh device here
@@ -119,8 +116,7 @@ mod fresh_device_tests {
             .read_register::<SecondChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read Channel Two Negative Active Energy register");
         println!(
-            "Channel Two Negative Active Energy: {:?}",
-            second_channel_negative_active_energy_register
+            "Channel Two Negative Active Energy: {second_channel_negative_active_energy_register:?}"
         );
 
         // This register can change and has no default value assume, fresh device here
@@ -140,8 +136,7 @@ mod set_register_tests {
             .read_register::<FirstChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read Channel One Positive Active Energy register");
         println!(
-            "Old Channel One Positive Active Energy Register: {:?}",
-            old_energy_register
+            "Old Channel One Positive Active Energy Register: {old_energy_register:?}"
         );
 
         let new_energy = Energy::new::<watt_hour>(123.45);
@@ -159,8 +154,7 @@ mod set_register_tests {
             .read_register::<FirstChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read updated Channel One Positive Active Energy register");
         println!(
-            "Updated Channel One Positive Active Energy Register: {:?}",
-            updated_energy_register
+            "Updated Channel One Positive Active Energy Register: {updated_energy_register:?}"
         );
 
         assert_eq!(
@@ -179,8 +173,7 @@ mod set_register_tests {
             .read_register::<FirstChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read reset Channel One Positive Active Energy register");
         println!(
-            "Reset Channel One Positive Active Energy Register: {:?}",
-            reset_energy_register
+            "Reset Channel One Positive Active Energy Register: {reset_energy_register:?}"
         );
 
         assert_eq!(
@@ -196,8 +189,7 @@ mod set_register_tests {
             .read_register::<SecondChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read Channel Two Positive Active Energy register");
         println!(
-            "Old Channel Two Positive Active Energy Register: {:?}",
-            old_energy_register
+            "Old Channel Two Positive Active Energy Register: {old_energy_register:?}"
         );
 
         let new_energy = Energy::new::<watt_hour>(123.45);
@@ -215,8 +207,7 @@ mod set_register_tests {
             .read_register::<SecondChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read updated Channel Two Positive Active Energy register");
         println!(
-            "Updated Channel Two Positive Active Energy Register: {:?}",
-            updated_energy_register
+            "Updated Channel Two Positive Active Energy Register: {updated_energy_register:?}"
         );
 
         assert_eq!(
@@ -235,8 +226,7 @@ mod set_register_tests {
             .read_register::<SecondChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read reset Channel Two Positive Active Energy register");
         println!(
-            "Reset Channel Two Positive Active Energy Register: {:?}",
-            reset_energy_register
+            "Reset Channel Two Positive Active Energy Register: {reset_energy_register:?}"
         );
 
         assert_eq!(
@@ -252,8 +242,7 @@ mod set_register_tests {
             .read_register::<FirstChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read Channel One Negative Active Energy register");
         println!(
-            "Old Channel One Negative Active Energy Register: {:?}",
-            old_energy_register
+            "Old Channel One Negative Active Energy Register: {old_energy_register:?}"
         );
 
         let new_energy = Energy::new::<watt_hour>(123.45);
@@ -271,8 +260,7 @@ mod set_register_tests {
             .read_register::<FirstChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read updated Channel One Negative Active Energy register");
         println!(
-            "Updated Channel One Negative Active Energy Register: {:?}",
-            updated_energy_register
+            "Updated Channel One Negative Active Energy Register: {updated_energy_register:?}"
         );
 
         assert_eq!(
@@ -291,8 +279,7 @@ mod set_register_tests {
             .read_register::<FirstChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read reset Channel One Negative Active Energy register");
         println!(
-            "Reset Channel One Negative Active Energy Register: {:?}",
-            reset_energy_register
+            "Reset Channel One Negative Active Energy Register: {reset_energy_register:?}"
         );
 
         assert_eq!(
@@ -309,8 +296,7 @@ mod set_register_tests {
             .read_register::<SecondChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read Channel Two Negative Active Energy register");
         println!(
-            "Old Channel Two Negative Active Energy Register: {:?}",
-            old_energy_register
+            "Old Channel Two Negative Active Energy Register: {old_energy_register:?}"
         );
 
         let new_energy = Energy::new::<watt_hour>(123.45);
@@ -328,8 +314,7 @@ mod set_register_tests {
             .read_register::<SecondChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read updated Channel Two Negative Active Energy register");
         println!(
-            "Updated Channel Two Negative Active Energy Register: {:?}",
-            updated_energy_register
+            "Updated Channel Two Negative Active Energy Register: {updated_energy_register:?}"
         );
 
         assert_eq!(
@@ -348,8 +333,7 @@ mod set_register_tests {
             .read_register::<SecondChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read reset Channel Two Negative Active Energy register");
         println!(
-            "Reset Channel Two Negative Active Energy Register: {:?}",
-            reset_energy_register
+            "Reset Channel Two Negative Active Energy Register: {reset_energy_register:?}"
         );
 
         assert_eq!(

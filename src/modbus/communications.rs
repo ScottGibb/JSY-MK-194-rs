@@ -159,10 +159,10 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         let mut response_buff = [0u8; FULL_READ_RESPONSE_HEADER_SIZE];
         self.read_buffer(&mut response_buff).await?;
 
-        Ok(self.extract_statistics(&response_buff).await?)
+        self.extract_statistics(&response_buff)
     }
     #[maybe_async::maybe_async]
-    async fn extract_statistics(&mut self, buffer: &[u8]) -> Result<Statistics, JSYMk194Error> {
+    fn extract_statistics(&mut self, buffer: &[u8]) -> Result<Statistics, JSYMk194Error> {
         if buffer.len() < FULL_READ_RESPONSE_HEADER_SIZE {
             return Err(JSYMk194Error::InvalidResponse);
         }
@@ -281,42 +281,38 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         let _function_code = FunctionCode::try_from(buffer[1])?;
         let _byte_count = buffer[2] as usize;
 
-        let voltage = if *channel == Channel::One {
-            FirstChannelVoltageRegister::from_bytes(&buffer[3..7]).get_scaled_value()
-        } else {
-            SecondChannelVoltageRegister::from_bytes(&buffer[3..7]).get_scaled_value()
+        let (
+            voltage,
+            current,
+            active_power,
+            positive_active_energy,
+            power_factor,
+            negative_active_energy,
+            power_direction,
+        ) = match channel {
+            Channel::One => (
+                FirstChannelVoltageRegister::from_bytes(&buffer[3..7]).get_scaled_value(),
+                FirstChannelCurrentRegister::from_bytes(&buffer[7..11]).get_scaled_value(),
+                FirstChannelActivePowerRegister::from_bytes(&buffer[11..15]).get_scaled_value(),
+                SecondChannelPositiveActiveEnergyRegister::from_bytes(&buffer[15..19])
+                    .get_scaled_value(),
+                SecondChannelPowerFactorRegister::from_bytes(&buffer[19..23]).get_scaled_value(),
+                SecondChannelNegativeActiveEnergyRegister::from_bytes(&buffer[23..27])
+                    .get_scaled_value(),
+                PowerDirectionRegister::from_bytes(&buffer[27..31]).first_channel,
+            ),
+            Channel::Two => (
+                SecondChannelVoltageRegister::from_bytes(&buffer[3..7]).get_scaled_value(),
+                SecondChannelCurrentRegister::from_bytes(&buffer[7..11]).get_scaled_value(),
+                SecondChannelActivePowerRegister::from_bytes(&buffer[11..15]).get_scaled_value(),
+                SecondChannelPositiveActiveEnergyRegister::from_bytes(&buffer[15..19])
+                    .get_scaled_value(),
+                SecondChannelPowerFactorRegister::from_bytes(&buffer[19..23]).get_scaled_value(),
+                SecondChannelNegativeActiveEnergyRegister::from_bytes(&buffer[23..27])
+                    .get_scaled_value(),
+                PowerDirectionRegister::from_bytes(&buffer[27..31]).second_channel,
+            ),
         };
-        let current = if *channel == Channel::One {
-            FirstChannelCurrentRegister::from_bytes(&buffer[7..11]).get_scaled_value()
-        } else {
-            SecondChannelCurrentRegister::from_bytes(&buffer[7..11]).get_scaled_value()
-        };
-        let active_power = if *channel == Channel::One {
-            FirstChannelActivePowerRegister::from_bytes(&buffer[11..15]).get_scaled_value()
-        } else {
-            SecondChannelActivePowerRegister::from_bytes(&buffer[11..15]).get_scaled_value()
-        };
-        let positive_active_energy = if *channel == Channel::One {
-            SecondChannelPositiveActiveEnergyRegister::from_bytes(&buffer[15..19])
-                .get_scaled_value()
-        } else {
-            SecondChannelPositiveActiveEnergyRegister::from_bytes(&buffer[15..19])
-                .get_scaled_value()
-        };
-        let power_factor = if *channel == Channel::One {
-            SecondChannelPowerFactorRegister::from_bytes(&buffer[19..23]).get_scaled_value()
-        } else {
-            SecondChannelPowerFactorRegister::from_bytes(&buffer[19..23]).get_scaled_value()
-        };
-        let negative_active_energy = if *channel == Channel::One {
-            SecondChannelNegativeActiveEnergyRegister::from_bytes(&buffer[23..27])
-                .get_scaled_value()
-        } else {
-            SecondChannelNegativeActiveEnergyRegister::from_bytes(&buffer[23..27])
-                .get_scaled_value()
-        };
-
-        let power_direction = PowerDirectionRegister::from_bytes(&buffer[27..31]);
 
         Ok(ChannelStatistics {
             voltage: ElectricPotential::new::<volt>(voltage),
@@ -324,11 +320,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             active_power: Power::new::<watt>(active_power),
             positive_active_energy: Energy::new::<kilowatt_hour>(positive_active_energy),
             negative_active_energy: Energy::new::<kilowatt_hour>(negative_active_energy),
-            power_direction: if *channel == Channel::One {
-                power_direction.first_channel
-            } else {
-                power_direction.second_channel
-            },
+            power_direction,
             power_factor,
         })
     }
