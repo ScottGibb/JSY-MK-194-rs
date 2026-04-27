@@ -1,5 +1,6 @@
 pub mod channel_one_measuring_electrical_paramaters;
 pub mod channel_two_measuring_electrical_paramaters;
+pub mod electrical_paramater_registers;
 mod macros;
 pub mod misc_registers;
 mod scalars;

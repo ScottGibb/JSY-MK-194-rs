@@ -2,11 +2,14 @@ use super::protocol::{calculate_crc_bytes, create_request_modbus_header};
 use crate::error::JSYMk194Error;
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
+use crate::modbus::offsets::{
+    CHANNEL_READ_RESPONSE_HEADER_SIZE, ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES,
+    FULL_READ_RESPONSE_HEADER_SIZE, MODBUS_DATA_START_OFFSET, SINGLE_READ_RESPONSE_HEADER_SIZE,
+    SINGLE_WRITE_REQUEST_HEADER_SIZE, SINGLE_WRITE_RESPONSE_HEADER_SIZE,
+};
 use crate::modbus::protocol::{
-    CHANNEL_READ_RESPONSE_HEADER_SIZE, FULL_READ_RESPONSE_HEADER_SIZE, ModbusErrorResponse,
-    REQUEST_RESPONSE_DELAY, SINGLE_READ_RESPONSE_HEADER_SIZE, SINGLE_WRITE_REQUEST_HEADER_SIZE,
-    SINGLE_WRITE_RESPONSE_HEADER_SIZE, construct_channel_read_request, construct_full_read_request,
-    construct_single_read_request,
+    ModbusErrorResponse, REQUEST_RESPONSE_DELAY, construct_channel_read_request,
+    construct_full_read_request, construct_single_read_request, extract_modbus_response_header,
 };
 use crate::modbus::types::FunctionCode;
 use crate::registers::channel_one_measuring_electrical_paramaters::{
@@ -19,7 +22,7 @@ use crate::registers::channel_two_measuring_electrical_paramaters::{
 };
 use crate::registers::misc_registers::{FrequencyRegister, PowerDirectionRegister};
 use crate::registers::traits::{self, Register};
-use crate::types::{Channel, ChannelStatistics, Id, Statistics};
+use crate::types::{Channel, ChannelStatistics, Statistics};
 use crate::units::{
     ElectricCurrent, ElectricPotential, Energy, Frequency, Power, ampere, hertz, kilowatt_hour,
     volt, watt,
@@ -47,7 +50,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         self.read_buffer(&mut response_buff).await?;
 
         let register_buff = response_buff
-            .get(3..(3 + Register::NUM_BYTES))
+            .get(MODBUS_DATA_START_OFFSET..(MODBUS_DATA_START_OFFSET + Register::NUM_BYTES))
             .ok_or(JSYMk194Error::InvalidResponse)?;
         Ok(Register::from_bytes(register_buff))
     }
@@ -166,44 +169,85 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         if buffer.len() < FULL_READ_RESPONSE_HEADER_SIZE {
             return Err(JSYMk194Error::InvalidResponse);
         }
-        let _device_id = Id::new(buffer[0])?;
-        let _function_code = FunctionCode::try_from(buffer[1])?;
-        let _byte_count = buffer[2] as usize;
+        let _ = extract_modbus_response_header(buffer)?;
 
-        let first_channel_voltage_register =
-            FirstChannelVoltageRegister::from_bytes(&buffer[3..7]).get_scaled_value();
-        let first_channel_current =
-            FirstChannelCurrentRegister::from_bytes(&buffer[7..11]).get_scaled_value();
-        let first_channel_active_power =
-            FirstChannelActivePowerRegister::from_bytes(&buffer[11..15]).get_scaled_value();
+        let first_channel_voltage_register = FirstChannelVoltageRegister::from_bytes(
+            &buffer[MODBUS_DATA_START_OFFSET
+                ..MODBUS_DATA_START_OFFSET + ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES],
+        )
+        .get_scaled_value();
+        let first_channel_current = FirstChannelCurrentRegister::from_bytes(
+            &buffer[MODBUS_DATA_START_OFFSET + ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES
+                ..MODBUS_DATA_START_OFFSET + (2 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+        )
+        .get_scaled_value();
+        let first_channel_active_power = FirstChannelActivePowerRegister::from_bytes(
+            &buffer[MODBUS_DATA_START_OFFSET + (2 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                ..MODBUS_DATA_START_OFFSET + (3 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+        )
+        .get_scaled_value();
         let first_channel_positive_active_energy =
-            SecondChannelPositiveActiveEnergyRegister::from_bytes(&buffer[15..19])
-                .get_scaled_value();
-        let first_channel_power_factor =
-            SecondChannelPowerFactorRegister::from_bytes(&buffer[19..23]).get_scaled_value();
+            SecondChannelPositiveActiveEnergyRegister::from_bytes(
+                &buffer[MODBUS_DATA_START_OFFSET + (3 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                    ..MODBUS_DATA_START_OFFSET + (4 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+            )
+            .get_scaled_value();
+        let first_channel_power_factor = SecondChannelPowerFactorRegister::from_bytes(
+            &buffer[MODBUS_DATA_START_OFFSET + (4 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                ..MODBUS_DATA_START_OFFSET + (5 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+        )
+        .get_scaled_value();
         let first_channel_negative_active_energy =
-            SecondChannelNegativeActiveEnergyRegister::from_bytes(&buffer[23..27])
-                .get_scaled_value();
+            SecondChannelNegativeActiveEnergyRegister::from_bytes(
+                &buffer[MODBUS_DATA_START_OFFSET + (5 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                    ..MODBUS_DATA_START_OFFSET + (6 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+            )
+            .get_scaled_value();
 
-        let power_direction = PowerDirectionRegister::from_bytes(&buffer[27..31]);
+        let power_direction = PowerDirectionRegister::from_bytes(
+            &buffer[MODBUS_DATA_START_OFFSET + (6 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                ..MODBUS_DATA_START_OFFSET + (7 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+        );
 
-        let frequency = FrequencyRegister::from_bytes(&buffer[31..35]).get_scaled_value();
+        let frequency = FrequencyRegister::from_bytes(
+            &buffer[MODBUS_DATA_START_OFFSET + (7 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                ..MODBUS_DATA_START_OFFSET + (8 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+        )
+        .get_scaled_value();
 
-        let second_channel_voltage =
-            SecondChannelVoltageRegister::from_bytes(&buffer[35..39]).get_scaled_value();
-        let second_channel_current =
-            SecondChannelCurrentRegister::from_bytes(&buffer[39..43]).get_scaled_value();
-        let second_channel_active_power =
-            SecondChannelActivePowerRegister::from_bytes(&buffer[43..47]).get_scaled_value();
+        let second_channel_voltage = SecondChannelVoltageRegister::from_bytes(
+            &buffer[MODBUS_DATA_START_OFFSET + (8 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                ..MODBUS_DATA_START_OFFSET + (9 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+        )
+        .get_scaled_value();
+        let second_channel_current = SecondChannelCurrentRegister::from_bytes(
+            &buffer[MODBUS_DATA_START_OFFSET + (9 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                ..MODBUS_DATA_START_OFFSET + (10 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+        )
+        .get_scaled_value();
+        let second_channel_active_power = SecondChannelActivePowerRegister::from_bytes(
+            &buffer[MODBUS_DATA_START_OFFSET + (10 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                ..MODBUS_DATA_START_OFFSET + (11 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+        )
+        .get_scaled_value();
 
         let second_channel_positive_active_energy =
-            SecondChannelPositiveActiveEnergyRegister::from_bytes(&buffer[47..51])
-                .get_scaled_value();
-        let second_channel_power_factor =
-            SecondChannelPowerFactorRegister::from_bytes(&buffer[51..55]).get_scaled_value();
+            SecondChannelPositiveActiveEnergyRegister::from_bytes(
+                &buffer[MODBUS_DATA_START_OFFSET + (11 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                    ..MODBUS_DATA_START_OFFSET + (12 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+            )
+            .get_scaled_value();
+        let second_channel_power_factor = SecondChannelPowerFactorRegister::from_bytes(
+            &buffer[MODBUS_DATA_START_OFFSET + (12 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                ..MODBUS_DATA_START_OFFSET + (13 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+        )
+        .get_scaled_value();
         let second_channel_negative_active_energy =
-            SecondChannelNegativeActiveEnergyRegister::from_bytes(&buffer[55..59])
-                .get_scaled_value();
+            SecondChannelNegativeActiveEnergyRegister::from_bytes(
+                &buffer[MODBUS_DATA_START_OFFSET + (13 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                    ..MODBUS_DATA_START_OFFSET + (14 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+            )
+            .get_scaled_value();
 
         let _crc = u16::from_be_bytes(
             buffer[59..61]
@@ -277,10 +321,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         if buffer.len() < CHANNEL_READ_RESPONSE_HEADER_SIZE {
             return Err(JSYMk194Error::InvalidResponse);
         }
-        let _device_id = Id::new(buffer[0])?;
-        let _function_code = FunctionCode::try_from(buffer[1])?;
-        let _byte_count = buffer[2] as usize;
-
+        let _ = extract_modbus_response_header(buffer)?;
         let (
             voltage,
             current,
@@ -291,26 +332,78 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             power_direction,
         ) = match channel {
             Channel::One => (
-                FirstChannelVoltageRegister::from_bytes(&buffer[3..7]).get_scaled_value(),
-                FirstChannelCurrentRegister::from_bytes(&buffer[7..11]).get_scaled_value(),
-                FirstChannelActivePowerRegister::from_bytes(&buffer[11..15]).get_scaled_value(),
-                SecondChannelPositiveActiveEnergyRegister::from_bytes(&buffer[15..19])
-                    .get_scaled_value(),
-                SecondChannelPowerFactorRegister::from_bytes(&buffer[19..23]).get_scaled_value(),
-                SecondChannelNegativeActiveEnergyRegister::from_bytes(&buffer[23..27])
-                    .get_scaled_value(),
-                PowerDirectionRegister::from_bytes(&buffer[27..31]).first_channel,
+                FirstChannelVoltageRegister::from_bytes(
+                    &buffer[MODBUS_DATA_START_OFFSET
+                        ..MODBUS_DATA_START_OFFSET + ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES],
+                )
+                .get_scaled_value(),
+                FirstChannelCurrentRegister::from_bytes(
+                    &buffer[MODBUS_DATA_START_OFFSET + ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES
+                        ..MODBUS_DATA_START_OFFSET + (2 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+                )
+                .get_scaled_value(),
+                FirstChannelActivePowerRegister::from_bytes(
+                    &buffer[MODBUS_DATA_START_OFFSET + (2 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                        ..MODBUS_DATA_START_OFFSET + (3 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+                )
+                .get_scaled_value(),
+                SecondChannelPositiveActiveEnergyRegister::from_bytes(
+                    &buffer[MODBUS_DATA_START_OFFSET + (3 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                        ..MODBUS_DATA_START_OFFSET + (4 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+                )
+                .get_scaled_value(),
+                SecondChannelPowerFactorRegister::from_bytes(
+                    &buffer[MODBUS_DATA_START_OFFSET + (4 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                        ..MODBUS_DATA_START_OFFSET + (5 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+                )
+                .get_scaled_value(),
+                SecondChannelNegativeActiveEnergyRegister::from_bytes(
+                    &buffer[MODBUS_DATA_START_OFFSET + (5 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                        ..MODBUS_DATA_START_OFFSET + (6 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+                )
+                .get_scaled_value(),
+                PowerDirectionRegister::from_bytes(
+                    &buffer[MODBUS_DATA_START_OFFSET + (6 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                        ..MODBUS_DATA_START_OFFSET + (7 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+                )
+                .first_channel,
             ),
             Channel::Two => (
-                SecondChannelVoltageRegister::from_bytes(&buffer[3..7]).get_scaled_value(),
-                SecondChannelCurrentRegister::from_bytes(&buffer[7..11]).get_scaled_value(),
-                SecondChannelActivePowerRegister::from_bytes(&buffer[11..15]).get_scaled_value(),
-                SecondChannelPositiveActiveEnergyRegister::from_bytes(&buffer[15..19])
-                    .get_scaled_value(),
-                SecondChannelPowerFactorRegister::from_bytes(&buffer[19..23]).get_scaled_value(),
-                SecondChannelNegativeActiveEnergyRegister::from_bytes(&buffer[23..27])
-                    .get_scaled_value(),
-                PowerDirectionRegister::from_bytes(&buffer[27..31]).second_channel,
+                SecondChannelVoltageRegister::from_bytes(
+                    &buffer[MODBUS_DATA_START_OFFSET
+                        ..MODBUS_DATA_START_OFFSET + ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES],
+                )
+                .get_scaled_value(),
+                SecondChannelCurrentRegister::from_bytes(
+                    &buffer[MODBUS_DATA_START_OFFSET + ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES
+                        ..MODBUS_DATA_START_OFFSET + (2 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+                )
+                .get_scaled_value(),
+                SecondChannelActivePowerRegister::from_bytes(
+                    &buffer[MODBUS_DATA_START_OFFSET + (2 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                        ..MODBUS_DATA_START_OFFSET + (3 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+                )
+                .get_scaled_value(),
+                SecondChannelPositiveActiveEnergyRegister::from_bytes(
+                    &buffer[MODBUS_DATA_START_OFFSET + (3 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                        ..MODBUS_DATA_START_OFFSET + (4 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+                )
+                .get_scaled_value(),
+                SecondChannelPowerFactorRegister::from_bytes(
+                    &buffer[MODBUS_DATA_START_OFFSET + (4 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                        ..MODBUS_DATA_START_OFFSET + (5 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+                )
+                .get_scaled_value(),
+                SecondChannelNegativeActiveEnergyRegister::from_bytes(
+                    &buffer[MODBUS_DATA_START_OFFSET + (5 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                        ..MODBUS_DATA_START_OFFSET + (6 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+                )
+                .get_scaled_value(),
+                PowerDirectionRegister::from_bytes(
+                    &buffer[MODBUS_DATA_START_OFFSET + (6 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)
+                        ..MODBUS_DATA_START_OFFSET + (7 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
+                )
+                .second_channel,
             ),
         };
 

@@ -27,9 +27,7 @@ fn test_set_system_configuration_register() {
         let original_system_configuration = device
             .read_register::<SystemConfigurationParamaterRegister>()
             .expect("Failed to read System Configuration register");
-        println!(
-            "Original System Configuration: {original_system_configuration:?}"
-        );
+        println!("Original System Configuration: {original_system_configuration:?}");
 
         let new_system_configuration = SystemConfigurationParamaterRegister {
             id: new_id.clone(),
