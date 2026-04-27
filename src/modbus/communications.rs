@@ -3,9 +3,10 @@ use crate::error::JSYMk194Error;
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
 use crate::modbus::protocol::{
-    FULL_READ_RESPONSE_HEADER_SIZE, ModbusErrorResponse, REQUEST_RESPONSE_DELAY,
-    SINGLE_READ_RESPONSE_HEADER_SIZE, SINGLE_WRITE_REQUEST_HEADER_SIZE,
-    SINGLE_WRITE_RESPONSE_HEADER_SIZE, construct_full_read_request, construct_single_read_request,
+    CHANNEL_READ_RESPONSE_HEADER_SIZE, FULL_READ_RESPONSE_HEADER_SIZE, ModbusErrorResponse,
+    REQUEST_RESPONSE_DELAY, SINGLE_READ_RESPONSE_HEADER_SIZE, SINGLE_WRITE_REQUEST_HEADER_SIZE,
+    SINGLE_WRITE_RESPONSE_HEADER_SIZE, construct_channel_read_request, construct_full_read_request,
+    construct_single_read_request,
 };
 use crate::modbus::types::FunctionCode;
 use crate::registers::channel_one_measuring_electrical_paramaters::{
@@ -18,7 +19,7 @@ use crate::registers::channel_two_measuring_electrical_paramaters::{
 };
 use crate::registers::misc_registers::{FrequencyRegister, PowerDirectionRegister};
 use crate::registers::traits::{self, Register};
-use crate::types::{ChannelStatistics, Id, Statistics};
+use crate::types::{Channel, ChannelStatistics, Id, Statistics};
 use crate::units::{
     ElectricCurrent, ElectricPotential, Energy, Frequency, Power, ampere, hertz, kilowatt_hour,
     volt, watt,
@@ -238,6 +239,97 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
                 power_direction: power_direction.second_channel,
             },
             frequency: Frequency::new::<hertz>(frequency),
+        })
+    }
+}
+
+impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
+    #[maybe_async::maybe_async]
+    pub async fn read_channel_statistics(
+        &mut self,
+        channel: Channel,
+    ) -> Result<ChannelStatistics, JSYMk194Error> {
+        let read_request =
+            construct_channel_read_request(self.device_address.clone(), channel.clone())?;
+        self.write_buffer(&read_request).await?;
+        self.delay
+            .delay_ms(
+                u32::try_from(REQUEST_RESPONSE_DELAY.as_millis())
+                    .expect("This should not fail to convert"),
+            )
+            .await;
+
+        let mut response_buff = [0u8; CHANNEL_READ_RESPONSE_HEADER_SIZE];
+        self.read_buffer(&mut response_buff).await?;
+
+        let statistics: ChannelStatistics = self
+            .extract_channel_statistics(&response_buff, &channel)
+            .await?;
+        Ok(statistics)
+    }
+
+    #[maybe_async::maybe_async]
+    async fn extract_channel_statistics(
+        &mut self,
+        buffer: &[u8],
+        channel: &Channel,
+    ) -> Result<ChannelStatistics, JSYMk194Error> {
+        if buffer.len() < CHANNEL_READ_RESPONSE_HEADER_SIZE {
+            return Err(JSYMk194Error::InvalidResponse);
+        }
+        let _device_id = Id::new(buffer[0])?;
+        let _function_code = FunctionCode::try_from(buffer[1])?;
+        let _byte_count = buffer[2] as usize;
+
+        let voltage = if *channel == Channel::One {
+            FirstChannelVoltageRegister::from_bytes(&buffer[3..7]).get_scaled_value()
+        } else {
+            SecondChannelVoltageRegister::from_bytes(&buffer[3..7]).get_scaled_value()
+        };
+        let current = if *channel == Channel::One {
+            FirstChannelCurrentRegister::from_bytes(&buffer[7..11]).get_scaled_value()
+        } else {
+            SecondChannelCurrentRegister::from_bytes(&buffer[7..11]).get_scaled_value()
+        };
+        let active_power = if *channel == Channel::One {
+            FirstChannelActivePowerRegister::from_bytes(&buffer[11..15]).get_scaled_value()
+        } else {
+            SecondChannelActivePowerRegister::from_bytes(&buffer[11..15]).get_scaled_value()
+        };
+        let positive_active_energy = if *channel == Channel::One {
+            SecondChannelPositiveActiveEnergyRegister::from_bytes(&buffer[15..19])
+                .get_scaled_value()
+        } else {
+            SecondChannelPositiveActiveEnergyRegister::from_bytes(&buffer[15..19])
+                .get_scaled_value()
+        };
+        let power_factor = if *channel == Channel::One {
+            SecondChannelPowerFactorRegister::from_bytes(&buffer[19..23]).get_scaled_value()
+        } else {
+            SecondChannelPowerFactorRegister::from_bytes(&buffer[19..23]).get_scaled_value()
+        };
+        let negative_active_energy = if *channel == Channel::One {
+            SecondChannelNegativeActiveEnergyRegister::from_bytes(&buffer[23..27])
+                .get_scaled_value()
+        } else {
+            SecondChannelNegativeActiveEnergyRegister::from_bytes(&buffer[23..27])
+                .get_scaled_value()
+        };
+
+        let power_direction = PowerDirectionRegister::from_bytes(&buffer[27..31]);
+
+        Ok(ChannelStatistics {
+            voltage: ElectricPotential::new::<volt>(voltage),
+            current: ElectricCurrent::new::<ampere>(current),
+            active_power: Power::new::<watt>(active_power),
+            positive_active_energy: Energy::new::<kilowatt_hour>(positive_active_energy),
+            negative_active_energy: Energy::new::<kilowatt_hour>(negative_active_energy),
+            power_direction: if *channel == Channel::One {
+                power_direction.first_channel
+            } else {
+                power_direction.second_channel
+            },
+            power_factor,
         })
     }
 }
