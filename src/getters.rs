@@ -53,15 +53,8 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
 impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub async fn get_all_channels(&mut self) -> Result<Statistics, JSYMk194Error> {
-        // TODO: replace this with a custom read to get all registers at the same time
-        let frequency = self.get_frequency().await?;
-        let channel_one = self.get_channel(Channel::One).await?;
-        let channel_two = self.get_channel(Channel::Two).await?;
-        Ok(Statistics {
-            channel_one,
-            channel_two,
-            frequency,
-        })
+        let statistics = self.read_statistics().await?;
+        Ok(statistics)
     }
 
     #[maybe_async::maybe_async]
