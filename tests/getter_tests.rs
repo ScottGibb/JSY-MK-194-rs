@@ -36,7 +36,7 @@ mod fresh_device_tests {
     fn test_get_id() {
         let mut device = setup_device(Id::default(), Baudrate::default());
         let id = device.get_id().expect("This should not fail");
-        println!("device Id {:?}", id);
+        println!("device Id {id:?}");
         assert_eq!(id, Id::default())
     }
 
@@ -44,7 +44,7 @@ mod fresh_device_tests {
     fn test_baudrate() {
         let mut device = setup_device(Id::default(), Baudrate::default());
         let baudrate = device.get_baudrate().expect("This should not fail");
-        println!("Baudrate: {:?}", baudrate);
+        println!("Baudrate: {baudrate:?}");
         assert_eq!(baudrate, Baudrate::default());
     }
 

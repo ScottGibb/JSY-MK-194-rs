@@ -61,8 +61,7 @@ impl TryFrom<u8> for Baudrate {
             7 => Ok(Baudrate::_19200),
             8 => Ok(Baudrate::_38400),
             _ => Err(JSYMk194Error::ConversionError(format!(
-                "Invalid baudrate value: {}",
-                value
+                "Invalid baudrate value: {value}"
             ))),
         }
     }
@@ -79,8 +78,7 @@ impl TryFrom<u32> for Baudrate {
             19200 => Ok(Baudrate::_19200),
             38400 => Ok(Baudrate::_38400),
             _ => Err(JSYMk194Error::ConversionError(format!(
-                "Invalid baudrate value: {}",
-                value
+                "Invalid baudrate value: {value}"
             ))),
         }
     }

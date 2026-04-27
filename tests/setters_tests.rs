@@ -17,7 +17,7 @@ mod configuration_tests {
             .read_register::<jsy_mk_194_rs::registers::system_configuration_paramater::SystemConfigurationParamaterRegister>()
             .expect("Failed to read System Configuration register")
             .id;
-            println!("Original ID: {:?}", original_id);
+            println!("Original ID: {original_id:?}");
 
             device.set_id(new_id.clone()).expect("Failed to set new ID");
             std::thread::sleep(jsy_mk_194_rs::REQUEST_RESPONSE_DELAY); // Give the device some time to process the change
@@ -28,7 +28,7 @@ mod configuration_tests {
             // Reset the ID back to the default value so it doesn't affect other tests
             device.set_id(Id::default()).expect("Failed to reset ID");
             let reset_id = device.get_id().expect("Failed to read ID after reset");
-            println!("Reset ID: {:?}", reset_id);
+            println!("Reset ID: {reset_id:?}");
             assert_eq!(reset_id, Id::default());
         }
     }
@@ -42,7 +42,7 @@ mod configuration_tests {
                 .read_register::<jsy_mk_194_rs::registers::system_configuration_paramater::SystemConfigurationParamaterRegister>()
                 .expect("Failed to read System Configuration register")
                 .baudrate;
-            println!("Original Baudrate: {:?}", original_baudrate);
+            println!("Original Baudrate: {original_baudrate:?}");
 
             device
                 .set_baudrate(new_baudrate.clone())
@@ -68,7 +68,7 @@ mod configuration_tests {
             let reset_baudrate = device
                 .get_baudrate()
                 .expect("Failed to read Baudrate after reset");
-            println!("Reset Baudrate: {:?}", reset_baudrate);
+            println!("Reset Baudrate: {reset_baudrate:?}");
             assert_eq!(reset_baudrate, Baudrate::default());
         }
     }

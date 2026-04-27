@@ -10,7 +10,7 @@ fn test_get_system_configuration_register() {
     let system_configuration = device
         .read_register::<SystemConfigurationParamaterRegister>()
         .expect("Failed to read System Configuration register");
-    println!("System Configuration: {:?}", system_configuration);
+    println!("System Configuration: {system_configuration:?}");
     assert_eq!(
         system_configuration,
         SystemConfigurationParamaterRegister::default()
@@ -28,8 +28,7 @@ fn test_set_system_configuration_register() {
             .read_register::<SystemConfigurationParamaterRegister>()
             .expect("Failed to read System Configuration register");
         println!(
-            "Original System Configuration: {:?}",
-            original_system_configuration
+            "Original System Configuration: {original_system_configuration:?}"
         );
 
         let new_system_configuration = SystemConfigurationParamaterRegister {
@@ -46,7 +45,7 @@ fn test_set_system_configuration_register() {
             .read_register::<SystemConfigurationParamaterRegister>()
             .expect("Failed to read System Configuration register after update");
 
-        println!("Updated System Configuration: {:?}", system_configuration);
+        println!("Updated System Configuration: {system_configuration:?}");
         assert_eq!(system_configuration.baudrate, new_baudrate);
         assert_eq!(system_configuration.id, new_id);
 
@@ -60,7 +59,7 @@ fn test_set_system_configuration_register() {
         .read_register::<SystemConfigurationParamaterRegister>()
         .expect("Failed to read System Configuration register after reset");
 
-    println!("Reset System Configuration: {:?}", system_configuration);
+    println!("Reset System Configuration: {system_configuration:?}");
     assert_eq!(
         system_configuration,
         SystemConfigurationParamaterRegister::default()

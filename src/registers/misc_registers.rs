@@ -73,8 +73,7 @@ impl TryFrom<u16> for PowerDirection {
             0 => Ok(PowerDirection::Positive),
             1 => Ok(PowerDirection::Negative),
             _ => Err(crate::error::JSYMk194Error::ConversionError(format!(
-                "Invalid power direction value: {}",
-                value
+                "Invalid power direction value: {value}"
             ))),
         }
     }

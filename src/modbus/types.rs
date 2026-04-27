@@ -38,8 +38,7 @@ impl TryFrom<u8> for FunctionCode {
             0x81 => Ok(FunctionCode::ExceptionReadOutputStatusResponseCode),
             0x85 => Ok(FunctionCode::ExceptionWriteOutputStatusResponseCode),
             _ => Err(JSYMk194Error::ConversionError(format!(
-                "Invalid function code: 0x{:02X}",
-                value
+                "Invalid function code: 0x{value:02X}"
             ))),
         }
     }
@@ -70,8 +69,7 @@ impl TryFrom<u8> for ErrorCode {
             0x82 => Ok(ErrorCode::IllegalDataAddress),
             0x83 => Ok(ErrorCode::IllegalDataValue),
             _ => Err(JSYMk194Error::ConversionError(format!(
-                "Invalid error code: 0x{:02X}",
-                value
+                "Invalid error code: 0x{value:02X}"
             ))),
         }
     }
