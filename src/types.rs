@@ -1,10 +1,6 @@
 pub use crate::registers::system_configuration_paramater::{Baudrate, Id};
 use crate::registers::system_paramaters::{CurrentRangeRegister, VoltageRangeRegister};
-use crate::registers::{
-    misc_registers::PowerDirection,
-    system_configuration_paramater::SystemConfigurationParamaterRegister,
-    system_paramaters::ModelOneRegister,
-};
+use crate::registers::{misc_registers::PowerDirection, system_paramaters::ModelOneRegister};
 use crate::units::*;
 #[derive(Debug, PartialEq)]
 pub struct ChannelStatistics {
@@ -54,7 +50,7 @@ impl core::fmt::Display for Statistics {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Channel {
     One,
     Two,

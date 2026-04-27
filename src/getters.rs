@@ -62,27 +62,10 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         &mut self,
         channel: Channel,
     ) -> Result<ChannelStatistics, JSYMk194Error> {
-        match channel {
-            Channel::One => Ok(ChannelStatistics {
-                voltage: todo!(),
-                current: todo!(),
-                active_power: todo!(),
-                positive_active_energy: todo!(),
-                negative_active_energy: todo!(),
-                power_factor: todo!(),
-                power_direction: todo!(),
-            }),
-            Channel::Two => Ok(ChannelStatistics {
-                voltage: todo!(),
-                current: todo!(),
-                active_power: todo!(),
-                positive_active_energy: todo!(),
-                negative_active_energy: todo!(),
-                power_factor: todo!(),
-                power_direction: todo!(),
-            }),
-        }
+        let channel_statistics = self.read_channel_statistics(channel).await?;
+        Ok(channel_statistics)
     }
+
     #[maybe_async::maybe_async]
     pub async fn get_frequency(&mut self) -> Result<Frequency, JSYMk194Error> {
         let frequency_register = self.read_register::<FrequencyRegister>().await?;
