@@ -39,6 +39,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             Register::ADDRESS,
             Register::NUM_BYTES,
         )?;
+        println!("[Modbus] Sending read request: {:02X?}", &buff);
         self.write_buffer(&buff).await?;
         self.delay
             .delay_ms(
@@ -48,10 +49,18 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             .await;
         let mut response_buff = [0u8; SINGLE_READ_RESPONSE_HEADER_SIZE];
         self.read_buffer(&mut response_buff).await?;
+        println!("[Modbus] Received read response: {:02X?}", &response_buff);
+
+        let (_, function_code) = extract_modbus_response_header(&response_buff)?;
+        match function_code {
+            FunctionCode::ExceptionReadOutputStatusResponseCode
+            //todo: THIS IS THE ISSUE NOT CHECKING FOR ALL THE EXCEPTION CODES
+        }
 
         let register_buff = response_buff
             .get(MODBUS_DATA_START_OFFSET..(MODBUS_DATA_START_OFFSET + Register::NUM_BYTES))
             .ok_or(JSYMk194Error::InvalidResponse)?;
+        println!("[Modbus] Register bytes: {:02X?}", register_buff);
         Ok(Register::from_bytes(register_buff))
     }
 
@@ -86,6 +95,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
                 register.to_bytes(&mut buff[7..9])?;
                 let crc = calculate_crc_bytes(&buff[0..9]);
                 buff[9..11].copy_from_slice(&crc);
+                println!("[Modbus] Sending write request: {:02X?}", &buff);
                 self.write_buffer(&buff).await?;
             }
             4 => {
@@ -97,6 +107,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
                 register.to_bytes(&mut buff[7..11])?;
                 let crc = calculate_crc_bytes(&buff[0..11]);
                 buff[11..13].copy_from_slice(&crc);
+                println!("[Modbus] Sending write request: {:02X?}", &buff);
                 self.write_buffer(&buff).await?;
             }
             _ => {
