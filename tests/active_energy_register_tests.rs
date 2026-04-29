@@ -64,9 +64,6 @@ mod fresh_device_tests {
     #[test]
     fn test_get_channel_one_positive_active_energy_register_fresh_device() {
         let mut device = setup_device(Id::default(), Baudrate::default());
-        // device.write_register(FirstChannelPositiveActiveEnergyRegister::from_scaled_value(0.0)).expect(
-        //     "Failed to reset Channel One Positive Active Energy register to default value before test",
-        // );
         let first_channel_positive_active_energy_register = device
             .read_register::<FirstChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read Channel One Positive Active Energy register");
@@ -135,6 +132,7 @@ mod fresh_device_tests {
 
 mod set_register_tests {
 
+    const NEW_ENERGY_VALUE: f32 = 123.45;
     use super::*;
     #[test]
     fn test_set_channel_one_positive_active_energy_register() {
@@ -144,7 +142,7 @@ mod set_register_tests {
             .expect("Failed to read Channel One Positive Active Energy register");
         println!("Old Channel One Positive Active Energy Register: {old_energy_register:?}");
 
-        let new_energy = Energy::new::<kilowatt_hour>(123.45);
+        let new_energy = Energy::new::<kilowatt_hour>(NEW_ENERGY_VALUE);
 
         let new_energy_register = FirstChannelPositiveActiveEnergyRegister::from_scaled_value(
             new_energy.get::<kilowatt_hour>(),
@@ -173,7 +171,7 @@ mod set_register_tests {
             "Failed to reset Channel One Positive Active Energy
     register",
         );
-        std::thread::sleep(REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
+        std::thread::sleep(2 * REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
         let reset_energy_register = device
             .read_register::<FirstChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read reset Channel One Positive Active Energy register");
@@ -193,12 +191,12 @@ mod set_register_tests {
             .expect("Failed to read Channel Two Positive Active Energy register");
         println!("Old Channel Two Positive Active Energy Register: {old_energy_register:?}");
 
-        let new_energy = Energy::new::<kilowatt_hour>(123.45);
+        let new_energy = Energy::new::<kilowatt_hour>(NEW_ENERGY_VALUE);
 
         let new_energy_register = SecondChannelPositiveActiveEnergyRegister::from_scaled_value(
             new_energy.get::<kilowatt_hour>(),
         );
-        std::thread::sleep(REQUEST_RESPONSE_DELAY); // Ensure we don't write too quickly after reading
+        std::thread::sleep(2 * REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
         device
             .write_register(new_energy_register)
             .expect("Failed to write new Channel Two Positive Active Energy register");
@@ -222,7 +220,7 @@ mod set_register_tests {
             "Failed to reset Channel Two Positive Active Energy
     register",
         );
-        std::thread::sleep(REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
+        std::thread::sleep(2 * REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
         let reset_energy_register = device
             .read_register::<SecondChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read reset Channel Two Positive Active Energy register");
@@ -242,7 +240,7 @@ mod set_register_tests {
             .expect("Failed to read Channel One Negative Active Energy register");
         println!("Old Channel One Negative Active Energy Register: {old_energy_register:?}");
 
-        let new_energy = Energy::new::<kilowatt_hour>(123.45);
+        let new_energy = Energy::new::<kilowatt_hour>(NEW_ENERGY_VALUE);
 
         let new_energy_register = FirstChannelNegativeActiveEnergyRegister::from_scaled_value(
             new_energy.get::<kilowatt_hour>(),
@@ -252,7 +250,7 @@ mod set_register_tests {
             .write_register(new_energy_register)
             .expect("Failed to write new Channel One Negative Active Energy register");
 
-        std::thread::sleep(REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
+        std::thread::sleep(2 * REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
         let updated_energy_register = device
             .read_register::<FirstChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read updated Channel One Negative Active Energy register");
@@ -271,7 +269,7 @@ mod set_register_tests {
             "Failed to reset Channel One Negative Active Energy
     register",
         );
-        std::thread::sleep(REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
+        std::thread::sleep(2 * REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
         let reset_energy_register = device
             .read_register::<FirstChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read reset Channel One Negative Active Energy register");
@@ -292,7 +290,7 @@ mod set_register_tests {
             .expect("Failed to read Channel Two Negative Active Energy register");
         println!("Old Channel Two Negative Active Energy Register: {old_energy_register:?}");
 
-        let new_energy = Energy::new::<kilowatt_hour>(123.45);
+        let new_energy = Energy::new::<kilowatt_hour>(NEW_ENERGY_VALUE);
 
         let new_energy_register = SecondChannelNegativeActiveEnergyRegister::from_scaled_value(
             new_energy.get::<kilowatt_hour>(),
@@ -302,7 +300,7 @@ mod set_register_tests {
             .write_register(new_energy_register)
             .expect("Failed to write new Channel Two Negative Active Energy register");
 
-        std::thread::sleep(REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
+        std::thread::sleep(2 * REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
         let updated_energy_register = device
             .read_register::<SecondChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read updated Channel Two Negative Active Energy register");
@@ -321,7 +319,7 @@ mod set_register_tests {
             "Failed to reset Channel Two Negative Active Energy
     register",
         );
-        std::thread::sleep(REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
+        std::thread::sleep(2 * REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
         let reset_energy_register = device
             .read_register::<SecondChannelNegativeActiveEnergyRegister>()
             .expect("Failed to read reset Channel Two Negative Active Energy register");
