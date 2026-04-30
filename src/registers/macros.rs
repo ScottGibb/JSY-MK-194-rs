@@ -108,12 +108,12 @@ macro_rules! define_scaled_register {
                 Self(<$data_type>::from_be_bytes(arr))
             }
             fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), $crate::error::JSYMk194Error> {
-                let data_bytes = self.0.to_be_bytes();
-                if bytes.len() < data_bytes.len() {
+                if bytes.len() != core::mem::size_of::<$data_type>() {
                     return Err($crate::error::JSYMk194Error::ConversionError(
-                        format!("Insufficient buffer length for Register: {}", stringify!($address)),
+                        format!("Invalid buffer length for Register: {}. Expected {} bytes, got {} bytes.", stringify!($address), core::mem::size_of::<$data_type>(), bytes.len()),
                     ));
                 }
+                let data_bytes = self.0.to_be_bytes();
                 bytes[..data_bytes.len()].copy_from_slice(&data_bytes);
                 Ok(())
         }
