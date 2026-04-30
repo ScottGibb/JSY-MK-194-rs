@@ -1,3 +1,4 @@
+use crate::modbus::ModbusErrorResponse;
 use crate::modbus::types::FunctionCode;
 use crate::{hal, modbus::ErrorCode};
 #[derive(Debug)]
@@ -8,9 +9,15 @@ pub enum JSYMk194Error {
     /// The device returned an unexpected response or data format.
     InvalidResponse,
     /// The Write failded to write the expected number of bytes to the device.
-    FailedToWrite { written: usize, expected: usize },
+    FailedToWrite {
+        written: usize,
+        expected: usize,
+    },
     /// The Read failed to read the expected number of bytes from the device.
-    FailedToRead { read: usize, expected: usize },
+    FailedToRead {
+        read: usize,
+        expected: usize,
+    },
     /// An error occurred during a conversion process, this could mean data is corrupted, or this library has
     /// not implemented the correct conversion for a specific type. That type should then be seen in the error string.
     ConversionError(String),
@@ -20,6 +27,8 @@ pub enum JSYMk194Error {
     CrcError,
     /// The device responded with an error function code, indicating that the requested operation could not be completed successfully.
     DeviceErrorResponse(FunctionCode),
+
+    ModBusDeviceError(ModbusErrorResponse),
 }
 
 impl<E: hal::Error> From<E> for JSYMk194Error {
