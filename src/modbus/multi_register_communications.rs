@@ -1,169 +1,34 @@
-use super::protocol::{calculate_crc_bytes, create_request_modbus_header};
-use crate::error::JSYMk194Error;
-use crate::hal::*;
-use crate::jsy_mk_194g::JsyMk194g;
-use crate::modbus::offsets::{
-    CHANNEL_READ_RESPONSE_HEADER_SIZE, ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES,
-    FULL_READ_RESPONSE_HEADER_SIZE, MODBUS_DATA_START_OFFSET, SINGLE_READ_RESPONSE_HEADER_SIZE,
-    SINGLE_WRITE_REQUEST_HEADER_SIZE, SINGLE_WRITE_RESPONSE_HEADER_SIZE,
+use crate::{
+    REQUEST_RESPONSE_DELAY,
+    error::JSYMk194Error,
+    hal::*,
+    jsy_mk_194g::JsyMk194g,
+    modbus::{
+        offsets::{
+            CHANNEL_READ_RESPONSE_HEADER_SIZE, ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES,
+            FULL_READ_RESPONSE_HEADER_SIZE, MODBUS_DATA_START_OFFSET,
+        },
+        protocol::{
+            construct_channel_read_request, construct_full_read_request,
+            extract_modbus_response_header,
+        },
+    },
+    registers::{
+        channel_one_measuring_electrical_paramaters::{
+            FirstChannelActivePowerRegister, FirstChannelCurrentRegister,
+            FirstChannelVoltageRegister,
+        },
+        channel_two_measuring_electrical_paramaters::{
+            SecondChannelActivePowerRegister, SecondChannelCurrentRegister,
+            SecondChannelNegativeActiveEnergyRegister, SecondChannelPositiveActiveEnergyRegister,
+            SecondChannelPowerFactorRegister, SecondChannelVoltageRegister,
+        },
+        misc_registers::{FrequencyRegister, PowerDirectionRegister},
+        traits::Register,
+    },
+    types::{Channel, ChannelStatistics, Statistics},
+    units::*,
 };
-use crate::modbus::protocol::{
-    ModbusErrorResponse, REQUEST_RESPONSE_DELAY, construct_channel_read_request,
-    construct_full_read_request, construct_single_read_request, extract_modbus_response_header,
-};
-use crate::modbus::types::FunctionCode;
-use crate::registers::channel_one_measuring_electrical_paramaters::{
-    FirstChannelActivePowerRegister, FirstChannelCurrentRegister, FirstChannelVoltageRegister,
-};
-use crate::registers::channel_two_measuring_electrical_paramaters::{
-    SecondChannelActivePowerRegister, SecondChannelCurrentRegister,
-    SecondChannelNegativeActiveEnergyRegister, SecondChannelPositiveActiveEnergyRegister,
-    SecondChannelPowerFactorRegister, SecondChannelVoltageRegister,
-};
-use crate::registers::misc_registers::{FrequencyRegister, PowerDirectionRegister};
-use crate::registers::traits::{self, Register};
-use crate::types::{Channel, ChannelStatistics, Statistics};
-use crate::units::{
-    ElectricCurrent, ElectricPotential, Energy, Frequency, Power, ampere, hertz, kilowatt_hour,
-    volt, watt,
-};
-
-impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
-    #[maybe_async::maybe_async]
-    pub async fn read_register<Register>(&mut self) -> Result<Register, JSYMk194Error>
-    where
-        Register: traits::Register + traits::ReadRegister,
-    {
-        let buff = construct_single_read_request(
-            self.device_address.clone(),
-            Register::ADDRESS,
-            Register::NUM_BYTES,
-        )?;
-        println!("[Modbus] Sending read request: {:02X?}", &buff);
-        self.write_buffer(&buff).await?;
-        self.delay
-            .delay_ms(
-                u32::try_from(REQUEST_RESPONSE_DELAY.as_millis())
-                    .expect("This should not fail to convert"),
-            )
-            .await;
-        let mut response_buff = [0u8; SINGLE_READ_RESPONSE_HEADER_SIZE];
-        self.read_buffer(&mut response_buff).await?;
-        println!("[Modbus] Received read response: {:02X?}", &response_buff);
-
-        let register_buff = response_buff
-            .get(MODBUS_DATA_START_OFFSET..(MODBUS_DATA_START_OFFSET + Register::NUM_BYTES))
-            .ok_or(JSYMk194Error::InvalidResponse)?;
-        println!("[Modbus] Register bytes: {:02X?}", register_buff);
-        Ok(Register::from_bytes(register_buff))
-    }
-
-    #[maybe_async::maybe_async]
-    pub async fn write_register(
-        &mut self,
-        register: impl Register + traits::WriteRegister,
-    ) -> Result<(), JSYMk194Error> {
-        let address_header = create_request_modbus_header(
-            self.device_address.clone(),
-            FunctionCode::WriteOneOrMoreRegisters,
-            register.address(),
-        );
-        let num_bytes = u16::try_from(register.num_bytes())
-            .map_err(|_| JSYMk194Error::ConversionError("Invalid register size".into()))?; // Fix `This`
-        if num_bytes % 2 != 0 {
-            return Err(JSYMk194Error::ConversionError(
-                "Invalid register size: must be a multiple of 2 bytes".into(),
-            ));
-        }
-        let num_registers = num_bytes / 2;
-        let [num_bytes_high, num_bytes_low] = num_bytes.to_be_bytes();
-        let [num_registers_high, num_registers_low] = num_registers.to_be_bytes();
-        match num_bytes {
-            2 => {
-                let mut buff = [0u8; SINGLE_WRITE_REQUEST_HEADER_SIZE + 1];
-                buff[0..4].copy_from_slice(&address_header);
-                buff[4] = num_registers_high;
-                buff[5] = num_registers_low;
-                buff[6] = num_bytes_low;
-                buff[7] = num_bytes_high;
-                register.to_bytes(&mut buff[7..9])?;
-                let crc = calculate_crc_bytes(&buff[0..9]);
-                buff[9..11].copy_from_slice(&crc);
-                println!("[Modbus] Sending write request: {:02X?}", &buff);
-                self.write_buffer(&buff).await?;
-            }
-            4 => {
-                let mut buff = [0u8; SINGLE_WRITE_REQUEST_HEADER_SIZE + 3];
-                buff[0..4].copy_from_slice(&address_header);
-                buff[4] = num_registers_high;
-                buff[5] = num_registers_low;
-                buff[6] = num_bytes_low;
-                register.to_bytes(&mut buff[7..11])?;
-                let crc = calculate_crc_bytes(&buff[0..11]);
-                buff[11..13].copy_from_slice(&crc);
-                println!("[Modbus] Sending write request: {:02X?}", &buff);
-                self.write_buffer(&buff).await?;
-            }
-            _ => {
-                return Err(JSYMk194Error::ConversionError(
-                    format!(
-                        "Invalid register size: {} for register Address: {:02X}",
-                        num_bytes,
-                        u16::from(register.address())
-                    )
-                    .into(),
-                ));
-            }
-        };
-        self.delay
-            .delay_ms(
-                u32::try_from(REQUEST_RESPONSE_DELAY.as_millis())
-                    .expect("This should not fail to convert"),
-            )
-            .await;
-        let mut response_buff = [0u8; SINGLE_WRITE_RESPONSE_HEADER_SIZE]; // Error response is smaller than normal response, so this will work for both
-        self.read_buffer(&mut response_buff).await?;
-        Ok(())
-    }
-
-    #[maybe_async::maybe_async]
-    async fn write_buffer(&mut self, buffer: &[u8]) -> Result<(), JSYMk194Error> {
-        let bytes_written = self.serial.write(buffer).await?;
-        if bytes_written < buffer.len() {
-            return Err(JSYMk194Error::FailedToWrite {
-                written: bytes_written,
-                expected: buffer.len(),
-            });
-        }
-        Ok(())
-    }
-    #[maybe_async::maybe_async]
-    async fn read_buffer(&mut self, buffer: &mut [u8]) -> Result<(), JSYMk194Error> {
-        let bytes_read = self.serial.read(buffer).await?;
-        println!(
-            "[Modbus] Raw response bytes: {:02X?}",
-            &buffer[..bytes_read]
-        );
-        if bytes_read == ModbusErrorResponse::ERROR_RESPONSE_HEADER_SIZE {
-            let error_code = ModbusErrorResponse::from_bytes(
-                &buffer[..ModbusErrorResponse::ERROR_RESPONSE_HEADER_SIZE],
-            )?
-            .error_code;
-            return Err(JSYMk194Error::DeviceError(error_code));
-        }
-        if bytes_read < buffer.len() {
-            return Err(JSYMk194Error::FailedToRead {
-                read: bytes_read,
-                expected: buffer.len(),
-            });
-        }
-        let (_, function_code) = extract_modbus_response_header(&buffer)?;
-        if function_code.is_exception_response() {
-            return Err(JSYMk194Error::DeviceErrorResponse(function_code));
-        }
-        Ok(())
-    }
-}
 
 impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
