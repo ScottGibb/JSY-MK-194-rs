@@ -119,10 +119,8 @@ mod fresh_device_tests {
         );
     }
 }
-
-mod set_register_tests {
-
-    const NEW_ENERGY_VALUE: f32 = 123.45;
+const NEW_ENERGY_VALUE: f32 = 123.45;
+mod set_channel_one_register_tests {
 
     use super::*;
     #[test]
@@ -167,55 +165,6 @@ mod set_register_tests {
             .read_register::<FirstChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read reset Channel One Positive Active Energy register");
         println!("Reset Channel One Positive Active Energy Register: {reset_energy_register:?}");
-
-        assert_eq!(
-            reset_energy_register.get_scaled_value(),
-            old_energy_register.get_scaled_value()
-        );
-    }
-
-    #[test]
-    fn test_set_channel_two_positive_active_energy_register() {
-        let mut device = setup_device(Id::default(), Baudrate::default());
-        let old_energy_register = device
-            .read_register::<SecondChannelPositiveActiveEnergyRegister>()
-            .expect("Failed to read Channel Two Positive Active Energy register");
-        println!("Old Channel Two Positive Active Energy Register: {old_energy_register:?}");
-
-        let new_energy_register =
-            SecondChannelPositiveActiveEnergyRegister::from_scaled_value(NEW_ENERGY_VALUE);
-        let mut bytes = [0u8; 4];
-        new_energy_register.to_bytes(&mut bytes).expect("");
-        println!(" Register to write: {bytes:02X?}");
-        std::thread::sleep(2 * REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
-        device
-            .write_register(new_energy_register)
-            .expect("Failed to write new Channel Two Positive Active Energy register");
-
-        std::thread::sleep(REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
-        let updated_energy_register = device
-            .read_register::<SecondChannelPositiveActiveEnergyRegister>()
-            .expect("Failed to read updated Channel Two Positive Active Energy register");
-        println!(
-            "Updated Channel Two Positive Active Energy Register: {updated_energy_register:?}"
-        );
-
-        assert_eq!(
-            updated_energy_register.get_scaled_value(),
-            new_energy_register.get_scaled_value()
-        );
-
-        // Reset the register back to the original value so it doesn't affect other tests
-        std::thread::sleep(REQUEST_RESPONSE_DELAY); // Ensure we don't write too quickly after reading
-        device.write_register(old_energy_register).expect(
-            "Failed to reset Channel Two Positive Active Energy
-    register",
-        );
-        std::thread::sleep(2 * REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
-        let reset_energy_register = device
-            .read_register::<SecondChannelPositiveActiveEnergyRegister>()
-            .expect("Failed to read reset Channel Two Positive Active Energy register");
-        println!("Reset Channel Two Positive Active Energy Register: {reset_energy_register:?}");
 
         assert_eq!(
             reset_energy_register.get_scaled_value(),
@@ -271,7 +220,59 @@ mod set_register_tests {
             old_energy_register.get_scaled_value()
         );
     }
+}
 
+mod set_channel_two_register_tests {
+    #[test]
+    fn test_set_channel_two_positive_active_energy_register() {
+        let mut device = setup_device(Id::default(), Baudrate::default());
+        let old_energy_register = device
+            .read_register::<SecondChannelPositiveActiveEnergyRegister>()
+            .expect("Failed to read Channel Two Positive Active Energy register");
+        println!("Old Channel Two Positive Active Energy Register: {old_energy_register:?}");
+
+        let new_energy_register =
+            SecondChannelPositiveActiveEnergyRegister::from_scaled_value(NEW_ENERGY_VALUE);
+        let mut bytes = [0u8; 4];
+        new_energy_register.to_bytes(&mut bytes).expect("");
+        println!(" Register to write: {bytes:02X?}");
+        std::thread::sleep(2 * REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
+        device
+            .write_register(new_energy_register)
+            .expect("Failed to write new Channel Two Positive Active Energy register");
+
+        std::thread::sleep(REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
+        let updated_energy_register = device
+            .read_register::<SecondChannelPositiveActiveEnergyRegister>()
+            .expect("Failed to read updated Channel Two Positive Active Energy register");
+        println!(
+            "Updated Channel Two Positive Active Energy Register: {updated_energy_register:?}"
+        );
+
+        assert_eq!(
+            updated_energy_register.get_scaled_value(),
+            new_energy_register.get_scaled_value()
+        );
+
+        // Reset the register back to the original value so it doesn't affect other tests
+        std::thread::sleep(REQUEST_RESPONSE_DELAY); // Ensure we don't write too quickly after reading
+        device.write_register(old_energy_register).expect(
+            "Failed to reset Channel Two Positive Active Energy
+    register",
+        );
+        std::thread::sleep(2 * REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
+        let reset_energy_register = device
+            .read_register::<SecondChannelPositiveActiveEnergyRegister>()
+            .expect("Failed to read reset Channel Two Positive Active Energy register");
+        println!("Reset Channel Two Positive Active Energy Register: {reset_energy_register:?}");
+
+        assert_eq!(
+            reset_energy_register.get_scaled_value(),
+            old_energy_register.get_scaled_value()
+        );
+    }
+
+    use super::*;
     /// TODO: This always fails
     #[test]
     fn test_set_channel_two_negative_active_energy_register() {
