@@ -27,7 +27,6 @@
 //! // Create measurements using unit constants
 //! let voltage = ElectricPotential::new::<volt>(5.0);
 //! let current = ElectricCurrent::new::<milliampere>(1500.0);
-//! let temp = ThermodynamicTemperature::new::<degree_celsius>(25.0);
 //!
 //! // Convert between units
 //! let voltage_mv = voltage.get::<millivolt>(); // 5000.0
@@ -37,7 +36,12 @@ pub use uom::si::electric_current::ampere;
 pub use uom::si::electric_current::milliampere;
 pub use uom::si::electric_potential::millivolt;
 pub use uom::si::electric_potential::volt;
+pub use uom::si::energy::kilowatt_hour;
+pub use uom::si::energy::watt_hour;
 pub use uom::si::f32::ElectricCurrent;
 pub use uom::si::f32::ElectricPotential;
+pub use uom::si::f32::Energy;
+pub use uom::si::f32::Frequency;
 pub use uom::si::f32::Power;
+pub use uom::si::frequency::hertz;
 pub use uom::si::power::watt;
