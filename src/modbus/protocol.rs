@@ -6,8 +6,8 @@ use crate::{
         ErrorCode,
         offsets::{
             CHANNEL_READ_REQUEST_HEADER_SIZE, FULL_READ_REQUEST_HEADER_SIZE,
-            MODBUS_DATA_START_OFFSET, MODBUS_DEVICE_ADDRESS_OFFSET, MODBUS_FUNCTION_CODE_OFFSET,
-            NUM_CHANNEL_REGISTERS, SINGLE_READ_REQUEST_HEADER_SIZE,
+            MODBUS_DATA_START_OFFSET, MODBUS_DEVICE_ADDRESS_OFFSET, MODBUS_ERROR_CODE_OFFSET,
+            MODBUS_FUNCTION_CODE_OFFSET, NUM_CHANNEL_REGISTERS, SINGLE_READ_REQUEST_HEADER_SIZE,
         },
         types::FunctionCode,
     },
@@ -150,7 +150,7 @@ impl ModbusErrorResponse {
         Ok(Self {
             _id: Id::new(bytes[MODBUS_DEVICE_ADDRESS_OFFSET])?,
             _function_code: FunctionCode::try_from(bytes[MODBUS_FUNCTION_CODE_OFFSET])?,
-            error_code: ErrorCode::try_from(bytes[MODBUS_DATA_START_OFFSET])?,
+            error_code: ErrorCode::try_from(bytes[MODBUS_ERROR_CODE_OFFSET])?,
         })
     }
 }
