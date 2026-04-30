@@ -51,7 +51,7 @@ macro_rules! define_register {
                 let data_bytes = self.0.to_be_bytes();
                 if bytes.len() < data_bytes.len() {
                     return Err($crate::error::JSYMk194Error::ConversionError(
-                        format!("Insufficient buffer length for Register: {}", stringify!($data_type)),
+                        format!("Insufficient buffer length for Register: {}", stringify!($address)),
                     ));
                 }
                 bytes[..data_bytes.len()].copy_from_slice(&data_bytes);
@@ -111,7 +111,7 @@ macro_rules! define_scaled_register {
                 let data_bytes = self.0.to_be_bytes();
                 if bytes.len() < data_bytes.len() {
                     return Err($crate::error::JSYMk194Error::ConversionError(
-                        format!("Insufficient buffer length for Register: {}", stringify!($data_type)),
+                        format!("Insufficient buffer length for Register: {}", stringify!($address)),
                     ));
                 }
                 bytes[..data_bytes.len()].copy_from_slice(&data_bytes);
