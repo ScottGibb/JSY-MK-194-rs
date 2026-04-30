@@ -1,3 +1,4 @@
+use jsy_mk_194_rs::registers::traits::Register;
 use jsy_mk_194_rs::{
     REQUEST_RESPONSE_DELAY,
     registers::{
@@ -122,6 +123,7 @@ mod fresh_device_tests {
 mod set_register_tests {
 
     const NEW_ENERGY_VALUE: f32 = 123.45;
+
     use super::*;
     #[test]
     fn test_set_channel_one_positive_active_energy_register() {
@@ -130,14 +132,17 @@ mod set_register_tests {
             .read_register::<FirstChannelPositiveActiveEnergyRegister>()
             .expect("Failed to read Channel One Positive Active Energy register");
         println!("Old Channel One Positive Active Energy Register: {old_energy_register:?}");
-
+        println!("----------------");
         let new_energy_register =
             FirstChannelPositiveActiveEnergyRegister::from_scaled_value(NEW_ENERGY_VALUE);
+        let mut bytes = [0u8; 4];
+        new_energy_register.to_bytes(&mut bytes).expect("");
+        println!(" Register to write: {bytes:02X?}");
         std::thread::sleep(REQUEST_RESPONSE_DELAY); // Ensure we don't write too quickly after reading
         device
             .write_register(new_energy_register)
             .expect("Failed to write new Channel One Positive Active Energy register");
-
+        println!("----------------");
         std::thread::sleep(2 * REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
         let updated_energy_register = device
             .read_register::<FirstChannelPositiveActiveEnergyRegister>()
@@ -179,6 +184,9 @@ mod set_register_tests {
 
         let new_energy_register =
             SecondChannelPositiveActiveEnergyRegister::from_scaled_value(NEW_ENERGY_VALUE);
+        let mut bytes = [0u8; 4];
+        new_energy_register.to_bytes(&mut bytes).expect("");
+        println!(" Register to write: {bytes:02X?}");
         std::thread::sleep(2 * REQUEST_RESPONSE_DELAY); // Ensure we don't read too quickly after writing
         device
             .write_register(new_energy_register)
@@ -225,6 +233,9 @@ mod set_register_tests {
 
         let new_energy_register =
             FirstChannelNegativeActiveEnergyRegister::from_scaled_value(NEW_ENERGY_VALUE);
+        let mut bytes = [0u8; 4];
+        new_energy_register.to_bytes(&mut bytes).expect("");
+        println!(" Register to write: {bytes:02X?}");
         std::thread::sleep(REQUEST_RESPONSE_DELAY); // Ensure we don't write too quickly after reading
         device
             .write_register(new_energy_register)
@@ -272,6 +283,9 @@ mod set_register_tests {
 
         let new_energy_register =
             SecondChannelNegativeActiveEnergyRegister::from_scaled_value(NEW_ENERGY_VALUE);
+        let mut bytes = [0u8; 4];
+        new_energy_register.to_bytes(&mut bytes).expect("");
+        println!(" Register to write: {bytes:02X?}");
         std::thread::sleep(REQUEST_RESPONSE_DELAY); // Ensure we don't write too quickly after reading
         device
             .write_register(new_energy_register)
