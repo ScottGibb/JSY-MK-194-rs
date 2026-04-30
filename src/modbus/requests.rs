@@ -1,8 +1,6 @@
 use crate::{
-    modbus::{
-        protocol::{calculate_crc, calculate_crc_bytes},
-        types::FunctionCode,
-    },
+    error::JSYMk194Error,
+    modbus::{protocol::calculate_crc, types::FunctionCode},
     registers::RegisterAddress,
     types::Id,
 };
@@ -52,10 +50,71 @@ impl ReadRequest {
 struct WriteRequest<'a> {
     device_address: Id,
     function_code: FunctionCode,
-    starting_address: [u8; 2],
-    quantity_of_registers: [u8; 2],
+    starting_address: RegisterAddress,
+    quantity_of_registers: u16,
     byte_count: u8,
     register_data: &'a [u8],
-    crc: [u8; 2],
+    crc: u16,
 }
-// TODO: Implement a builder type pattern to add registers on.
+
+impl<'a> WriteRequest<'a> {
+    pub fn new(
+        device_address: Id,
+        starting_address: RegisterAddress,
+        register_data: &'a [u8],
+    ) -> Result<Self, JSYMk194Error> {
+        let function_code = FunctionCode::WriteOneOrMoreRegisters;
+        let starting_address_bytes = u16::from(starting_address.clone()).to_be_bytes();
+        if register_data.len() % 2 != 0 {
+            return Err(JSYMk194Error::ConversionError(format!(
+                "Invalid register data length: {} for register Address: {:02X}",
+                register_data.len(),
+                u16::from(starting_address.clone())
+            )));
+        }
+        let byte_count = u8::try_from(register_data.len()).map_err(|err| {
+            JSYMk194Error::ConversionError(format!("Register data too large: {}", err))
+        })?;
+        let quantity_of_registers = u16::try_from(register_data.len() / 2).map_err(|err| {
+            JSYMk194Error::ConversionError(format!("Invalid register data length: {}", err))
+        })?;
+        let quantity_of_registers_bytes = quantity_of_registers.to_be_bytes();
+
+        Ok(Self {
+            device_address: device_address.clone(),
+            function_code: function_code.clone(),
+            starting_address,
+            quantity_of_registers,
+            byte_count,
+            register_data,
+            crc: calculate_crc(&[
+                device_address.into(),
+                function_code.into(),
+                starting_address_bytes[0],
+                starting_address_bytes[1],
+                quantity_of_registers_bytes[0],
+                quantity_of_registers_bytes[1],
+                byte_count,
+            ]),
+        })
+    }
+    fn to_bytes(&self, buff: &mut [u8]) -> Result<(), JSYMk194Error> {
+        if buff.len() < (7 + self.register_data.len()) {
+            return Err(JSYMk194Error::ConversionError(format!(
+                "Buffer too small: expected at least {} bytes, got {} bytes",
+                7 + self.register_data.len(),
+                buff.len()
+            )));
+        }
+        buff[0] = self.device_address.clone().into();
+        buff[1] = self.function_code.clone().into();
+        buff[2..4].copy_from_slice(&u16::from(self.starting_address.clone()).to_be_bytes());
+        buff[4..6].copy_from_slice(&self.quantity_of_registers.to_be_bytes());
+        buff[6] = self.byte_count;
+        buff[7..(7 + self.register_data.len())].copy_from_slice(self.register_data);
+        let crc = calculate_crc(&buff[0..(7 + self.register_data.len())]);
+        buff[(7 + self.register_data.len())..(7 + self.register_data.len() + 2)]
+            .copy_from_slice(&crc.to_le_bytes());
+        Ok(())
+    }
+}
