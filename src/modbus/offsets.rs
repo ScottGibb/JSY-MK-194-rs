@@ -2,7 +2,7 @@
 pub const MODBUS_DEVICE_ADDRESS_OFFSET: usize = 0;
 pub const MODBUS_FUNCTION_CODE_OFFSET: usize = 1;
 // pub const MODBUS_BYTE_COUNT_OFFSET: usize = 2;
-pub const MODBUS_DATA_START_OFFSET: usize = 2;
+pub const MODBUS_DATA_START_OFFSET: usize = 3;
 
 pub use crate::registers::electrical_paramater_registers::ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES;
 
