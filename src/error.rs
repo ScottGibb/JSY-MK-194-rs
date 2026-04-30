@@ -1,6 +1,7 @@
 use crate::modbus::types::FunctionCode;
 use crate::{hal, modbus::ErrorCode};
 #[derive(Debug)]
+#[non_exhaustive]
 pub enum JSYMk194Error {
     /// An error occurred during I/O operations, such as reading from or writing to the device.
     Io(hal::ErrorKind),
