@@ -24,6 +24,18 @@ impl From<FunctionCode> for u8 {
     }
 }
 
+impl FunctionCode {
+    pub fn is_exception_response(&self) -> bool {
+        matches!(
+            self,
+            FunctionCode::ExceptionReadResponseCode
+                | FunctionCode::ExceptionWriteResponseCode
+                | FunctionCode::ExceptionReadOutputStatusResponseCode
+                | FunctionCode::ExceptionWriteOutputStatusResponseCode
+        )
+    }
+}
+
 impl TryFrom<u8> for FunctionCode {
     type Error = JSYMk194Error;
 
