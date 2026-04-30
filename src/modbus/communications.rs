@@ -51,12 +51,6 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         self.read_buffer(&mut response_buff).await?;
         println!("[Modbus] Received read response: {:02X?}", &response_buff);
 
-        let (_, function_code) = extract_modbus_response_header(&response_buff)?;
-        match function_code {
-            FunctionCode::ExceptionReadOutputStatusResponseCode
-            //todo: THIS IS THE ISSUE NOT CHECKING FOR ALL THE EXCEPTION CODES
-        }
-
         let register_buff = response_buff
             .get(MODBUS_DATA_START_OFFSET..(MODBUS_DATA_START_OFFSET + Register::NUM_BYTES))
             .ok_or(JSYMk194Error::InvalidResponse)?;
@@ -112,7 +106,12 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             }
             _ => {
                 return Err(JSYMk194Error::ConversionError(
-                    "Invalid register size".into(),
+                    format!(
+                        "Invalid register size: {} for register Address: {:02X}",
+                        num_bytes,
+                        u16::from(register.address())
+                    )
+                    .into(),
                 ));
             }
         };
@@ -141,6 +140,10 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     async fn read_buffer(&mut self, buffer: &mut [u8]) -> Result<(), JSYMk194Error> {
         let bytes_read = self.serial.read(buffer).await?;
+        println!(
+            "[Modbus] Raw response bytes: {:02X?}",
+            &buffer[..bytes_read]
+        );
         if bytes_read == ModbusErrorResponse::ERROR_RESPONSE_HEADER_SIZE {
             let error_code = ModbusErrorResponse::from_bytes(
                 &buffer[..ModbusErrorResponse::ERROR_RESPONSE_HEADER_SIZE],
@@ -153,6 +156,10 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
                 read: bytes_read,
                 expected: buffer.len(),
             });
+        }
+        let (_, function_code) = extract_modbus_response_header(&buffer)?;
+        if function_code.is_exception_response() {
+            return Err(JSYMk194Error::DeviceErrorResponse(function_code));
         }
         Ok(())
     }
