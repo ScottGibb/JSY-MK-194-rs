@@ -21,8 +21,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             Register::ADDRESS,
             Register::NUM_BYTES,
         )?;
-        println!("[Modbus] Sending read request : {:02X?}", &buff);
-        println!("[Modbus] Raw request bytes    : {:02X?}", &buff);
+        println!("Sending Read Request");
         self.write_buffer(&buff).await?;
         self.delay
             .delay_ms(
@@ -34,8 +33,6 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             2 => {
                 let mut response_buff = [0u8; SINGLE_READ_RESPONSE_HEADER_SIZE];
                 self.read_buffer(&mut response_buff).await?;
-                println!("[Modbus] Raw response bytes   : {:02X?}", &response_buff);
-                println!("[Modbus] Received read resp  : {:02X?}", &response_buff);
 
                 println!("NUM_BYTES: {}", Register::NUM_BYTES);
                 let register_buff = response_buff
@@ -45,10 +42,8 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
                 Ok(Register::from_bytes(register_buff))
             }
             4 => {
-                let mut response_buff = [0u8; SINGLE_READ_RESPONSE_HEADER_SIZE + 2]; // 2 extra bytes for 4 byte register data
+                let mut response_buff = [0u8; SINGLE_READ_RESPONSE_HEADER_SIZE + 2 + 4]; // 2 extra bytes for 4 byte register data
                 self.read_buffer(&mut response_buff).await?;
-                println!("[Modbus] Raw response bytes   : {:02X?}", &response_buff);
-                println!("[Modbus] Received read resp   : {:02X?}", &response_buff);
 
                 println!("NUM_BYTES: {}", Register::NUM_BYTES);
                 let register_buff = response_buff
@@ -85,33 +80,31 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             ));
         }
         let num_registers = num_bytes / 2;
-        let [num_bytes_high, num_bytes_low] = num_bytes.to_be_bytes();
+        let num_bytes = u8::try_from(num_bytes)
+            .map_err(|_| JSYMk194Error::ConversionError("Register size too large".into()))?;
         let [num_registers_high, num_registers_low] = num_registers.to_be_bytes();
+        println!("Sending Write Request");
         match num_bytes {
             2 => {
                 let mut buff = [0u8; SINGLE_WRITE_REQUEST_HEADER_SIZE + 1];
                 buff[0..4].copy_from_slice(&address_header);
                 buff[4] = num_registers_high;
                 buff[5] = num_registers_low;
-                buff[6] = num_bytes_low;
-                buff[7] = num_bytes_high;
+                buff[6] = num_bytes;
                 register.to_bytes(&mut buff[7..9])?;
                 let crc = calculate_crc_bytes(&buff[0..9]);
                 buff[9..11].copy_from_slice(&crc);
-                println!("[Modbus] Sending write request: {:02X?}", &buff);
                 self.write_buffer(&buff).await?;
             }
             4 => {
-                let mut buff = [0u8; SINGLE_WRITE_REQUEST_HEADER_SIZE + 4];
+                let mut buff = [0u8; SINGLE_WRITE_REQUEST_HEADER_SIZE + 3];
                 buff[0..4].copy_from_slice(&address_header);
                 buff[4] = num_registers_high;
                 buff[5] = num_registers_low;
-                buff[6] = num_bytes_low;
-                buff[7] = num_bytes_high;
-                register.to_bytes(&mut buff[8..12])?;
-                let crc = calculate_crc_bytes(&buff[0..12]);
-                buff[12..14].copy_from_slice(&crc);
-                println!("[Modbus] Sending write request: {:02X?}", &buff);
+                buff[6] = num_bytes;
+                register.to_bytes(&mut buff[7..11])?;
+                let crc = calculate_crc_bytes(&buff[0..11]);
+                buff[11..13].copy_from_slice(&crc);
                 self.write_buffer(&buff).await?;
             }
             _ => {
@@ -128,6 +121,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
                     .expect("This should not fail to convert"),
             )
             .await;
+        // let mut response_buff = [0u8; SINGLE_WRITE_RESPONSE_HEADER_SIZE + 4]; // Error response is smaller than normal response, so this will work for both
         let mut response_buff = [0u8; SINGLE_WRITE_RESPONSE_HEADER_SIZE]; // Error response is smaller than normal response, so this will work for both
         self.read_buffer(&mut response_buff).await?;
         Ok(())
