@@ -20,8 +20,9 @@ pub struct ReadResponse<'a> {
 }
 impl<'a> ReadResponse<'a> {
     pub fn from_bytes(bytes: &'a [u8]) -> Result<Self, JSYMk194Error> {
-        if bytes.len() < 5 {
-            // An Error Response has been returned. Cosnruct the error response and return an error.
+        if bytes.len() == ModbusErrorResponse::ERROR_RESPONSE_HEADER_SIZE {
+            let error_response = ModbusErrorResponse::from_bytes(bytes)?;
+            return Err(JSYMk194Error::ModBusDeviceError(error_response));
         }
         let device_address = Id::new(bytes[0])?;
         let function_code = FunctionCode::try_from(bytes[1])?;
@@ -54,6 +55,10 @@ pub struct WriteResponse {
 
 impl WriteResponse {
     pub fn from_bytes(bytes: &[u8]) -> Result<Self, JSYMk194Error> {
+        if bytes.len() == ModbusErrorResponse::ERROR_RESPONSE_HEADER_SIZE {
+            let error_response = ModbusErrorResponse::from_bytes(bytes)?;
+            return Err(JSYMk194Error::ModBusDeviceError(error_response));
+        }
         if bytes.len() != 8 {
             return Err(JSYMk194Error::InvalidResponse);
         }
@@ -72,6 +77,7 @@ impl WriteResponse {
     }
 }
 
+#[derive(Debug)]
 pub struct ModbusErrorResponse {
     pub id: Id,
     pub function_code: FunctionCode,

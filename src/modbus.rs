@@ -8,4 +8,5 @@ mod responses;
 pub mod types;
 
 pub use protocol::REQUEST_RESPONSE_DELAY;
+pub use responses::ModbusErrorResponse;
 pub use types::ErrorCode;
