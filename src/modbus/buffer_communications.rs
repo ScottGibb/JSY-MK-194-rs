@@ -1,7 +1,8 @@
 use crate::error::JSYMk194Error;
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
-use crate::modbus::protocol::{ModbusErrorResponse, extract_modbus_response_header};
+use crate::modbus::protocol::extract_modbus_response_header;
+use crate::modbus::responses::ModbusErrorResponse;
 
 impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]

@@ -3,6 +3,8 @@ mod multi_register_communications;
 mod offsets;
 mod protocol;
 mod register_communications;
+mod requests;
+mod responses;
 pub mod types;
 
 pub use protocol::REQUEST_RESPONSE_DELAY;

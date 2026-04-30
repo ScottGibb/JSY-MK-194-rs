@@ -113,7 +113,7 @@ pub fn construct_full_read_request(
     Ok(buff)
 }
 
-fn calculate_crc(data: &[u8]) -> u16 {
+pub fn calculate_crc(data: &[u8]) -> u16 {
     let mut crc: u16 = 0xFFFF;
     for &byte in data {
         crc ^= byte as u16;
@@ -132,27 +132,6 @@ fn calculate_crc(data: &[u8]) -> u16 {
 pub fn calculate_crc_bytes(data: &[u8]) -> [u8; 2] {
     let crc = calculate_crc(data);
     crc.to_le_bytes()
-}
-
-pub struct ModbusErrorResponse {
-    pub _id: Id,
-    pub _function_code: FunctionCode,
-    pub error_code: ErrorCode,
-}
-
-impl ModbusErrorResponse {
-    pub const ERROR_RESPONSE_HEADER_SIZE: usize = 5;
-    pub fn from_bytes(bytes: &[u8]) -> Result<Self, JSYMk194Error> {
-        if bytes.len() != Self::ERROR_RESPONSE_HEADER_SIZE {
-            return Err(JSYMk194Error::InvalidResponse);
-        }
-
-        Ok(Self {
-            _id: Id::new(bytes[MODBUS_DEVICE_ADDRESS_OFFSET])?,
-            _function_code: FunctionCode::try_from(bytes[MODBUS_FUNCTION_CODE_OFFSET])?,
-            error_code: ErrorCode::try_from(bytes[MODBUS_ERROR_CODE_OFFSET])?,
-        })
-    }
 }
 
 pub fn extract_modbus_response_header(buffer: &[u8]) -> Result<(Id, FunctionCode), JSYMk194Error> {
