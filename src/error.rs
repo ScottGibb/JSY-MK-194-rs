@@ -1,5 +1,5 @@
+use crate::modbus::types::FunctionCode;
 use crate::{hal, modbus::ErrorCode};
-
 #[derive(Debug)]
 pub enum JSYMk194Error {
     /// An error occurred during I/O operations, such as reading from or writing to the device.
@@ -17,6 +17,8 @@ pub enum JSYMk194Error {
     DeviceError(ErrorCode),
     /// The CRC check failed, indicating that the data received from the device may be corrupted or tampered with.
     CrcError,
+    /// The device responded with an error function code, indicating that the requested operation could not be completed successfully.
+    DeviceErrorResponse(FunctionCode),
 }
 
 impl<E: hal::Error> From<E> for JSYMk194Error {
