@@ -33,6 +33,8 @@ pub enum RegisterAddress {
     SecondChannelPositiveActiveEnergy = 0x0053,
     SecondChannelPowerFactor = 0x0054,
     SecondChannelNegativeActiveEnergy = 0x0055,
+
+    ClearEnergyCommand = 0x000C,
 }
 
 impl From<RegisterAddress> for u16 {
