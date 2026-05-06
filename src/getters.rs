@@ -53,7 +53,8 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
 impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub async fn get_all_channels(&mut self) -> Result<Statistics, JSYMk194Error> {
-        unimplemented!()
+        let stats = self.read_statistics().await?;
+        Ok(stats)
     }
 
     #[maybe_async::maybe_async]
