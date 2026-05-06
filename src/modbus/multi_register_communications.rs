@@ -131,12 +131,16 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
                     ..MODBUS_DATA_START_OFFSET + (14 * ELECTRICAL_PARAMATER_REGISTER_NUM_BYTES)],
             )
             .get_scaled_value();
-
-        let _crc = u16::from_be_bytes(
-            buffer[59..61]
-                .try_into()
-                .map_err(|_| JSYMk194Error::CrcError)?,
-        );
+        //make compile for now
+        let _crc =
+            u16::from_be_bytes(
+                buffer[59..61]
+                    .try_into()
+                    .map_err(|_| JSYMk194Error::CrcError {
+                        expected: 2,
+                        actual: u16::from_be_bytes(buffer[59..61].try_into().unwrap()),
+                    })?,
+            );
 
         Ok(Statistics {
             channel_one: ChannelStatistics {
