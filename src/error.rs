@@ -1,6 +1,9 @@
+use core::num::TryFromIntError;
+
 use crate::hal;
 use crate::modbus::ModbusErrorResponse;
 use crate::modbus::types::FunctionCode;
+use crate::registers::RegisterAddress;
 #[derive(Debug)]
 #[non_exhaustive]
 pub enum JSYMk194Error {
@@ -20,7 +23,7 @@ pub enum JSYMk194Error {
     },
     /// An error occurred during a conversion process, this could mean data is corrupted, or this library has
     /// not implemented the correct conversion for a specific type. That type should then be seen in the error string.
-    ConversionError(String),
+    ConversionError(ConversionError),
     /// The CRC check failed, indicating that the data received from the device may be corrupted or tampered with.
     CrcError {
         actual: u16,
@@ -36,4 +39,18 @@ impl<E: hal::Error> From<E> for JSYMk194Error {
     fn from(e: E) -> Self {
         JSYMk194Error::Io(e.kind())
     }
+}
+
+#[derive(Debug)]
+pub enum ConversionError {
+    InvalidRegisterDataLength {
+        length: usize,
+        address: RegisterAddress,
+    },
+    InvalidQuantityOfRegisters(TryFromIntError),
+    InvalidByteCount(TryFromIntError),
+    UnknownRegister {
+        address: u16,
+    },
+    InvalidValue,
 }

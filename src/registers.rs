@@ -1,4 +1,4 @@
-use crate::error::JSYMk194Error;
+use crate::error::{ConversionError, JSYMk194Error};
 
 pub mod channel_one_measuring_electrical_paramaters;
 pub mod channel_two_measuring_electrical_paramaters;
@@ -69,9 +69,9 @@ impl TryFrom<u16> for RegisterAddress {
             0x0054 => Ok(RegisterAddress::SecondChannelPowerFactor),
             0x0055 => Ok(RegisterAddress::SecondChannelNegativeActiveEnergy),
             0x000C => Ok(RegisterAddress::ClearEnergyCommand),
-            _ => Err(JSYMk194Error::ConversionError(format!(
-                "Invalid Register Address: {value:#06X}"
-            ))),
+            _ => Err(JSYMk194Error::ConversionError(
+                ConversionError::UnknownRegister { address: value },
+            )),
         }
     }
 }

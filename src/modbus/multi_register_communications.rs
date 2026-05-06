@@ -126,8 +126,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         self.extract_statistics_from_response(read_response)
     }
 
-    #[maybe_async::maybe_async]
-    async fn extract_statistics_from_response(
+    fn extract_statistics_from_response(
         &mut self,
         read_response: ReadResponse,
     ) -> Result<Statistics, JSYMk194Error> {

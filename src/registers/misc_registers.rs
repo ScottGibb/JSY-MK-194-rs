@@ -1,5 +1,6 @@
 use crate::{
     define_scaled_register,
+    error::{ConversionError, JSYMk194Error},
     registers::{
         RegisterAddress, scalars,
         traits::{ReadRegister, Register},
@@ -44,10 +45,13 @@ impl Register for PowerDirectionRegister {
         }
     }
 
-    fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), crate::error::JSYMk194Error> {
+    fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), JSYMk194Error> {
         if bytes.len() < Self::NUM_BYTES {
-            return Err(crate::error::JSYMk194Error::ConversionError(
-                "Invalid byte length for PowerDirectionRegister".into(),
+            return Err(JSYMk194Error::ConversionError(
+                ConversionError::InvalidRegisterDataLength {
+                    length: bytes.len(),
+                    address: Self::ADDRESS,
+                },
             ));
         }
         let first_channel_bytes = (self.first_channel.clone() as u16).to_le_bytes();
@@ -67,15 +71,15 @@ pub enum PowerDirection {
     Negative = 1,
 }
 impl TryFrom<u16> for PowerDirection {
-    type Error = crate::error::JSYMk194Error;
+    type Error = JSYMk194Error;
 
     fn try_from(value: u16) -> Result<Self, Self::Error> {
         match value {
             0 => Ok(PowerDirection::Positive),
             1 => Ok(PowerDirection::Negative),
-            _ => Err(crate::error::JSYMk194Error::ConversionError(format!(
-                "Invalid power direction value: {value}"
-            ))),
+            _ => Err(JSYMk194Error::ConversionError(
+                ConversionError::InvalidValue,
+            )),
         }
     }
 }

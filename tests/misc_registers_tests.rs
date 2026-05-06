@@ -1,3 +1,5 @@
+#![cfg(feature = "std")]
+
 use jsy_mk_194_rs::{
     registers::misc_registers::{FrequencyRegister, PowerDirection, PowerDirectionRegister},
     types::{Baudrate, Id},

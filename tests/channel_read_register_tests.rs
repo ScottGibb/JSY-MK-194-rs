@@ -1,3 +1,5 @@
+#![cfg(feature = "std")]
+
 use jsy_mk_194_rs::{
     registers::{
         channel_one_measuring_electrical_paramaters::{

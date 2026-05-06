@@ -1,3 +1,5 @@
+#![cfg(feature = "std")]
+
 use std::{
     process::{ExitCode, exit},
     time::Duration,

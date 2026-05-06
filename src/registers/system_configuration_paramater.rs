@@ -1,5 +1,5 @@
 use crate::{
-    error::JSYMk194Error,
+    error::{ConversionError, JSYMk194Error},
     registers::{
         RegisterAddress,
         traits::{ReadRegister, Register, WriteRegister},
@@ -32,7 +32,9 @@ pub struct Id {
 impl Id {
     pub fn new(id: u8) -> Result<Self, JSYMk194Error> {
         if id == 0 {
-            return Err(JSYMk194Error::ConversionError("Invalid ID value: 0".into()));
+            return Err(JSYMk194Error::ConversionError(
+                ConversionError::InvalidValue,
+            ));
         }
         Ok(Self { id })
     }
@@ -60,26 +62,26 @@ impl TryFrom<u8> for Baudrate {
             6 => Ok(Baudrate::_9600),
             7 => Ok(Baudrate::_19200),
             8 => Ok(Baudrate::_38400),
-            _ => Err(JSYMk194Error::ConversionError(format!(
-                "Invalid baudrate value: {value}"
-            ))),
+            _ => Err(JSYMk194Error::ConversionError(
+                ConversionError::InvalidValue,
+            )),
         }
     }
 }
 
 impl TryFrom<u32> for Baudrate {
     type Error = JSYMk194Error;
-    fn try_from(value: u32) -> Result<Self, JSYMk194Error> {
-        match value {
+    fn try_from(baud_rate: u32) -> Result<Self, JSYMk194Error> {
+        match baud_rate {
             1200 => Ok(Baudrate::_1200),
             2400 => Ok(Baudrate::_2400),
             4800 => Ok(Baudrate::_4800),
             9600 => Ok(Baudrate::_9600),
             19200 => Ok(Baudrate::_19200),
             38400 => Ok(Baudrate::_38400),
-            _ => Err(JSYMk194Error::ConversionError(format!(
-                "Invalid baudrate value: {value}"
-            ))),
+            _ => Err(JSYMk194Error::ConversionError(
+                ConversionError::InvalidValue,
+            )),
         }
     }
 }
@@ -120,7 +122,10 @@ impl Register for SystemConfigurationParamaterRegister {
     fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), JSYMk194Error> {
         if bytes.len() < Self::NUM_BYTES {
             return Err(JSYMk194Error::ConversionError(
-                "Invalid byte length for SystemConfigurationParamaterRegister".into(),
+                ConversionError::InvalidRegisterDataLength {
+                    length: bytes.len(),
+                    address: Self::ADDRESS,
+                },
             ));
         }
         bytes[0] = u8::from(self.id.clone());
