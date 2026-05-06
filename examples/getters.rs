@@ -1,10 +1,20 @@
-use std::time::Duration;
+#![cfg_attr(not(feature = "std"), allow(dead_code))]
 
-use jsy_mk_194_rs::jsy_mk_194g::JsyMk194g;
-use jsy_mk_194_rs::registers::system_configuration_paramater::Baudrate;
-use jsy_mk_194_rs::types::Channel;
-use jsy_mk_194_rs::units::*;
+#[cfg(not(feature = "std"))]
 fn main() {
+    println!("This example needs std enabled");
+}
+
+#[cfg(feature = "std")]
+fn main() {
+    use std::println;
+    use std::time::Duration;
+
+    use jsy_mk_194_rs::jsy_mk_194g::JsyMk194g;
+    use jsy_mk_194_rs::registers::system_configuration_paramater::Baudrate;
+    use jsy_mk_194_rs::types::Channel;
+    use jsy_mk_194_rs::units::*;
+
     let ports = serialport::available_ports().expect("No ports found!");
     println!("Available ports:");
     for p in ports {

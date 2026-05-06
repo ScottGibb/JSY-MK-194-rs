@@ -1,3 +1,4 @@
+#![cfg(feature = "std")]
 use jsy_mk_194_rs::registers::traits::Register;
 use jsy_mk_194_rs::{
     registers::{

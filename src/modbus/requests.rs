@@ -1,5 +1,5 @@
 use crate::{
-    error::JSYMk194Error,
+    error::{ConversionError, JSYMk194Error},
     modbus::{protocol::calculate_crc, types::FunctionCode},
     registers::RegisterAddress,
     types::Id,
@@ -67,17 +67,18 @@ impl<'a> WriteRequest<'a> {
         let function_code = FunctionCode::WriteOneOrMoreRegisters;
         let starting_address_bytes = u16::from(starting_address.clone()).to_be_bytes();
         if register_data.len() % 2 != 0 {
-            return Err(JSYMk194Error::ConversionError(format!(
-                "Invalid register data length: {} for register Address: {:02X}",
-                register_data.len(),
-                u16::from(starting_address.clone())
-            )));
+            return Err(JSYMk194Error::ConversionError(
+                ConversionError::InvalidRegisterDataLength {
+                    length: register_data.len(),
+                    address: starting_address.clone(),
+                },
+            ));
         }
         let byte_count = u8::try_from(register_data.len()).map_err(|err| {
-            JSYMk194Error::ConversionError(format!("Register data too large: {err}"))
+            JSYMk194Error::ConversionError(ConversionError::InvalidByteCount(err))
         })?;
         let quantity_of_registers = u16::try_from(register_data.len() / 2).map_err(|err| {
-            JSYMk194Error::ConversionError(format!("Invalid register data length: {err}"))
+            JSYMk194Error::ConversionError(ConversionError::InvalidQuantityOfRegisters(err))
         })?;
         let quantity_of_registers_bytes = quantity_of_registers.to_be_bytes();
 
@@ -101,11 +102,12 @@ impl<'a> WriteRequest<'a> {
     }
     pub fn to_bytes(&self, buff: &mut [u8]) -> Result<(), JSYMk194Error> {
         if buff.len() < (Self::HEADER_SIZE + self.register_data.len()) {
-            return Err(JSYMk194Error::ConversionError(format!(
-                "Buffer too small: expected at least {} bytes, got {} bytes",
-                Self::HEADER_SIZE + self.register_data.len(),
-                buff.len()
-            )));
+            return Err(JSYMk194Error::ConversionError(
+                ConversionError::InvalidRegisterDataLength {
+                    length: buff.len(),
+                    address: self.starting_address.clone(),
+                },
+            ));
         }
         buff[0] = self.device_address.clone().into();
         buff[1] = self.function_code.clone().into();

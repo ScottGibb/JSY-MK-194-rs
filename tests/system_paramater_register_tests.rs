@@ -1,3 +1,5 @@
+#![cfg(feature = "std")]
+
 use jsy_mk_194_rs::{
     registers::system_paramaters::{CurrentRangeRegister, ModelOneRegister, VoltageRangeRegister},
     types::{Baudrate, Id},

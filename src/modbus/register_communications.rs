@@ -1,4 +1,4 @@
-use crate::error::JSYMk194Error;
+use crate::error::{ConversionError, JSYMk194Error};
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
 use crate::modbus::protocol::REQUEST_RESPONSE_DELAY;
@@ -59,7 +59,10 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             }
             _ => {
                 return Err(JSYMk194Error::ConversionError(
-                    "Invalid register size: must be 2 or 4 bytes".into(),
+                    ConversionError::InvalidRegisterDataLength {
+                        length: register.num_bytes(),
+                        address: register.address(),
+                    },
                 ));
             }
         }

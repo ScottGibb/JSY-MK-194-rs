@@ -1,3 +1,5 @@
+#![cfg(feature = "std")]
+
 mod common;
 use common::setup_device;
 use jsy_mk_194_rs::registers::misc_registers::PowerDirection;
