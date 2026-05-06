@@ -1,7 +1,6 @@
 use crate::error::JSYMk194Error;
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
-use crate::modbus::offsets::SINGLE_WRITE_RESPONSE_HEADER_SIZE;
 use crate::modbus::protocol::REQUEST_RESPONSE_DELAY;
 use crate::modbus::requests::{ReadRequest, WriteRequest};
 use crate::modbus::responses::{ReadResponse, WriteResponse};
@@ -71,7 +70,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
                     .expect("This should not fail to convert"),
             )
             .await;
-        let mut response_buff = [0u8; SINGLE_WRITE_RESPONSE_HEADER_SIZE]; // Error response is smaller than normal response, so this will work for both
+        let mut response_buff = [0u8; 256]; // Error response is smaller than normal response, so this will work for both
         self.read_buffer(&mut response_buff).await?;
         let _write_response = WriteResponse::from_bytes(&response_buff)?;
         Ok(())
