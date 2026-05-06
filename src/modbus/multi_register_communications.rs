@@ -8,6 +8,7 @@ use crate::{
     registers::{
         channel_one_measuring_electrical_paramaters::{
             FirstChannelActivePowerRegister, FirstChannelCurrentRegister,
+            FirstChannelNegativeActiveEnergyRegister, FirstChannelPositiveActiveEnergyRegister,
             FirstChannelPowerFactorRegister, FirstChannelVoltageRegister,
         },
         channel_two_measuring_electrical_paramaters::{
@@ -76,20 +77,22 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         let active_power =
             FirstChannelActivePowerRegister::from_bytes(&read_response.register_data[8..12])
                 .get_scaled_value();
-        let positive_activer_energy =
-            FirstChannelActivePowerRegister::from_bytes(&read_response.register_data[12..16])
-                .get_scaled_value();
+        let positive_active_energy = FirstChannelPositiveActiveEnergyRegister::from_bytes(
+            &read_response.register_data[12..16],
+        )
+        .get_scaled_value();
         let power_factor =
             FirstChannelPowerFactorRegister::from_bytes(&read_response.register_data[16..20]);
-        let negative_active_energy =
-            FirstChannelActivePowerRegister::from_bytes(&read_response.register_data[20..24])
-                .get_scaled_value();
+        let negative_active_energy = FirstChannelNegativeActiveEnergyRegister::from_bytes(
+            &read_response.register_data[20..24],
+        )
+        .get_scaled_value();
 
         Ok(ChannelStatistics {
             voltage: ElectricPotential::new::<volt>(voltage),
             current: ElectricCurrent::new::<ampere>(current),
             active_power: Power::new::<watt>(active_power),
-            positive_active_energy: Energy::new::<kilowatt_hour>(positive_activer_energy),
+            positive_active_energy: Energy::new::<kilowatt_hour>(positive_active_energy),
             negative_active_energy: Energy::new::<kilowatt_hour>(negative_active_energy),
             power_factor: power_factor.get_scaled_value(),
             power_direction,
@@ -139,14 +142,16 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         let first_active_power =
             FirstChannelActivePowerRegister::from_bytes(&read_response.register_data[8..12])
                 .get_scaled_value();
-        let first_positive_active_energy =
-            FirstChannelActivePowerRegister::from_bytes(&read_response.register_data[12..16])
-                .get_scaled_value();
+        let first_positive_active_energy = FirstChannelPositiveActiveEnergyRegister::from_bytes(
+            &read_response.register_data[12..16],
+        )
+        .get_scaled_value();
         let first_power_factor =
             FirstChannelPowerFactorRegister::from_bytes(&read_response.register_data[16..20]);
-        let first_negative_active_energy =
-            FirstChannelActivePowerRegister::from_bytes(&read_response.register_data[20..24])
-                .get_scaled_value();
+        let first_negative_active_energy = FirstChannelNegativeActiveEnergyRegister::from_bytes(
+            &read_response.register_data[20..24],
+        )
+        .get_scaled_value();
 
         let power_direction_register =
             PowerDirectionRegister::from_bytes(&read_response.register_data[24..28]);
