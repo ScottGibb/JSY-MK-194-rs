@@ -46,7 +46,7 @@ pub fn validate_crc(data: &[u8], crc: u16) -> Result<(), JSYMk194Error> {
 
 pub fn extract_modbus_response_header(buffer: &[u8]) -> Result<(Id, FunctionCode), JSYMk194Error> {
     if buffer.len() < 2 {
-        return Err(JSYMk194Error::InvalidResponse);
+        return Err(JSYMk194Error::InvalidHeader);
     }
     let id = Id::new(buffer[MODBUS_DEVICE_ADDRESS_OFFSET])?;
     let function_code = FunctionCode::try_from(buffer[MODBUS_FUNCTION_CODE_OFFSET])?;

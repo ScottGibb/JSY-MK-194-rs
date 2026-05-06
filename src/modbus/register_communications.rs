@@ -71,8 +71,8 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             )
             .await;
         let mut response_buff = [0u8; 256]; // Error response is smaller than normal response, so this will work for both
-        self.read_buffer(&mut response_buff).await?;
-        let _write_response = WriteResponse::from_bytes(&response_buff)?;
+        let bytes_read = self.read_buffer(&mut response_buff).await?;
+        let _write_response = WriteResponse::from_bytes(&response_buff[..bytes_read])?;
         Ok(())
     }
 }
