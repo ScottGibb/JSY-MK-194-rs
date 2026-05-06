@@ -80,6 +80,7 @@ fn reset_active_energy_registers() {
     println!("Active energy registers reset to {SET_ENERGY_VALUE}");
 }
 
+#[cfg(test)]
 mod fresh_device_tests {
     use super::*;
     #[test]
@@ -156,6 +157,8 @@ mod fresh_device_tests {
 // and it is not clear why this is the case. It could be an issue with the device, or it could be an issue with the way the register is being written to.
 // Further investigation is needed to determine the cause of this issue and whether it can be resolved.
 const NEW_ENERGY_VALUE: f32 = 1000.0;
+
+#[cfg(test)]
 mod set_channel_one_register_tests {
 
     use super::*;
@@ -258,6 +261,7 @@ mod set_channel_one_register_tests {
     }
 }
 
+#[cfg(test)]
 mod set_channel_two_register_tests {
     // Fails to set
     #[test]

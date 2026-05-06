@@ -3,6 +3,7 @@ use common::setup_device;
 use jsy_mk_194_rs::types::{Baudrate, Id};
 use jsy_mk_194_rs::{types::Channel, units::Energy, units::kilowatt_hour};
 
+#[cfg(test)]
 mod configuration_tests {
 
     use super::*;
@@ -73,6 +74,8 @@ mod configuration_tests {
         }
     }
 }
+
+#[cfg(test)]
 mod energy_tests {
     use super::*;
 

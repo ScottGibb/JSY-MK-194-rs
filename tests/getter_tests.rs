@@ -28,6 +28,7 @@ fn fresh_channel_statistics() -> ChannelStatistics {
     }
 }
 
+#[cfg(test)]
 mod fresh_device_tests {
 
     use jsy_mk_194_rs::registers::misc_registers::PowerDirection;

@@ -13,6 +13,7 @@ use jsy_mk_194_rs::{
 mod common;
 use common::setup_device;
 
+#[cfg(test)]
 mod mains_tests {
     use super::*;
     #[test]
@@ -62,6 +63,7 @@ mod mains_tests {
     }
 }
 
+#[cfg(test)]
 mod no_load_tests {
     use jsy_mk_194_rs::registers::{
         channel_one_measuring_electrical_paramaters::{
