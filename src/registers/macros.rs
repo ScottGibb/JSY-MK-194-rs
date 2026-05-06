@@ -104,7 +104,7 @@ macro_rules! define_scaled_register {
             const NUM_BYTES: usize = core::mem::size_of::<$data_type>();
             fn from_bytes(bytes: &[u8]) -> Self {
                 let mut arr = [0u8; core::mem::size_of::<$data_type>()];
-                arr.copy_from_slice(bytes);
+                arr.copy_from_slice(bytes); //TODO:  can cause run time panic fix this
                 Self(<$data_type>::from_be_bytes(arr))
             }
             fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), $crate::error::JSYMk194Error> {
