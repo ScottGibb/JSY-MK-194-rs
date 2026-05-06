@@ -20,11 +20,12 @@ pub struct ReadResponse<'a> {
     pub crc: u16,
 }
 impl<'a> ReadResponse<'a> {
+    pub const RESPONSE_HEADER_SIZE: usize = 5; // Device address, function code, byte count, and CRC
     pub fn from_bytes(bytes: &'a [u8]) -> Result<Self, JSYMk194Error> {
-        if bytes.len() < 5 {
+        if bytes.len() < Self::RESPONSE_HEADER_SIZE {
             return Err(JSYMk194Error::FailedToRead {
                 read: bytes.len(),
-                expected: 5,
+                expected: Self::RESPONSE_HEADER_SIZE,
             });
         }
         let device_address = Id::new(bytes[0])?;
