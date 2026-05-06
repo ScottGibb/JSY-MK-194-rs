@@ -1,13 +1,10 @@
-use super::protocol::{calculate_crc_bytes, create_request_modbus_header};
 use crate::error::JSYMk194Error;
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
-use crate::modbus::offsets::{
-    MODBUS_DATA_START_OFFSET, SINGLE_READ_RESPONSE_HEADER_SIZE, SINGLE_WRITE_REQUEST_HEADER_SIZE,
-    SINGLE_WRITE_RESPONSE_HEADER_SIZE,
-};
-use crate::modbus::protocol::{REQUEST_RESPONSE_DELAY, construct_single_read_request};
-use crate::modbus::types::FunctionCode;
+use crate::modbus::offsets::SINGLE_WRITE_RESPONSE_HEADER_SIZE;
+use crate::modbus::protocol::REQUEST_RESPONSE_DELAY;
+use crate::modbus::requests::{ReadRequest, WriteRequest};
+use crate::modbus::responses::{ReadResponse, WriteResponse};
 use crate::registers::traits::{self, Register};
 
 impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
@@ -16,12 +13,8 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     where
         Register: traits::Register + traits::ReadRegister,
     {
-        let buff = construct_single_read_request(
-            self.device_address.clone(),
-            Register::ADDRESS,
-            Register::NUM_BYTES,
-        )?;
-        println!("Sending Read Request");
+        let read_request = ReadRequest::new(self.device_address.clone(), Register::ADDRESS, 1);
+        let buff = read_request.to_bytes();
         self.write_buffer(&buff).await?;
         self.delay
             .delay_ms(
@@ -29,37 +22,10 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
                     .expect("This should not fail to convert"),
             )
             .await;
-        match Register::NUM_BYTES {
-            2 => {
-                let mut response_buff = [0u8; SINGLE_READ_RESPONSE_HEADER_SIZE];
-                self.read_buffer(&mut response_buff).await?;
-
-                println!("NUM_BYTES: {}", Register::NUM_BYTES);
-                let register_buff = response_buff
-                    .get(MODBUS_DATA_START_OFFSET..(MODBUS_DATA_START_OFFSET + Register::NUM_BYTES))
-                    .ok_or(JSYMk194Error::InvalidResponse)?;
-                println!("[Modbus] Register bytes      : {:02X?}", register_buff);
-                Ok(Register::from_bytes(register_buff))
-            }
-            4 => {
-                let mut response_buff = [0u8; SINGLE_READ_RESPONSE_HEADER_SIZE + 2 + 4]; // 2 extra bytes for 4 byte register data
-                self.read_buffer(&mut response_buff).await?;
-
-                println!("NUM_BYTES: {}", Register::NUM_BYTES);
-                let register_buff = response_buff
-                    .get(MODBUS_DATA_START_OFFSET..(MODBUS_DATA_START_OFFSET + Register::NUM_BYTES))
-                    .ok_or(JSYMk194Error::InvalidResponse)?;
-                println!("[Modbus] Register bytes      : {:02X?}", register_buff);
-                Ok(Register::from_bytes(register_buff))
-            }
-            _ => {
-                return Err(JSYMk194Error::ConversionError(format!(
-                    "Invalid register size: {} for register Address: {:02X}",
-                    Register::NUM_BYTES,
-                    u16::from(Register::ADDRESS)
-                )));
-            }
-        }
+        let mut response_buff = [0u8; 256];
+        let bytes_read = self.read_buffer(&mut response_buff).await?;
+        let read_response = ReadResponse::from_bytes(&response_buff[..bytes_read])?;
+        Ok(Register::from_bytes(read_response.register_data))
     }
 
     #[maybe_async::maybe_async]
@@ -67,63 +33,47 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         &mut self,
         register: impl Register + traits::WriteRegister,
     ) -> Result<(), JSYMk194Error> {
-        let address_header = create_request_modbus_header(
-            self.device_address.clone(),
-            FunctionCode::WriteOneOrMoreRegisters,
-            register.address(),
-        );
-        let num_bytes = u16::try_from(register.num_bytes())
-            .map_err(|_| JSYMk194Error::ConversionError("Invalid register size".into()))?; // Fix `This`
-        if num_bytes % 2 != 0 {
-            return Err(JSYMk194Error::ConversionError(
-                "Invalid register size: must be a multiple of 2 bytes".into(),
-            ));
-        }
-        let num_registers = num_bytes / 2;
-        let num_bytes = u8::try_from(num_bytes)
-            .map_err(|_| JSYMk194Error::ConversionError("Register size too large".into()))?;
-        let [num_registers_high, num_registers_low] = num_registers.to_be_bytes();
-        println!("Sending Write Request");
-        match num_bytes {
+        match register.num_bytes() {
             2 => {
-                let mut buff = [0u8; SINGLE_WRITE_REQUEST_HEADER_SIZE + 1];
-                buff[0..4].copy_from_slice(&address_header);
-                buff[4] = num_registers_high;
-                buff[5] = num_registers_low;
-                buff[6] = num_bytes;
-                register.to_bytes(&mut buff[7..9])?;
-                let crc = calculate_crc_bytes(&buff[0..9]);
-                buff[9..11].copy_from_slice(&crc);
-                self.write_buffer(&buff).await?;
+                let mut register_data = [0u8; 2];
+                register.to_bytes(&mut register_data)?;
+                let write_request = WriteRequest::new(
+                    self.device_address.clone(),
+                    register.address(),
+                    &register_data,
+                )?;
+                let mut write_request_buffer = [0u8; 11];
+                write_request.to_bytes(&mut write_request_buffer)?;
+                self.write_buffer(&write_request_buffer).await?;
             }
             4 => {
-                let mut buff = [0u8; SINGLE_WRITE_REQUEST_HEADER_SIZE + 3];
-                buff[0..4].copy_from_slice(&address_header);
-                buff[4] = num_registers_high;
-                buff[5] = num_registers_low;
-                buff[6] = num_bytes;
-                register.to_bytes(&mut buff[7..11])?;
-                let crc = calculate_crc_bytes(&buff[0..11]);
-                buff[11..13].copy_from_slice(&crc);
-                self.write_buffer(&buff).await?;
+                let mut register_data = [0u8; 4];
+                register.to_bytes(&mut register_data)?;
+                let write_request = WriteRequest::new(
+                    self.device_address.clone(),
+                    register.address(),
+                    &register_data,
+                )?;
+                let mut write_request_buffer = [0u8; 13]; // 2 extra bytes for the additional register data
+                write_request.to_bytes(&mut write_request_buffer)?;
+                self.write_buffer(&write_request_buffer).await?;
             }
             _ => {
-                return Err(JSYMk194Error::ConversionError(format!(
-                    "Invalid register size: {} for register Address: {:02X}",
-                    num_bytes,
-                    u16::from(register.address())
-                )));
+                return Err(JSYMk194Error::ConversionError(
+                    "Invalid register size: must be 2 or 4 bytes".into(),
+                ));
             }
-        };
+        }
+
         self.delay
             .delay_ms(
                 u32::try_from(REQUEST_RESPONSE_DELAY.as_millis())
                     .expect("This should not fail to convert"),
             )
             .await;
-        // let mut response_buff = [0u8; SINGLE_WRITE_RESPONSE_HEADER_SIZE + 4]; // Error response is smaller than normal response, so this will work for both
         let mut response_buff = [0u8; SINGLE_WRITE_RESPONSE_HEADER_SIZE]; // Error response is smaller than normal response, so this will work for both
         self.read_buffer(&mut response_buff).await?;
+        let _write_response = WriteResponse::from_bytes(&response_buff)?;
         Ok(())
     }
 }

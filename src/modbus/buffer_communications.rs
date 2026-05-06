@@ -21,29 +21,21 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         Ok(())
     }
     #[maybe_async::maybe_async]
-    pub async fn read_buffer(&mut self, buffer: &mut [u8]) -> Result<(), JSYMk194Error> {
+    pub async fn read_buffer(&mut self, buffer: &mut [u8]) -> Result<usize, JSYMk194Error> {
         let bytes_read = self.serial.read(buffer).await?;
         println!(
             "[Modbus] Raw response bytes  :  {:02X?}",
             &buffer[..bytes_read]
         );
         if bytes_read == ModbusErrorResponse::ERROR_RESPONSE_HEADER_SIZE {
-            let error_code = ModbusErrorResponse::from_bytes(
-                &buffer[..ModbusErrorResponse::ERROR_RESPONSE_HEADER_SIZE],
-            )?
-            .error_code;
-            return Err(JSYMk194Error::DeviceError(error_code));
+            return Err(JSYMk194Error::ModBusDeviceError(
+                ModbusErrorResponse::from_bytes(&buffer[..bytes_read])?,
+            ));
         }
-        if bytes_read < buffer.len() {
-            return Err(JSYMk194Error::FailedToRead {
-                read: bytes_read,
-                expected: buffer.len(),
-            });
-        }
-        let (_, function_code) = extract_modbus_response_header(buffer)?;
+        let (_, function_code) = extract_modbus_response_header(&buffer[..bytes_read])?;
         if function_code.is_exception_response() {
             return Err(JSYMk194Error::DeviceErrorResponse(function_code));
         }
-        Ok(())
+        Ok(bytes_read)
     }
 }
