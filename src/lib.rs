@@ -16,17 +16,15 @@ pub mod units;
 
 #[cfg(all(feature = "sync", feature = "async"))]
 compile_error!("Choose only one of sync or async.");
-#[cfg(all(feature = "std", any(feature = "sync", feature = "async")))]
-compile_error!("Choose std OR embedded mode, not both.");
 
 /// Sync Based HAL Imports
 #[cfg(feature = "sync")]
 mod hal {
-    pub use embedded_hal::delay::DelayNs;
-    pub use embedded_io::Error;
-    pub use embedded_io::ErrorKind;
-    pub use embedded_io::Read;
-    pub use embedded_io::Write;
+    #[cfg(not(feature = "std"))]
+    pub use crate::no_std_hal::*;
+
+    #[cfg(feature = "std")]
+    pub use crate::std_hal::*;
 }
 
 /// Async Based HAL Imports
@@ -40,7 +38,7 @@ mod hal {
 }
 
 #[cfg(feature = "std")]
-mod hal {
+mod std_hal {
     pub use embedded_hal::delay::DelayNs;
     pub use std::io::{ErrorKind, Read, Write};
     pub trait Error {
@@ -52,4 +50,13 @@ mod hal {
             std::io::Error::kind(self)
         }
     }
+}
+
+#[cfg(all(not(feature = "std"), feature = "sync"))]
+mod no_std_hal {
+    pub use embedded_hal::delay::DelayNs;
+    pub use embedded_io::Error;
+    pub use embedded_io::ErrorKind;
+    pub use embedded_io::Read;
+    pub use embedded_io::Write;
 }
