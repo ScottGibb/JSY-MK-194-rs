@@ -70,8 +70,7 @@ impl TryFrom<u16> for RegisterAddress {
             0x0055 => Ok(RegisterAddress::SecondChannelNegativeActiveEnergy),
             0x000C => Ok(RegisterAddress::ClearEnergyCommand),
             _ => Err(JSYMk194Error::ConversionError(format!(
-                "Invalid Register Address: {:#06X}",
-                value
+                "Invalid Register Address: {value:#06X}"
             ))),
         }
     }

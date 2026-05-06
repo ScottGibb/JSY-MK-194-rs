@@ -6,7 +6,7 @@ use crate::{
 };
 
 // Always 8 Bytes
-struct ReadRequest {
+pub struct ReadRequest {
     device_address: Id,
     function_code: FunctionCode,
     starting_address: RegisterAddress,
@@ -47,7 +47,7 @@ impl ReadRequest {
     }
 }
 
-struct WriteRequest<'a> {
+pub struct WriteRequest<'a> {
     device_address: Id,
     function_code: FunctionCode,
     starting_address: RegisterAddress,
@@ -73,10 +73,10 @@ impl<'a> WriteRequest<'a> {
             )));
         }
         let byte_count = u8::try_from(register_data.len()).map_err(|err| {
-            JSYMk194Error::ConversionError(format!("Register data too large: {}", err))
+            JSYMk194Error::ConversionError(format!("Register data too large: {err}"))
         })?;
         let quantity_of_registers = u16::try_from(register_data.len() / 2).map_err(|err| {
-            JSYMk194Error::ConversionError(format!("Invalid register data length: {}", err))
+            JSYMk194Error::ConversionError(format!("Invalid register data length: {err}"))
         })?;
         let quantity_of_registers_bytes = quantity_of_registers.to_be_bytes();
 
@@ -98,7 +98,7 @@ impl<'a> WriteRequest<'a> {
             ]),
         })
     }
-    fn to_bytes(&self, buff: &mut [u8]) -> Result<(), JSYMk194Error> {
+    pub fn to_bytes(&self, buff: &mut [u8]) -> Result<(), JSYMk194Error> {
         if buff.len() < (7 + self.register_data.len()) {
             return Err(JSYMk194Error::ConversionError(format!(
                 "Buffer too small: expected at least {} bytes, got {} bytes",
