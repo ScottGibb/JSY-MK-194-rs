@@ -29,6 +29,7 @@ impl Register for PowerDirectionRegister {
         core::mem::size_of::<PowerDirection>() + core::mem::size_of::<PowerDirection>();
     const ADDRESS: RegisterAddress = RegisterAddress::PowerDirection;
 
+    //TODO: remove the panic and replace with a Result to handle errors gracefully
     fn from_bytes(bytes: &[u8]) -> Self {
         if bytes.len() != Self::NUM_BYTES {
             panic!("Invalid byte length for PowerDirectionRegister");
