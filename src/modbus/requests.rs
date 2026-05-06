@@ -5,7 +5,6 @@ use crate::{
     types::Id,
 };
 
-// Always 8 Bytes
 pub struct ReadRequest {
     device_address: Id,
     function_code: FunctionCode,
@@ -14,6 +13,7 @@ pub struct ReadRequest {
     crc: u16,
 }
 impl ReadRequest {
+    const REQUEST_SIZE: usize = 8; // Device address, function code, starting address (2 bytes), quantity of registers (2 bytes), and CRC (2 bytes)
     pub fn new(
         device_address: Id,
         starting_address: RegisterAddress,
@@ -36,8 +36,8 @@ impl ReadRequest {
             crc,
         }
     }
-    pub fn to_bytes(&self) -> [u8; 8] {
-        let mut buff = [0u8; 8];
+    pub fn to_bytes(&self) -> [u8; Self::REQUEST_SIZE] {
+        let mut buff = [0u8; Self::REQUEST_SIZE];
         buff[0] = self.device_address.clone().into();
         buff[1] = self.function_code.clone().into();
         buff[2..4].copy_from_slice(&u16::from(self.starting_address.clone()).to_be_bytes());
@@ -58,6 +58,7 @@ pub struct WriteRequest<'a> {
 }
 
 impl<'a> WriteRequest<'a> {
+    const HEADER_SIZE: usize = 7; // Device address, function code, starting address (2 bytes), quantity of registers (2 bytes), and byte count
     pub fn new(
         device_address: Id,
         starting_address: RegisterAddress,
@@ -99,10 +100,10 @@ impl<'a> WriteRequest<'a> {
         })
     }
     pub fn to_bytes(&self, buff: &mut [u8]) -> Result<(), JSYMk194Error> {
-        if buff.len() < (7 + self.register_data.len()) {
+        if buff.len() < (Self::HEADER_SIZE + self.register_data.len()) {
             return Err(JSYMk194Error::ConversionError(format!(
                 "Buffer too small: expected at least {} bytes, got {} bytes",
-                7 + self.register_data.len(),
+                Self::HEADER_SIZE + self.register_data.len(),
                 buff.len()
             )));
         }
