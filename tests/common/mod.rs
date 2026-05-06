@@ -1,9 +1,6 @@
 #![cfg(feature = "std")]
 
-use std::{
-    process::{ExitCode, exit},
-    time::Duration,
-};
+use std::time::Duration;
 
 use jsy_mk_194_rs::{
     jsy_mk_194g::JsyMk194g,
