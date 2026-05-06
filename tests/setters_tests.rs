@@ -215,7 +215,6 @@ mod energy_tests {
         assert_eq!(reset_active_energy, original_active_energy);
     }
 
-    // Also doesnt work Illegal Address
     #[test]
     fn test_set_second_channel_negative_active_energy() {
         let mut device = setup_device(Id::default(), Baudrate::default());
