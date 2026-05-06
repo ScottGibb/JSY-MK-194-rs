@@ -1,6 +1,6 @@
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
-use crate::registers::misc_registers::FrequencyRegister;
+use crate::registers::misc_registers::{FrequencyRegister, PowerDirection, PowerDirectionRegister};
 use crate::registers::system_configuration_paramater::{
     Baudrate, SystemConfigurationParamaterRegister,
 };
@@ -53,8 +53,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
 impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub async fn get_all_channels(&mut self) -> Result<Statistics, JSYMk194Error> {
-        let statistics = self.read_statistics().await?;
-        Ok(statistics)
+        unimplemented!()
     }
 
     #[maybe_async::maybe_async]
@@ -72,5 +71,16 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         let scaled_value = frequency_register.get_scaled_value();
 
         Ok(Frequency::new::<hertz>(scaled_value))
+    }
+    #[maybe_async::maybe_async]
+    pub async fn get_power_direction(
+        &mut self,
+        channel: Channel,
+    ) -> Result<PowerDirection, JSYMk194Error> {
+        let power_direction_register = self.read_register::<PowerDirectionRegister>().await?;
+        match channel {
+            Channel::One => Ok(power_direction_register.first_channel),
+            Channel::Two => Ok(power_direction_register.second_channel),
+        }
     }
 }

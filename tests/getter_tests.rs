@@ -23,12 +23,14 @@ fn fresh_channel_statistics() -> ChannelStatistics {
         active_power: Power::new::<watt>(0.0),
         positive_active_energy: Energy::new::<kilowatt_hour>(0.0),
         negative_active_energy: Energy::new::<kilowatt_hour>(0.0),
-        power_direction: PowerDirection::Negative,
         power_factor: 0.0,
+        power_direction: PowerDirection::Positive,
     }
 }
 
 mod fresh_device_tests {
+
+    use jsy_mk_194_rs::registers::misc_registers::PowerDirection;
 
     use super::*;
 
@@ -99,5 +101,22 @@ mod fresh_device_tests {
 
         assert_eq!(system_paramaters, SystemParameters::default())
     }
+
+    #[test]
+    fn get_power_direction_test() {
+        let mut device = setup_device(Id::default(), Baudrate::default());
+        let power_direction_channel_one = device
+            .get_power_direction(Channel::One)
+            .expect("This should not fail");
+        let power_direction_channel_two = device
+            .get_power_direction(Channel::Two)
+            .expect("This should not fail");
+        println!("Power Direction Channel One: {power_direction_channel_one:?}");
+        println!("Power Direction Channel Two: {power_direction_channel_two:?}");
+        // There is no default value for this register, so we can't assert against it. Just check that it can be read without error.
+        assert_eq!(power_direction_channel_one, PowerDirection::Positive);
+        assert_eq!(power_direction_channel_two, PowerDirection::Positive);
+    }
 }
+
 //TODO Add Mains Tests

@@ -10,21 +10,21 @@ pub struct ChannelStatistics {
     pub positive_active_energy: Energy,
     pub negative_active_energy: Energy,
 
-    pub power_direction: PowerDirection,
     pub power_factor: f32,
+
+    pub power_direction: PowerDirection,
 }
 
 impl core::fmt::Display for ChannelStatistics {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(
             f,
-            "Voltage: {} V, Current: {} A, Active Power: {} W, Positive Active Energy: {} kWh, Negative Active Energy: {} kWh, Power Direction: {:?}, Power Factor: {}",
+            "Voltage: {} V, Current: {} A, Active Power: {} W, Positive Active Energy: {} kWh, Negative Active Energy: {} kWh, Power Factor: {}",
             self.voltage.get::<volt>(),
             self.current.get::<ampere>(),
             self.active_power.get::<watt>(),
             self.positive_active_energy.get::<kilowatt_hour>(),
             self.negative_active_energy.get::<kilowatt_hour>(),
-            self.power_direction,
             self.power_factor
         )
     }
