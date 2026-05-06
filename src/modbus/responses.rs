@@ -20,6 +20,7 @@ pub struct ReadResponse<'a> {
     pub crc: u16,
 }
 impl<'a> ReadResponse<'a> {
+    const RESPONSE_FRONT_HEADER_SIZE: usize = 3; // Device address, function code, and byte count
     pub const RESPONSE_HEADER_SIZE: usize = 5; // Device address, function code, byte count, and CRC
     pub fn from_bytes(bytes: &'a [u8]) -> Result<Self, JSYMk194Error> {
         if bytes.len() < Self::RESPONSE_HEADER_SIZE {
@@ -30,24 +31,28 @@ impl<'a> ReadResponse<'a> {
         }
         let device_address = Id::new(bytes[0])?;
         let function_code = FunctionCode::try_from(bytes[1])?;
-        let byte_count = bytes[2];
-        if bytes.len() != (3 + byte_count as usize + 2) {
+        let byte_count = usize::from(bytes[2]);
+        if bytes.len() != (Self::RESPONSE_FRONT_HEADER_SIZE + byte_count + 2) {
             // 3 bytes for device address, function code, and byte count, plus byte_count bytes for register data, plus 2 bytes for CRC
             return Err(JSYMk194Error::FailedToRead {
                 read: bytes.len(),
-                expected: 3 + byte_count as usize + 2,
+                expected: Self::RESPONSE_FRONT_HEADER_SIZE + byte_count + 2,
             });
         }
-        let register_data = &bytes[3..(3 + byte_count as usize)];
+        let register_data = &bytes
+            [Self::RESPONSE_FRONT_HEADER_SIZE..(Self::RESPONSE_FRONT_HEADER_SIZE + byte_count)];
         let crc = u16::from_le_bytes([
-            bytes[3 + byte_count as usize],
-            bytes[4 + byte_count as usize],
+            bytes[Self::RESPONSE_FRONT_HEADER_SIZE + byte_count],
+            bytes[Self::RESPONSE_FRONT_HEADER_SIZE + byte_count + 1],
         ]);
-        validate_crc(&bytes[0..(3 + byte_count as usize)], crc)?;
+        validate_crc(
+            &bytes[0..(Self::RESPONSE_FRONT_HEADER_SIZE + byte_count)],
+            crc,
+        )?;
         Ok(Self {
             device_address,
             function_code,
-            byte_count,
+            byte_count: bytes[2],
             register_data,
             crc,
         })
