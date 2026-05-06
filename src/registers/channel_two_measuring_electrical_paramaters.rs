@@ -27,7 +27,7 @@ define_scaled_register!(
     SecondChannelActivePowerRegister,
     u32,
     RegisterAddress::SecondChannelActivePower,
-    scalars::POWER_FACTOR_SCALAR
+    scalars::POWER_SCALAR
 );
 impl ReadRegister for SecondChannelActivePowerRegister {}
 

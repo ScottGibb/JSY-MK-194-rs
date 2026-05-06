@@ -1,5 +1,6 @@
 pub const VOLTAGE_SCALAR: f32 = 10000.0;
 pub const CURRENT_SCALAR: f32 = 10000.0;
+pub const POWER_SCALAR: f32 = 10000.0;
 pub const POWER_FACTOR_SCALAR: f32 = 1000.0;
 pub const ENERGY_SCALAR: f32 = 10000.0;
 pub const FREQUENCY_SCALAR: f32 = 100.0;
