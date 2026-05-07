@@ -37,7 +37,7 @@ jsy-mk-194-rs = { version = "x.x", default-features = false, features = ["async"
 ## Why this crate
 
 - Multi-platform support via feature flags.
-- Sync and async operation modes.
+- `sync` and `async` operation modes.
 - Strongly typed measurements using uom (units of measurement), so APIs return quantities like voltage, current, frequency, and energy as typed values instead of raw floats.
 
 ## Feature flags
