@@ -13,6 +13,13 @@ use crate::registers::system_configuration_paramater::{
 use crate::types::Channel;
 use crate::units::*;
 impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
+    /// Sets the baud rate of the device.
+    ///
+    /// This method intentionally consumes `self` because changing the baud rate
+    /// invalidates the current driver instance — the underlying serial connection
+    /// is now configured at the wrong speed. To communicate with the device again,
+    /// you must reconstruct the driver with a new serial port opened at the updated
+    /// baud rate.
     #[maybe_async::maybe_async]
     pub async fn set_baudrate(mut self, baudrate: Baudrate) -> Result<(), JSYMk194Error> {
         let previous_register = self
