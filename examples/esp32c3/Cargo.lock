@@ -938,7 +938,7 @@ dependencies = [
 
 [[package]]
 name = "jsy-mk-194-rs"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "defmt 1.0.1",
  "embedded-hal-async",
