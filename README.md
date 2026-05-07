@@ -71,20 +71,6 @@ Run tests in std-sync mode explicitly:
 cargo test --features std-sync -- --test-threads=1
 ```
 
-## Build modes
-
-Default build:
-
-```bash
-cargo build
-```
-
-`no_std` `async` build:
-
-```bash
-cargo build --no-default-features --features async
-```
-
 ## Useful Links
 
 - [JSY-MK-194 Module](https://www.aliexpress.com/item/1005007369940517.html#nav-review)
