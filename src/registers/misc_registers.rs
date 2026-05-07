@@ -34,7 +34,7 @@ impl Register for PowerDirectionRegister {
         if bytes.len() != Self::NUM_BYTES {
             return Err(JSYMk194Error::ConversionError(
                 ConversionError::InvalidRegisterDataLength {
-                    length: bytes.len(),
+                    given_length: bytes.len(),
                     address: Self::ADDRESS,
                 },
             ));
@@ -51,7 +51,7 @@ impl Register for PowerDirectionRegister {
         if bytes.len() < Self::NUM_BYTES {
             return Err(JSYMk194Error::ConversionError(
                 ConversionError::InvalidRegisterDataLength {
-                    length: bytes.len(),
+                    given_length: bytes.len(),
                     address: Self::ADDRESS,
                 },
             ));

@@ -70,7 +70,7 @@ impl<'a> WriteRequest<'a> {
         if register_data.len() % 2 != 0 {
             return Err(JSYMk194Error::ConversionError(
                 ConversionError::InvalidRegisterDataLength {
-                    length: register_data.len(),
+                    given_length: register_data.len(),
                     address: starting_address.clone(),
                 },
             ));
@@ -105,7 +105,7 @@ impl<'a> WriteRequest<'a> {
         if buff.len() < (Self::HEADER_SIZE + self.register_data.len()) {
             return Err(JSYMk194Error::ConversionError(
                 ConversionError::InvalidRegisterDataLength {
-                    length: buff.len(),
+                    given_length: buff.len(),
                     address: self.starting_address.clone(),
                 },
             ));

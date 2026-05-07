@@ -45,7 +45,7 @@ macro_rules! define_register {
             fn try_from_bytes(bytes: &[u8]) -> Result<Self, $crate::error::JSYMk194Error> {
                 if bytes.len() != core::mem::size_of::<$data_type>() {
                     return Err($crate::error::JSYMk194Error::ConversionError($crate::error::ConversionError::InvalidRegisterDataLength {
-                        length: bytes.len(),
+                        given_length: bytes.len(),
                         address: Self::ADDRESS,
                     }));
                 }
@@ -58,7 +58,7 @@ macro_rules! define_register {
                 if bytes.len() < data_bytes.len() {
                     return Err($crate::error::JSYMk194Error::ConversionError(
                         $crate::error::ConversionError::InvalidRegisterDataLength {
-                            length: bytes.len(),
+                            given_length: bytes.len(),
                             address: Self::ADDRESS,
                         },
                     ));
@@ -114,7 +114,7 @@ macro_rules! define_scaled_register {
             fn try_from_bytes(bytes: &[u8]) -> Result<Self, $crate::error::JSYMk194Error> {
                 if bytes.len() != core::mem::size_of::<$data_type>() {
                     return Err($crate::error::JSYMk194Error::ConversionError($crate::error::ConversionError::InvalidRegisterDataLength {
-                        length: bytes.len(),
+                        given_length: bytes.len(),
                         address: Self::ADDRESS,
                     }));
                 }
@@ -125,7 +125,7 @@ macro_rules! define_scaled_register {
             fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), $crate::error::JSYMk194Error> {
                 if bytes.len() != core::mem::size_of::<$data_type>() {
                     return Err($crate::error::JSYMk194Error::ConversionError($crate::error::ConversionError::InvalidRegisterDataLength {
-                        length: bytes.len(),
+                        given_length: bytes.len(),
                         address: Self::ADDRESS,
                     }));
                 }

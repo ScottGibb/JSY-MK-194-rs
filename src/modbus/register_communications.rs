@@ -60,7 +60,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             _ => {
                 return Err(JSYMk194Error::ConversionError(
                     ConversionError::InvalidRegisterDataLength {
-                        length: register.num_bytes(),
+                        given_length: register.num_bytes(),
                         address: register.address(),
                     },
                 ));
