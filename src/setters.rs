@@ -14,7 +14,7 @@ use crate::types::Channel;
 use crate::units::*;
 impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
-    pub async fn set_baudrate(&mut self, baudrate: Baudrate) -> Result<(), JSYMk194Error> {
+    pub async fn set_baudrate(mut self, baudrate: Baudrate) -> Result<(), JSYMk194Error> {
         let previous_register = self
             .read_register::<SystemConfigurationParameterRegister>()
             .await?;
