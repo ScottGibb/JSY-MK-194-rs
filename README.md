@@ -51,7 +51,7 @@ Only one runtime mode should be enabled at a time:
 
 ## Run examples
 
-The repository currently includes examples in the [examples](./examples/) directory.
+The repository currently includes examples in the [examples](./examples/) directory. There is also an ESP32C3 example using embassy.
 
 You can run them like so:
 
