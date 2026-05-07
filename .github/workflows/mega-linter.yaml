@@ -174,7 +174,7 @@ jobs:
         uses: Swatinem/rust-cache@v2
       - name: Run fmt check
         run: cargo fmt --all -- --check
-        
+
   ESP32C3_Example:
     name: Lint ESP32C3 Example
     runs-on: ubuntu-latest
