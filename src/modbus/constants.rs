@@ -18,7 +18,7 @@ pub const MODBUS_DEVICE_ADDRESS_OFFSET: usize = 0;
 pub const MODBUS_FUNCTION_CODE_OFFSET: usize = 1;
 pub const MODBUS_ERROR_CODE_OFFSET: usize = 2;
 
-/// Number of bytes to be expected when doing multi register reads
+// Number of bytes to be expected when doing multi register reads
 
 pub const NUM_CHANNEL_ONE_READ_BYTES: usize = FirstChannelVoltageRegister::NUM_BYTES
     + FirstChannelCurrentRegister::NUM_BYTES

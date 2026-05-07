@@ -55,10 +55,6 @@ pub fn find_device_test() {
                     match device.get_id() {
                         Ok(id) => {
                             println!("Found device with baudrate {new_baud:?} and id {id:?}");
-                            assert!(
-                                true,
-                                "Found device with baudrate {new_baud:?} and id {id:?}"
-                            );
                             //Reset the device
                             println!("Resetting device id and baudrate to default");
                             device
