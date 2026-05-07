@@ -73,7 +73,6 @@ jobs:
       - name: Build with advanced feature
         run: cargo build --no-default-features --features "std-sync advanced"
 
-  
   build-esp32c3:
     name: Build for ESP32-C3 target
     runs-on: ubuntu-latest
