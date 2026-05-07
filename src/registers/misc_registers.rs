@@ -57,8 +57,8 @@ impl Register for PowerDirectionRegister {
             ));
         }
 
-        let first_channel_bytes = (u16::from(self.first_channel.clone())).to_le_bytes();
-        let second_channel_bytes = (u16::from(self.second_channel.clone())).to_le_bytes();
+        let first_channel_bytes = (u16::from(self.first_channel.clone())).to_be_bytes();
+        let second_channel_bytes = (u16::from(self.second_channel.clone())).to_be_bytes();
         bytes[0] = first_channel_bytes[0];
         bytes[1] = first_channel_bytes[1];
         bytes[2] = second_channel_bytes[0];
