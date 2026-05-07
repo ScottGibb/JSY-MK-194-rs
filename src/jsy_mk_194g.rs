@@ -18,11 +18,13 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub async fn new_default(serial: Serial, delay: D) -> Result<Self, JSYMk194Error> {
         // Check if device is on the bus
-        let device = Self {
+        let mut device = Self {
             serial,
             device_address: Id::default(),
             delay,
         };
+        // Check if we can get the ID
+        device.get_id()?;
         Ok(device)
     }
 }
