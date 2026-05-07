@@ -8,7 +8,7 @@ use crate::registers::channel_two_measuring_electrical_paramaters::{
     SecondChannelNegativeActiveEnergyRegister, SecondChannelPositiveActiveEnergyRegister,
 };
 use crate::registers::system_configuration_paramater::{
-    Baudrate, Id, SystemConfigurationParamaterRegister,
+    Baudrate, Id, SystemConfigurationParameterRegister,
 };
 use crate::types::Channel;
 use crate::units::*;
@@ -16,9 +16,9 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub async fn set_baudrate(&mut self, baudrate: Baudrate) -> Result<(), JSYMk194Error> {
         let previous_register = self
-            .read_register::<SystemConfigurationParamaterRegister>()
+            .read_register::<SystemConfigurationParameterRegister>()
             .await?;
-        let register = SystemConfigurationParamaterRegister {
+        let register = SystemConfigurationParameterRegister {
             baudrate,
             id: previous_register.id, // Keep the same ID as the previous register
         };
@@ -29,9 +29,9 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub async fn set_id(&mut self, id: Id) -> Result<(), JSYMk194Error> {
         let previous_register = self
-            .read_register::<SystemConfigurationParamaterRegister>()
+            .read_register::<SystemConfigurationParameterRegister>()
             .await?;
-        let register = SystemConfigurationParamaterRegister {
+        let register = SystemConfigurationParameterRegister {
             baudrate: previous_register.baudrate, // Keep the same baudrate as the previous register
             id: id.clone(),                       // Use the new ID provided as an argument
         };

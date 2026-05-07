@@ -17,7 +17,7 @@ mod configuration_tests {
             let mut device = setup_device(Id::default(), Baudrate::default());
 
             let original_id = device
-            .read_register::<jsy_mk_194_rs::registers::system_configuration_paramater::SystemConfigurationParamaterRegister>()
+            .read_register::<jsy_mk_194_rs::registers::system_configuration_paramater::SystemConfigurationParameterRegister>()
             .expect("Failed to read System Configuration register")
             .id;
             println!("Original ID: {original_id:?}");
@@ -42,7 +42,7 @@ mod configuration_tests {
             let mut device = setup_device(Id::default(), Baudrate::default());
 
             let original_baudrate = device
-                .read_register::<jsy_mk_194_rs::registers::system_configuration_paramater::SystemConfigurationParamaterRegister>()
+                .read_register::<jsy_mk_194_rs::registers::system_configuration_paramater::SystemConfigurationParameterRegister>()
                 .expect("Failed to read System Configuration register")
                 .baudrate;
             println!("Original Baudrate: {original_baudrate:?}");

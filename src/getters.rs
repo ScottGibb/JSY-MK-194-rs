@@ -2,7 +2,7 @@ use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
 use crate::registers::misc_registers::{FrequencyRegister, PowerDirection, PowerDirectionRegister};
 use crate::registers::system_configuration_paramater::{
-    Baudrate, SystemConfigurationParamaterRegister,
+    Baudrate, SystemConfigurationParameterRegister,
 };
 use crate::registers::system_paramaters::{
     CurrentRangeRegister, ModelOneRegister, VoltageRangeRegister,
@@ -17,7 +17,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub async fn get_id(&mut self) -> Result<Id, JSYMk194Error> {
         let configuration_register = self
-            .read_register::<SystemConfigurationParamaterRegister>()
+            .read_register::<SystemConfigurationParameterRegister>()
             .await?;
         let id = configuration_register.id;
         Ok(id)
@@ -25,7 +25,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub async fn get_baudrate(&mut self) -> Result<Baudrate, JSYMk194Error> {
         let configuration_register = self
-            .read_register::<SystemConfigurationParamaterRegister>()
+            .read_register::<SystemConfigurationParameterRegister>()
             .await?;
         let baudrate = configuration_register.baudrate;
         Ok(baudrate)

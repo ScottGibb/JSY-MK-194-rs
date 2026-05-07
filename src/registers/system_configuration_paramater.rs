@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[derive(Debug, PartialEq, Default)]
-pub struct SystemConfigurationParamaterRegister {
+pub struct SystemConfigurationParameterRegister {
     pub id: Id,
     pub baudrate: Baudrate,
 }
@@ -105,7 +105,7 @@ impl From<Baudrate> for u32 {
     }
 }
 
-impl Register for SystemConfigurationParamaterRegister {
+impl Register for SystemConfigurationParameterRegister {
     const NUM_BYTES: usize = core::mem::size_of::<u8>() + core::mem::size_of::<Baudrate>();
     const ADDRESS: RegisterAddress = RegisterAddress::SystemConfigurationParameter;
 
@@ -138,5 +138,5 @@ impl Register for SystemConfigurationParamaterRegister {
     }
 }
 
-impl ReadRegister for SystemConfigurationParamaterRegister {}
-impl WriteRegister for SystemConfigurationParamaterRegister {}
+impl ReadRegister for SystemConfigurationParameterRegister {}
+impl WriteRegister for SystemConfigurationParameterRegister {}
