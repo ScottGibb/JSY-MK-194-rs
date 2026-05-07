@@ -4,7 +4,7 @@ use crate::{
     jsy_mk_194g::JsyMk194g,
     modbus::{
         constants::{
-            NUM_ALL_CHANNELS_READ_BYTES, NUM_CHANNEL_ONE_READ_BYTES, NUM_CHANNEL_TWO_READ_BYTES,
+            ALL_CHANNELS_NUM_READ_BYTES, CHANNEL_ONE_NUM_READ_BYTES, CHANNEL_TWO_NUM_READ_BYTES,
         },
         protocol::CHANNEL_REQUEST_RESPONSE_DELAY,
         requests::ReadRequest,
@@ -61,16 +61,16 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         if bytes_read
             < ReadResponse::RESPONSE_SIZE
                 + match channel {
-                    Channel::One => NUM_CHANNEL_ONE_READ_BYTES,
-                    Channel::Two => NUM_CHANNEL_TWO_READ_BYTES,
+                    Channel::One => CHANNEL_ONE_NUM_READ_BYTES,
+                    Channel::Two => CHANNEL_TWO_NUM_READ_BYTES,
                 }
         {
             return Err(JSYMk194Error::FailedToRead {
                 read: bytes_read,
                 expected: ReadResponse::RESPONSE_SIZE
                     + match channel {
-                        Channel::One => NUM_CHANNEL_ONE_READ_BYTES,
-                        Channel::Two => NUM_CHANNEL_TWO_READ_BYTES,
+                        Channel::One => CHANNEL_ONE_NUM_READ_BYTES,
+                        Channel::Two => CHANNEL_TWO_NUM_READ_BYTES,
                     },
             });
         }
@@ -186,10 +186,10 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         let read_response = ReadResponse::from_bytes(&response_buff[..bytes_read])?;
 
         // Check if bytes read are enough to contain the registers we expect to read
-        if bytes_read < ReadResponse::RESPONSE_SIZE + NUM_ALL_CHANNELS_READ_BYTES {
+        if bytes_read < ReadResponse::RESPONSE_SIZE + ALL_CHANNELS_NUM_READ_BYTES {
             return Err(JSYMk194Error::FailedToRead {
                 read: bytes_read,
-                expected: ReadResponse::RESPONSE_SIZE + NUM_ALL_CHANNELS_READ_BYTES, // 56 bytes for the 14 registers we expect to read (4 bytes each)
+                expected: ReadResponse::RESPONSE_SIZE + ALL_CHANNELS_NUM_READ_BYTES, // 56 bytes for the 14 registers we expect to read (4 bytes each)
             });
         }
         self.extract_statistics_from_response(read_response)

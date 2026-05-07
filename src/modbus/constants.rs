@@ -20,21 +20,21 @@ pub const MODBUS_ERROR_CODE_OFFSET: usize = 2;
 
 // Number of bytes to be expected when doing multi register reads
 
-pub const NUM_CHANNEL_ONE_READ_BYTES: usize = FirstChannelVoltageRegister::NUM_BYTES
+pub const CHANNEL_ONE_NUM_READ_BYTES: usize = FirstChannelVoltageRegister::NUM_BYTES
     + FirstChannelCurrentRegister::NUM_BYTES
     + FirstChannelActivePowerRegister::NUM_BYTES
     + FirstChannelPositiveActiveEnergyRegister::NUM_BYTES
     + FirstChannelPowerFactorRegister::NUM_BYTES
     + FirstChannelNegativeActiveEnergyRegister::NUM_BYTES;
 
-pub const NUM_CHANNEL_TWO_READ_BYTES: usize = SecondChannelVoltageRegister::NUM_BYTES
+pub const CHANNEL_TWO_NUM_READ_BYTES: usize = SecondChannelVoltageRegister::NUM_BYTES
     + SecondChannelCurrentRegister::NUM_BYTES
     + SecondChannelActivePowerRegister::NUM_BYTES
     + SecondChannelPositiveActiveEnergyRegister::NUM_BYTES
     + SecondChannelPowerFactorRegister::NUM_BYTES
     + SecondChannelNegativeActiveEnergyRegister::NUM_BYTES;
 
-pub const NUM_ALL_CHANNELS_READ_BYTES: usize = NUM_CHANNEL_ONE_READ_BYTES
-    + NUM_CHANNEL_TWO_READ_BYTES
+pub const ALL_CHANNELS_NUM_READ_BYTES: usize = CHANNEL_ONE_NUM_READ_BYTES
+    + CHANNEL_TWO_NUM_READ_BYTES
     + PowerDirectionRegister::NUM_BYTES
     + FrequencyRegister::NUM_BYTES;
