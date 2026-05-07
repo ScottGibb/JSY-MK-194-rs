@@ -21,7 +21,7 @@ use crate::{
             SecondChannelNegativeActiveEnergyRegister, SecondChannelPositiveActiveEnergyRegister,
             SecondChannelPowerFactorRegister, SecondChannelVoltageRegister,
         },
-        misc_registers::{FrequencyRegister, PowerDirection, PowerDirectionRegister},
+        misc_registers::{FrequencyRegister, PowerDirectionRegister},
         traits::Register,
     },
     types::{Channel, ChannelStatistics, Statistics},
