@@ -118,10 +118,8 @@ impl Register for SystemConfigurationParamaterRegister {
                 },
             ));
         }
-        let id = Id::new(bytes[0])
-            .map_err(|_| JSYMk194Error::ConversionError(ConversionError::InvalidValue))?;
-        let baudrate = Baudrate::try_from(bytes[1])
-            .map_err(|_| JSYMk194Error::ConversionError(ConversionError::InvalidValue))?;
+        let id = Id::new(bytes[0])?;
+        let baudrate = Baudrate::try_from(bytes[1])?;
         Ok(Self { id, baudrate })
     }
 
