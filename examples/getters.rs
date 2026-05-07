@@ -2,7 +2,7 @@
 
 #[cfg(not(feature = "std-sync"))]
 fn main() {
-    println!("This example needs std enabled");
+    println!("This example needs std-sync enabled");
 }
 
 #[cfg(feature = "std-sync")]
