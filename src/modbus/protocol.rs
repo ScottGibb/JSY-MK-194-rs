@@ -3,7 +3,7 @@ use core::time::Duration;
 use crate::{
     error::JSYMk194Error,
     modbus::{
-        offsets::{MODBUS_DEVICE_ADDRESS_OFFSET, MODBUS_FUNCTION_CODE_OFFSET},
+        constants::{MODBUS_DEVICE_ADDRESS_OFFSET, MODBUS_FUNCTION_CODE_OFFSET},
         types::FunctionCode,
     },
     registers::system_configuration_paramater::Id,

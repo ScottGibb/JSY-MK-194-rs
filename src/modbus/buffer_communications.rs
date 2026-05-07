@@ -27,7 +27,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         //     "[Modbus] Raw response bytes  :  {:02X?}",
         //     &buffer[..bytes_read]
         // );
-        if bytes_read == ModbusErrorResponse::ERROR_RESPONSE_HEADER_SIZE {
+        if bytes_read == ModbusErrorResponse::RESPONSE_SIZE {
             return Err(JSYMk194Error::ModBusDeviceError(
                 ModbusErrorResponse::from_bytes(&buffer[..bytes_read])?,
             ));

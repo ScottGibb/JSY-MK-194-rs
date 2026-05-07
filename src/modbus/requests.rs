@@ -58,7 +58,8 @@ pub struct WriteRequest<'a> {
 }
 
 impl<'a> WriteRequest<'a> {
-    const HEADER_SIZE: usize = 7; // Device address, function code, starting address (2 bytes), quantity of registers (2 bytes), and byte count
+    const REQUEST_SIZE: usize = 7; // Device address, function code, starting address (2 bytes), quantity of registers (2 bytes), and byte count
+    const HEADER_SIZE: usize = Self::REQUEST_SIZE + 2; // Device address, function code, starting address (2 bytes), quantity of registers (2 bytes), and byte count plus CRC (2 bytes)
     pub fn new(
         device_address: Id,
         starting_address: RegisterAddress,
@@ -114,9 +115,11 @@ impl<'a> WriteRequest<'a> {
         buff[2..4].copy_from_slice(&u16::from(self.starting_address.clone()).to_be_bytes());
         buff[4..6].copy_from_slice(&self.quantity_of_registers.to_be_bytes());
         buff[6] = self.byte_count;
-        buff[7..(7 + self.register_data.len())].copy_from_slice(self.register_data);
-        let crc = calculate_crc(&buff[0..(7 + self.register_data.len())]);
-        buff[(7 + self.register_data.len())..(7 + self.register_data.len() + 2)]
+        buff[7..(Self::REQUEST_SIZE + self.register_data.len())]
+            .copy_from_slice(self.register_data);
+        let crc = calculate_crc(&buff[0..(Self::REQUEST_SIZE + self.register_data.len())]);
+        buff[(Self::REQUEST_SIZE + self.register_data.len())
+            ..(Self::REQUEST_SIZE + self.register_data.len() + 2)]
             .copy_from_slice(&crc.to_le_bytes());
         Ok(())
     }

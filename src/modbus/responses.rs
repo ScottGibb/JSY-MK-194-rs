@@ -2,7 +2,7 @@ use crate::{
     error::JSYMk194Error,
     modbus::{
         ErrorCode,
-        offsets::{
+        constants::{
             MODBUS_DEVICE_ADDRESS_OFFSET, MODBUS_ERROR_CODE_OFFSET, MODBUS_FUNCTION_CODE_OFFSET,
         },
         protocol::validate_crc,
@@ -20,35 +20,31 @@ pub struct ReadResponse<'a> {
     pub crc: u16,
 }
 impl<'a> ReadResponse<'a> {
-    const RESPONSE_FRONT_HEADER_SIZE: usize = 3; // Device address, function code, and byte count
-    pub const RESPONSE_HEADER_SIZE: usize = 5; // Device address, function code, byte count, and CRC
+    const FRONT_HEADER_SIZE: usize = 3; // Device address, function code, and byte count
+    pub const RESPONSE_SIZE: usize = 5; // Device address, function code, byte count, and CRC
     pub fn from_bytes(bytes: &'a [u8]) -> Result<Self, JSYMk194Error> {
-        if bytes.len() < Self::RESPONSE_HEADER_SIZE {
+        if bytes.len() < Self::RESPONSE_SIZE {
             return Err(JSYMk194Error::FailedToRead {
                 read: bytes.len(),
-                expected: Self::RESPONSE_HEADER_SIZE,
+                expected: Self::RESPONSE_SIZE,
             });
         }
         let device_address = Id::new(bytes[0])?;
         let function_code = FunctionCode::try_from(bytes[1])?;
         let byte_count = usize::from(bytes[2]);
-        if bytes.len() != (Self::RESPONSE_FRONT_HEADER_SIZE + byte_count + 2) {
+        if bytes.len() != (Self::FRONT_HEADER_SIZE + byte_count + 2) {
             // 3 bytes for device address, function code, and byte count, plus byte_count bytes for register data, plus 2 bytes for CRC
             return Err(JSYMk194Error::FailedToRead {
                 read: bytes.len(),
-                expected: Self::RESPONSE_FRONT_HEADER_SIZE + byte_count + 2,
+                expected: Self::FRONT_HEADER_SIZE + byte_count + 2,
             });
         }
-        let register_data = &bytes
-            [Self::RESPONSE_FRONT_HEADER_SIZE..(Self::RESPONSE_FRONT_HEADER_SIZE + byte_count)];
+        let register_data = &bytes[Self::FRONT_HEADER_SIZE..(Self::FRONT_HEADER_SIZE + byte_count)];
         let crc = u16::from_le_bytes([
-            bytes[Self::RESPONSE_FRONT_HEADER_SIZE + byte_count],
-            bytes[Self::RESPONSE_FRONT_HEADER_SIZE + byte_count + 1],
+            bytes[Self::FRONT_HEADER_SIZE + byte_count],
+            bytes[Self::FRONT_HEADER_SIZE + byte_count + 1],
         ]);
-        validate_crc(
-            &bytes[0..(Self::RESPONSE_FRONT_HEADER_SIZE + byte_count)],
-            crc,
-        )?;
+        validate_crc(&bytes[0..(Self::FRONT_HEADER_SIZE + byte_count)], crc)?;
         Ok(Self {
             device_address,
             function_code,
@@ -71,7 +67,7 @@ impl WriteResponse {
     pub const RESPONSE_SIZE: usize = 8;
 
     pub fn from_bytes(bytes: &[u8]) -> Result<Self, JSYMk194Error> {
-        if bytes.len() == ModbusErrorResponse::ERROR_RESPONSE_HEADER_SIZE {
+        if bytes.len() == ModbusErrorResponse::RESPONSE_SIZE {
             let error_response = ModbusErrorResponse::from_bytes(bytes)?;
             return Err(JSYMk194Error::ModBusDeviceError(error_response));
         }
@@ -107,9 +103,9 @@ pub struct ModbusErrorResponse {
 }
 
 impl ModbusErrorResponse {
-    pub const ERROR_RESPONSE_HEADER_SIZE: usize = 5;
+    pub const RESPONSE_SIZE: usize = 5;
     pub fn from_bytes(bytes: &[u8]) -> Result<Self, JSYMk194Error> {
-        if bytes.len() != Self::ERROR_RESPONSE_HEADER_SIZE {
+        if bytes.len() != Self::RESPONSE_SIZE {
             return Err(JSYMk194Error::InvalidHeader);
         }
         let crc = u16::from_le_bytes([bytes[bytes.len() - 2], bytes[bytes.len() - 1]]);

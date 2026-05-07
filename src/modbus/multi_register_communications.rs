@@ -3,7 +3,12 @@ use crate::{
     hal::*,
     jsy_mk_194g::JsyMk194g,
     modbus::{
-        protocol::CHANNEL_REQUEST_RESPONSE_DELAY, requests::ReadRequest, responses::ReadResponse,
+        constants::{
+            NUM_ALL_CHANNELS_READ_BYTES, NUM_CHANNEL_ONE_READ_BYTES, NUM_CHANNEL_TWO_READ_BYTES,
+        },
+        protocol::CHANNEL_REQUEST_RESPONSE_DELAY,
+        requests::ReadRequest,
+        responses::ReadResponse,
     },
     registers::{
         channel_one_measuring_electrical_paramaters::{
@@ -53,10 +58,20 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         let bytes_read = self.read_buffer(&mut response_buff).await?;
         let read_response = ReadResponse::from_bytes(&response_buff[..bytes_read])?;
         // Check if bytes read are enough to contain the registers we expect to read
-        if bytes_read < ReadResponse::RESPONSE_HEADER_SIZE + 12 {
+        if bytes_read
+            < ReadResponse::RESPONSE_SIZE
+                + match channel {
+                    Channel::One => NUM_CHANNEL_ONE_READ_BYTES,
+                    Channel::Two => NUM_CHANNEL_TWO_READ_BYTES,
+                }
+        {
             return Err(JSYMk194Error::FailedToRead {
                 read: bytes_read,
-                expected: ReadResponse::RESPONSE_HEADER_SIZE + 12, // 14 bytes for the 6 registers we expect to read (2 bytes each)
+                expected: ReadResponse::RESPONSE_SIZE
+                    + match channel {
+                        Channel::One => NUM_CHANNEL_ONE_READ_BYTES,
+                        Channel::Two => NUM_CHANNEL_TWO_READ_BYTES,
+                    },
             });
         }
 
@@ -120,10 +135,10 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         let read_response = ReadResponse::from_bytes(&response_buff[..bytes_read])?;
 
         // Check if bytes read are enough to contain the registers we expect to read
-        if bytes_read < ReadResponse::RESPONSE_HEADER_SIZE + 28 {
+        if bytes_read < ReadResponse::RESPONSE_SIZE + NUM_ALL_CHANNELS_READ_BYTES {
             return Err(JSYMk194Error::FailedToRead {
                 read: bytes_read,
-                expected: ReadResponse::RESPONSE_HEADER_SIZE + 28, // 28 bytes for the 14 registers we expect to read (2 bytes each)
+                expected: ReadResponse::RESPONSE_SIZE + NUM_ALL_CHANNELS_READ_BYTES, // 56 bytes for the 14 registers we expect to read (4 bytes each)
             });
         }
         self.extract_statistics_from_response(read_response)

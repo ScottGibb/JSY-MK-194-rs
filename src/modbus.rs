@@ -1,6 +1,6 @@
 mod buffer_communications;
+mod constants;
 mod multi_register_communications;
-mod offsets;
 mod protocol;
 mod register_communications;
 mod requests;
