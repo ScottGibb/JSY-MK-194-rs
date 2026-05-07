@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0](https://github.com/ScottGibb/JSY-MK-194-rs/compare/v0.0.1...v0.1.0) - 2026-05-07
+
+### Added
+
+- add defmt support and esp32c3 example
+
+### Fixed
+
+- *(docs)* changelog
+- defmt feature flag
+- update examples lock
+
+### Other
+
+- add esp32c3
+- release v0.1
+- add lint checks to example and library
+- add esp32 example
+
 ## [0.0.1](https://github.com/ScottGibb/JSY-MK-194-rs/compare/v0.0.0...v0.0.1) - 2026-05-07
 
 ### Added
