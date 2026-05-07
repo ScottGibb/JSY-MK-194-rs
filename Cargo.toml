@@ -9,9 +9,10 @@ repository = "https://github.com/ScottGibb/jsy-mk-194-rs"
 rust-version = "1.85.1"
 
 [features]
-default = ["std", "sync"]
+default = ["std-sync"]
+
 # Required embedded-hal for the Delay construct
-std = ["maybe-async/is_sync", "dep:embedded-hal"]
+std-sync = ["maybe-async/is_sync", "dep:embedded-hal"]
 
 
 sync = ["maybe-async/is_sync", "dep:embedded-io", "dep:embedded-hal"]

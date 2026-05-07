@@ -53,7 +53,7 @@ jobs:
         run: cargo build --no-default-features --features "async defmt"
 
   build-std:
-    name: Build with build-std feature
+    name: Build with std-sync feature
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -69,8 +69,7 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Build
-        run: cargo build --no-default-features --features "std sync"
+        run: cargo build --no-default-features --features "std-sync"
       - name: Build with advanced feature
-        run: cargo build --no-default-features --features "std sync advanced"
-      - name: Build with defmt feature
-        run: cargo build --no-default-features --features "std sync defmt"
+        run: cargo build --no-default-features --features "std-sync advanced"
+
