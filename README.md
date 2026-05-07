@@ -9,6 +9,31 @@
 
 Rust driver for the JSY MK-194 power monitor IC, designed for both desktop and embedded environments. Using `embedded-io` and `embedded-io-async` traits, allowing for true cross platform enablement.
 
+## Add to Cargo.toml
+
+Choose one runtime mode feature to work with in your application.
+
+`sync` mode example:
+
+```toml
+[dependencies]
+jsy-mk-194-rs = { version = "x.x", default-features = false, features = ["sync"] }
+```
+
+`std-sync` (default) mode example:
+
+```toml
+[dependencies]
+jsy-mk-194-rs = { version = "x.x", features = ["std-sync"] }
+```
+
+`async` mode example:
+
+```toml
+[dependencies]
+jsy-mk-194-rs = { version = "x.x", default-features = false, features = ["async"] }
+```
+
 ## Why this crate
 
 - Multi-platform support via feature flags.
