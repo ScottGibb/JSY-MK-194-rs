@@ -42,10 +42,16 @@ macro_rules! define_register {
         impl $crate::registers::traits::Register for $name {
             const ADDRESS: $crate::registers::RegisterAddress = $address;
             const NUM_BYTES: usize = core::mem::size_of::<$data_type>();
-            fn from_bytes(bytes: &[u8]) -> Self {
+            fn try_from_bytes(bytes: &[u8]) -> Result<Self, $crate::error::JSYMk194Error> {
+                if bytes.len() != core::mem::size_of::<$data_type>() {
+                    return Err($crate::error::JSYMk194Error::ConversionError($crate::error::ConversionError::InvalidRegisterDataLength {
+                        length: bytes.len(),
+                        address: Self::ADDRESS,
+                    }));
+                }
                 let mut arr = [0u8; core::mem::size_of::<$data_type>()];
                 arr.copy_from_slice(bytes);
-                Self(<$data_type>::from_be_bytes(arr))
+                Ok(Self(<$data_type>::from_be_bytes(arr)))
             }
             fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), $crate::error::JSYMk194Error> {
                 let data_bytes = self.0.to_be_bytes();
@@ -105,10 +111,16 @@ macro_rules! define_scaled_register {
         impl $crate::registers::traits::Register for $name {
             const ADDRESS: $crate::registers::RegisterAddress = $address;
             const NUM_BYTES: usize = core::mem::size_of::<$data_type>();
-            fn from_bytes(bytes: &[u8]) -> Self {
+            fn try_from_bytes(bytes: &[u8]) -> Result<Self, $crate::error::JSYMk194Error> {
+                if bytes.len() != core::mem::size_of::<$data_type>() {
+                    return Err($crate::error::JSYMk194Error::ConversionError($crate::error::ConversionError::InvalidRegisterDataLength {
+                        length: bytes.len(),
+                        address: Self::ADDRESS,
+                    }));
+                }
                 let mut arr = [0u8; core::mem::size_of::<$data_type>()];
-                arr.copy_from_slice(bytes); //TODO:  can cause run time panic fix this
-                Self(<$data_type>::from_be_bytes(arr))
+                arr.copy_from_slice(bytes);
+                Ok(Self(<$data_type>::from_be_bytes(arr)))
             }
             fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), $crate::error::JSYMk194Error> {
                 if bytes.len() != core::mem::size_of::<$data_type>() {

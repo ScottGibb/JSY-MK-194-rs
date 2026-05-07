@@ -109,14 +109,20 @@ impl Register for SystemConfigurationParamaterRegister {
     const NUM_BYTES: usize = core::mem::size_of::<u8>() + core::mem::size_of::<Baudrate>();
     const ADDRESS: RegisterAddress = RegisterAddress::SystemConfigurationParameter;
 
-    fn from_bytes(bytes: &[u8]) -> Self {
-        //TODO: Handle errors properly instead of panicking
+    fn try_from_bytes(bytes: &[u8]) -> Result<Self, JSYMk194Error> {
         if bytes.len() != Self::NUM_BYTES {
-            panic!("Invalid byte length for SystemConfigurationParamaterRegister");
+            return Err(JSYMk194Error::ConversionError(
+                ConversionError::InvalidRegisterDataLength {
+                    length: bytes.len(),
+                    address: Self::ADDRESS,
+                },
+            ));
         }
-        let id = Id::new(bytes[0]).expect("Invalid ID value");
-        let baudrate = Baudrate::try_from(bytes[1]).expect("Invalid baudrate value");
-        Self { id, baudrate }
+        let id = Id::new(bytes[0])
+            .map_err(|_| JSYMk194Error::ConversionError(ConversionError::InvalidValue))?;
+        let baudrate = Baudrate::try_from(bytes[1])
+            .map_err(|_| JSYMk194Error::ConversionError(ConversionError::InvalidValue))?;
+        Ok(Self { id, baudrate })
     }
 
     fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), JSYMk194Error> {

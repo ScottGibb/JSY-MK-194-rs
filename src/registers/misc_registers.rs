@@ -30,19 +30,23 @@ impl Register for PowerDirectionRegister {
         core::mem::size_of::<PowerDirection>() + core::mem::size_of::<PowerDirection>();
     const ADDRESS: RegisterAddress = RegisterAddress::PowerDirection;
 
-    //TODO: remove the panic and replace with a Result to handle errors gracefully
-    fn from_bytes(bytes: &[u8]) -> Self {
+    fn try_from_bytes(bytes: &[u8]) -> Result<Self, JSYMk194Error> {
         if bytes.len() != Self::NUM_BYTES {
-            panic!("Invalid byte length for PowerDirectionRegister");
+            return Err(JSYMk194Error::ConversionError(
+                ConversionError::InvalidRegisterDataLength {
+                    length: bytes.len(),
+                    address: Self::ADDRESS,
+                },
+            ));
         }
         let first_channel = PowerDirection::try_from(u16::from_le_bytes([bytes[0], bytes[1]]))
-            .expect("Invalid first channel value");
+            .map_err(|_| JSYMk194Error::ConversionError(ConversionError::InvalidValue))?;
         let second_channel = PowerDirection::try_from(u16::from_le_bytes([bytes[2], bytes[3]]))
-            .expect("Invalid second channel value");
-        Self {
+            .map_err(|_| JSYMk194Error::ConversionError(ConversionError::InvalidValue))?;
+        Ok(Self {
             first_channel,
             second_channel,
-        }
+        })
     }
 
     fn to_bytes(&self, bytes: &mut [u8]) -> Result<(), JSYMk194Error> {

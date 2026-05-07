@@ -24,7 +24,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         let mut response_buff = [0u8; 256];
         let bytes_read = self.read_buffer(&mut response_buff).await?;
         let read_response = ReadResponse::from_bytes(&response_buff[..bytes_read])?;
-        Ok(Register::from_bytes(read_response.register_data))
+        Register::try_from_bytes(read_response.register_data)
     }
 
     #[maybe_async::maybe_async]

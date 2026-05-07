@@ -42,6 +42,7 @@ impl<E: hal::Error> From<E> for JSYMk194Error {
 }
 
 #[derive(Debug)]
+#[non_exhaustive]
 pub enum ConversionError {
     InvalidRegisterDataLength {
         length: usize,
