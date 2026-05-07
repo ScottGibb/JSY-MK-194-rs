@@ -2,8 +2,8 @@
 
 mod common;
 use common::setup_device;
-use jsy_mk_194_rs::registers::misc_registers::PowerDirection;
 use jsy_mk_194_rs::types::Channel;
+use jsy_mk_194_rs::types::PowerDirection;
 use jsy_mk_194_rs::types::SystemParameters;
 use jsy_mk_194_rs::types::{Baudrate, Id};
 use jsy_mk_194_rs::units::volt;
@@ -33,7 +33,7 @@ fn fresh_channel_statistics() -> ChannelStatistics {
 #[cfg(test)]
 mod fresh_device_tests {
 
-    use jsy_mk_194_rs::registers::misc_registers::PowerDirection;
+    use jsy_mk_194_rs::types::PowerDirection;
 
     use super::*;
 

@@ -1,6 +1,9 @@
 mod modbus;
 pub use modbus::REQUEST_RESPONSE_DELAY;
+#[cfg(feature = "advanced")]
 pub mod registers;
+#[cfg(not(feature = "advanced"))]
+mod registers;
 
 pub mod error;
 pub mod jsy_mk_194g;

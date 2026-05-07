@@ -47,7 +47,7 @@ Only one runtime mode should be enabled at a time:
 - `std-sync` (default): desktop/std usage.
 - `sync`: no_std synchronous embedded usage.
 - `async`: no_std asynchronous embedded usage.
-- `advanced`: optional advanced APIs.
+- `advanced`: exposes low-level register modules and direct register read/write access.
 
 ## Run examples
 

@@ -11,7 +11,7 @@ fn main() {
     use std::time::Duration;
 
     use jsy_mk_194_rs::jsy_mk_194g::JsyMk194g;
-    use jsy_mk_194_rs::registers::system_configuration_paramater::Baudrate;
+    use jsy_mk_194_rs::types::Baudrate;
     use jsy_mk_194_rs::types::Channel;
     use jsy_mk_194_rs::units::*;
 

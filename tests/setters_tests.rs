@@ -5,7 +5,6 @@ use common::setup_device;
 use jsy_mk_194_rs::types::{Baudrate, Id};
 use jsy_mk_194_rs::{types::Channel, units::Energy, units::kilowatt_hour};
 
-#[cfg(test)]
 mod configuration_tests {
 
     use super::*;
@@ -16,10 +15,7 @@ mod configuration_tests {
         {
             let mut device = setup_device(Id::default(), Baudrate::default());
 
-            let original_id = device
-            .read_register::<jsy_mk_194_rs::registers::system_configuration_paramater::SystemConfigurationParameterRegister>()
-            .expect("Failed to read System Configuration register")
-            .id;
+            let original_id = device.get_id().expect("This should not fail");
             println!("Original ID: {original_id:?}");
 
             device.set_id(new_id.clone()).expect("Failed to set new ID");
@@ -41,10 +37,7 @@ mod configuration_tests {
         {
             let mut device = setup_device(Id::default(), Baudrate::default());
 
-            let original_baudrate = device
-                .read_register::<jsy_mk_194_rs::registers::system_configuration_paramater::SystemConfigurationParameterRegister>()
-                .expect("Failed to read System Configuration register")
-                .baudrate;
+            let original_baudrate = device.get_baudrate().expect("This should not fail");
             println!("Original Baudrate: {original_baudrate:?}");
 
             device

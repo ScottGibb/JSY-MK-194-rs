@@ -1,4 +1,4 @@
-#![cfg(feature = "std-sync")]
+#![cfg(all(feature = "std-sync", feature = "advanced"))]
 
 use jsy_mk_194_rs::{
     registers::system_paramaters::{CurrentRangeRegister, ModelOneRegister, VoltageRangeRegister},

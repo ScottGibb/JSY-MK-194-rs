@@ -8,7 +8,8 @@ use crate::registers::traits::{self, Register};
 
 impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
-    pub async fn read_register<Register>(&mut self) -> Result<Register, JSYMk194Error>
+    #[cfg_attr(feature = "advanced", visibility::make(pub))]
+    pub(crate) async fn read_register<Register>(&mut self) -> Result<Register, JSYMk194Error>
     where
         Register: traits::Register + traits::ReadRegister,
     {
@@ -36,7 +37,8 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     }
 
     #[maybe_async::maybe_async]
-    pub async fn write_register(
+    #[cfg_attr(feature = "advanced", visibility::make(pub))]
+    pub(crate) async fn write_register(
         &mut self,
         register: impl Register + traits::WriteRegister,
     ) -> Result<(), JSYMk194Error> {
