@@ -64,3 +64,4 @@ cargo build --no-default-features --features async
 
 - [JSY-MK-194 Module](https://www.aliexpress.com/item/1005007369940517.html#nav-review)
 - [USB to TTL Converter](https://www.amazon.co.uk/DSD-TECH-SH-U09C2-Debugging-Programming/dp/B07TXVRQ7V/ref=sxin_16_sbv_search_btf?aref=Vv9YmCPRzk&content-id=amzn1.sym.0cf85714-a5b0-4d96-9050-d0dce9037023%3Aamzn1.sym.0cf85714-a5b0-4d96-9050-d0dce9037023&cv_ct_cx=usb%2Bttl&keywords=usb%2Bttl&pd_rd_i=B07TXVRQ7V&pd_rd_r=04212b29-7e5e-4633-bacc-94676cbfd216&pd_rd_w=6nYOC&pd_rd_wg=K7M1W&pf_rd_p=0cf85714-a5b0-4d96-9050-d0dce9037023&pf_rd_r=961QBR06A76W3GQFKM4H&qid=1778159565&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&sr=1-1-9131241a-a358-4619-a7b8-0f5a65d91d81&th=1)
+- [JSY-MK-194 Datasheet](./docs/JSY-MK-194G-User-Manual.pdf)
