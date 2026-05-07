@@ -10,7 +10,7 @@ pub enum FunctionCode {
     ReadOutputStatus = 0x01,
     WriteOutputStatus = 0x05,
 
-    // Acording to the datasheet when an error, or exception happens,
+    // According to the datasheet when an error, or exception happens,
     // the device will respond with the function code with the most significant bit set to 1
     ExceptionReadResponseCode = 0x83,
     ExceptionWriteResponseCode = 0x90,

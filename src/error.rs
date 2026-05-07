@@ -11,7 +11,7 @@ pub enum JSYMk194Error {
     Io(hal::ErrorKind),
     /// The device returned an unexpected response or data format.
     InvalidHeader,
-    /// The Write failded to write the expected number of bytes to the device.
+    /// The Write failed to write the expected number of bytes to the device.
     FailedToWrite {
         written: usize,
         expected: usize,
