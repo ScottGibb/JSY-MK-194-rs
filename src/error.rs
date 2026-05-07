@@ -57,6 +57,7 @@ pub enum ConversionError {
     InvalidValue,
 }
 
+#[cfg(feature = "defmt")]
 impl defmt::Format for JSYMk194Error {
     fn format(&self, fmt: defmt::Formatter) {
         match self {

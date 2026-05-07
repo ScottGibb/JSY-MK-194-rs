@@ -31,6 +31,7 @@ impl core::fmt::Display for ChannelStatistics {
     }
 }
 
+#[cfg(feature = "defmt")]
 impl defmt::Format for ChannelStatistics {
     fn format(&self, fmt: defmt::Formatter) {
         defmt::write!(
@@ -66,6 +67,7 @@ impl core::fmt::Display for Statistics {
     }
 }
 
+#[cfg(feature = "defmt")]
 impl defmt::Format for Statistics {
     fn format(&self, fmt: defmt::Formatter) {
         defmt::write!(
@@ -104,6 +106,7 @@ impl core::fmt::Display for SystemParameters {
         )
     }
 }
+#[cfg(feature = "defmt")]
 impl defmt::Format for SystemParameters {
     fn format(&self, fmt: defmt::Formatter) {
         defmt::write!(
