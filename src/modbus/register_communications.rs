@@ -24,6 +24,14 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         let mut response_buff = [0u8; 256];
         let bytes_read = self.read_buffer(&mut response_buff).await?;
         let read_response = ReadResponse::from_bytes(&response_buff[..bytes_read])?;
+        if usize::from(read_response.byte_count) != Register::NUM_BYTES {
+            return Err(JSYMk194Error::ConversionError(
+                ConversionError::InvalidRegisterDataLength {
+                    given_length: usize::from(read_response.byte_count),
+                    address: Register::ADDRESS,
+                },
+            ));
+        }
         Register::try_from_bytes(read_response.register_data)
     }
 
