@@ -1,9 +1,8 @@
-// use crate::registers::RegisterAddress;
-
 use crate::error::{ConversionError, JSYMk194Error};
 
 #[derive(Debug, Clone)]
 #[non_exhaustive]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub enum FunctionCode {
     ReadOneOrMoreRegisters = 0x03,
     WriteOneOrMoreRegisters = 0x10,
@@ -59,6 +58,7 @@ impl TryFrom<u8> for FunctionCode {
 #[derive(Debug, Clone)]
 #[allow(clippy::enum_variant_names)]
 #[non_exhaustive]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub enum ErrorCode {
     /// Illegal function code, that is, the received function code module is not supported.
     IllegalFunction = 0x81,

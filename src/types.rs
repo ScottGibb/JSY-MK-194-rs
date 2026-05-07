@@ -31,6 +31,21 @@ impl core::fmt::Display for ChannelStatistics {
     }
 }
 
+impl defmt::Format for ChannelStatistics {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(
+            fmt,
+            "Voltage: {} V, Current: {} A, Active Power: {} W, Positive Active Energy: {} kWh, Negative Active Energy: {} kWh, Power Factor: {}",
+            self.voltage.get::<volt>(),
+            self.current.get::<ampere>(),
+            self.active_power.get::<watt>(),
+            self.positive_active_energy.get::<kilowatt_hour>(),
+            self.negative_active_energy.get::<kilowatt_hour>(),
+            self.power_factor
+        );
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub struct Statistics {
     pub channel_one: ChannelStatistics,
@@ -51,7 +66,20 @@ impl core::fmt::Display for Statistics {
     }
 }
 
+impl defmt::Format for Statistics {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(
+            fmt,
+            "Frequency: {} Hz\nChannel One:\n{}\nChannel Two:\n{}",
+            self.frequency.get::<hertz>(),
+            self.channel_one,
+            self.channel_two
+        );
+    }
+}
+
 #[derive(Debug, PartialEq, Clone)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub enum Channel {
     One,
     Two,
@@ -74,6 +102,17 @@ impl core::fmt::Display for SystemParameters {
             self.voltage_range.get::<volt>(),
             self.current_range.get::<ampere>()
         )
+    }
+}
+impl defmt::Format for SystemParameters {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(
+            fmt,
+            "Model: {}, Voltage Range: {} V, Current Range: {} A",
+            self.model_one,
+            self.voltage_range.get::<volt>(),
+            self.current_range.get::<ampere>()
+        );
     }
 }
 

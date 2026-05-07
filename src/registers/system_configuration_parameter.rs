@@ -7,12 +7,14 @@ use crate::{
 };
 
 #[derive(Debug, PartialEq, Default)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub struct SystemConfigurationParameterRegister {
     pub id: Id,
     pub baudrate: Baudrate,
 }
 
 #[derive(Debug, PartialEq, Clone, Default)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub enum Baudrate {
     _1200 = 3,
@@ -25,6 +27,7 @@ pub enum Baudrate {
 }
 
 #[derive(Debug, PartialEq, Clone)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub struct Id {
     id: u8,
 }

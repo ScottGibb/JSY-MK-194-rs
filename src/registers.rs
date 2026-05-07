@@ -10,6 +10,7 @@ pub mod system_parameters;
 pub mod traits;
 
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub enum RegisterAddress {
     SystemConfigurationParameter = 0x0004,
 

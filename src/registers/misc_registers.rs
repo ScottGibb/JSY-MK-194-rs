@@ -8,6 +8,7 @@ use crate::{
 };
 
 #[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub struct PowerDirectionRegister {
     pub first_channel: PowerDirection,
     pub second_channel: PowerDirection,
@@ -68,6 +69,7 @@ impl Register for PowerDirectionRegister {
 }
 
 #[derive(Debug, PartialEq, Clone)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u16)]
 pub enum PowerDirection {
     Positive = 0,

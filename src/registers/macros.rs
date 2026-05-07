@@ -25,6 +25,7 @@ macro_rules! define_register {
     // Shared implementation
     (@inner $name:ident, $data_type:ty, $address:expr) => {
         #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+        #[cfg_attr(feature = "defmt", derive(defmt::Format))]
         pub struct $name(pub $data_type);
 
         impl From<$data_type> for $name {
@@ -94,6 +95,7 @@ macro_rules! define_scaled_register {
     // Shared implementation
     (@inner $name:ident, $data_type:ty, $address:expr, $scale:expr) => {
         #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+        #[cfg_attr(feature = "defmt", derive(defmt::Format))]
         pub struct $name(pub $data_type);
 
         impl From<$data_type> for $name {
