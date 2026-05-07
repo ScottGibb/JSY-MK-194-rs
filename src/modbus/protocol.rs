@@ -9,8 +9,8 @@ use crate::{
     registers::system_configuration_paramater::Id,
 };
 
-pub const REQUEST_RESPONSE_DELAY: Duration = Duration::from_millis(100);
-pub const CHANNEL_REQUEST_RESPONSE_DELAY: Duration = Duration::from_millis(200);
+pub const REQUEST_RESPONSE_DELAY: Duration = Duration::from_millis(400);
+pub const CHANNEL_REQUEST_RESPONSE_DELAY: Duration = Duration::from_millis(800);
 // Verify that REQUEST_RESPONSE_DELAY can fit in a u32 when converted to milliseconds, since that's the type used in the driver implementation. This is important to prevent overflow issues when converting the duration to milliseconds.
 const _: () = assert!(
     REQUEST_RESPONSE_DELAY.as_millis() <= u32::MAX as u128,
