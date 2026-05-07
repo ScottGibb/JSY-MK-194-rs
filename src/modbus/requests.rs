@@ -54,7 +54,7 @@ pub struct WriteRequest<'a> {
     quantity_of_registers: u16,
     byte_count: u8,
     register_data: &'a [u8],
-    crc: u16,
+    _crc: u16,
 }
 
 impl<'a> WriteRequest<'a> {
@@ -90,7 +90,7 @@ impl<'a> WriteRequest<'a> {
             quantity_of_registers,
             byte_count,
             register_data,
-            crc: calculate_crc(&[
+            _crc: calculate_crc(&[
                 device_address.into(),
                 function_code.into(),
                 starting_address_bytes[0],

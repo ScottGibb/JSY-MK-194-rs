@@ -13,11 +13,11 @@ use crate::{
 };
 
 pub struct ReadResponse<'a> {
-    pub device_address: Id,
-    pub function_code: FunctionCode,
+    pub _device_address: Id,
+    pub _function_code: FunctionCode,
     pub byte_count: u8,
     pub register_data: &'a [u8],
-    pub crc: u16,
+    pub _crc: u16,
 }
 impl<'a> ReadResponse<'a> {
     const FRONT_HEADER_SIZE: usize = 3; // Device address, function code, and byte count
@@ -46,21 +46,21 @@ impl<'a> ReadResponse<'a> {
         ]);
         validate_crc(&bytes[0..(Self::FRONT_HEADER_SIZE + byte_count)], crc)?;
         Ok(Self {
-            device_address,
-            function_code,
+            _device_address: device_address,
+            _function_code: function_code,
             byte_count: bytes[2],
             register_data,
-            crc,
+            _crc: crc,
         })
     }
 }
 // Always 8 Bytes if successful
 pub struct WriteResponse {
-    pub device_address: Id,
-    pub function_code: FunctionCode,
-    pub starting_address: RegisterAddress,
-    pub quantity_of_registers: u16,
-    pub crc: u16,
+    pub _device_address: Id,
+    pub _function_code: FunctionCode,
+    pub _starting_address: RegisterAddress,
+    pub _quantity_of_registers: u16,
+    pub _crc: u16,
 }
 
 impl WriteResponse {
@@ -85,11 +85,11 @@ impl WriteResponse {
         validate_crc(&bytes[0..6], crc)?;
 
         Ok(Self {
-            device_address,
-            function_code,
-            starting_address,
-            quantity_of_registers,
-            crc,
+            _device_address: device_address,
+            _function_code: function_code,
+            _starting_address: starting_address,
+            _quantity_of_registers: quantity_of_registers,
+            _crc: crc,
         })
     }
 }

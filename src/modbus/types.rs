@@ -57,6 +57,7 @@ impl TryFrom<u8> for FunctionCode {
 }
 
 #[derive(Debug, Clone)]
+#[allow(clippy::enum_variant_names)]
 #[non_exhaustive]
 pub enum ErrorCode {
     /// Illegal function code, that is, the received function code module is not supported.
