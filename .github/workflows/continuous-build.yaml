@@ -72,4 +72,3 @@ jobs:
         run: cargo build --no-default-features --features "std-sync"
       - name: Build with advanced feature
         run: cargo build --no-default-features --features "std-sync advanced"
-
