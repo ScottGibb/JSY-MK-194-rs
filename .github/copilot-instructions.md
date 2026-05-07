@@ -9,7 +9,7 @@ A Rust driver for the JSY MK-194 power monitor IC, supporting synchronous, async
 Three mutually exclusive modes:
 
 | Feature    | Description                                                                                           |
-| ---------- | ----------------------------------------------------------------------------------------------------- |
+|------------|-------------------------------------------------------------------------------------------------------|
 | `std-sync` | Desktop/PC usage, wraps `std::io` and requires `embedded-hal` for timing                              |
 | `sync`     | Embedded no_std sync via `embedded-io` + `embedded-hal`                                               |
 | `async`    | Embedded no_std async via `embedded-io-async` + `embedded-hal-async`                                  |
