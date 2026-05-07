@@ -24,7 +24,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
             delay,
         };
         // Check if we can get the ID
-        device.get_id()?;
+        device.get_id().await?;
         Ok(device)
     }
 }

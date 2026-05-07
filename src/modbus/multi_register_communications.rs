@@ -77,13 +77,14 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
 
         // Perform an extra read for the power direction register
         self.extract_channel_statistics_from_response(channel, read_response)
+            .await
     }
 
     #[maybe_async::maybe_async]
     async fn extract_channel_statistics_from_response(
         &mut self,
         channel: Channel,
-        read_response: ReadResponse,
+        read_response: ReadResponse<'_>,
     ) -> Result<ChannelStatistics, JSYMk194Error> {
         let power_direction = self.get_power_direction(channel.clone()).await?;
         match channel {
