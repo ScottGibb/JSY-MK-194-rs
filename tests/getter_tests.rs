@@ -96,13 +96,13 @@ mod fresh_device_tests {
     }
 
     #[test]
-    fn get_system_paramaters_tests() {
+    fn get_system_parameters_tests() {
         let mut device = setup_device(Id::default(), Baudrate::default());
-        let system_paramaters = device
+        let system_parameters = device
             .get_system_parameters()
             .expect("This should not fail");
 
-        assert_eq!(system_paramaters, SystemParameters::default())
+        assert_eq!(system_parameters, SystemParameters::default())
     }
 
     #[test]

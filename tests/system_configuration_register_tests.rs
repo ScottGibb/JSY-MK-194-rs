@@ -1,6 +1,6 @@
 #![cfg(all(feature = "std-sync", feature = "advanced"))]
 
-use jsy_mk_194_rs::registers::system_configuration_paramater::{
+use jsy_mk_194_rs::registers::system_configuration_parameter::{
     Baudrate, Id, SystemConfigurationParameterRegister,
 };
 mod common;

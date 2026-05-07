@@ -2,10 +2,10 @@
 use jsy_mk_194_rs::registers::traits::Register;
 use jsy_mk_194_rs::{
     registers::{
-        channel_one_measuring_electrical_paramaters::{
+        channel_one_measuring_electrical_parameters::{
             FirstChannelNegativeActiveEnergyRegister, FirstChannelPositiveActiveEnergyRegister,
         },
-        channel_two_measuring_electrical_paramaters::{
+        channel_two_measuring_electrical_parameters::{
             SecondChannelNegativeActiveEnergyRegister, SecondChannelPositiveActiveEnergyRegister,
         },
     },

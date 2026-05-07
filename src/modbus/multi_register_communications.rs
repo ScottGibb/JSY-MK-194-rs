@@ -11,12 +11,12 @@ use crate::{
         responses::ReadResponse,
     },
     registers::{
-        channel_one_measuring_electrical_paramaters::{
+        channel_one_measuring_electrical_parameters::{
             FirstChannelActivePowerRegister, FirstChannelCurrentRegister,
             FirstChannelNegativeActiveEnergyRegister, FirstChannelPositiveActiveEnergyRegister,
             FirstChannelPowerFactorRegister, FirstChannelVoltageRegister,
         },
-        channel_two_measuring_electrical_paramaters::{
+        channel_two_measuring_electrical_parameters::{
             SecondChannelActivePowerRegister, SecondChannelCurrentRegister,
             SecondChannelNegativeActiveEnergyRegister, SecondChannelPositiveActiveEnergyRegister,
             SecondChannelPowerFactorRegister, SecondChannelVoltageRegister,

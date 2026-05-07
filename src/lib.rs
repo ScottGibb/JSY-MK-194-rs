@@ -1,3 +1,6 @@
+#![deny(unsafe_code)]
+#![cfg_attr(not(feature = "std-sync"), no_std)]
+
 mod modbus;
 pub use modbus::REQUEST_RESPONSE_DELAY;
 #[cfg(feature = "advanced")]

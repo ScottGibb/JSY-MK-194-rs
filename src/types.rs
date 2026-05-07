@@ -1,7 +1,7 @@
 pub use crate::registers::misc_registers::PowerDirection;
-pub use crate::registers::system_configuration_paramater::{Baudrate, Id};
-use crate::registers::system_paramaters::ModelOneRegister;
-use crate::registers::system_paramaters::{CurrentRangeRegister, VoltageRangeRegister};
+pub use crate::registers::system_configuration_parameter::{Baudrate, Id};
+use crate::registers::system_parameters::ModelOneRegister;
+use crate::registers::system_parameters::{CurrentRangeRegister, VoltageRangeRegister};
 use crate::units::*;
 #[derive(Debug, PartialEq)]
 pub struct ChannelStatistics {

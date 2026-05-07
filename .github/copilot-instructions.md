@@ -2,14 +2,14 @@
 
 ## Project Overview
 
-A Rust driver for the JSY MK-194 power monitor IC, supporting synchronous, asynchronous, and std-based operation modes via feature flags. The driver should work across multiple platforms, including embedded no_std environments and desktop applications. They will use the appropriate HAL traits for serial communication and timing based on the selected mode.
+A Rust driver for the JSY MK-194 power monitor IC, supporting synchronous, asynchronous, and `std-sync` operation modes via feature flags. The driver should work across multiple platforms, including embedded no_std environments and desktop applications. They will use the appropriate HAL traits for serial communication and timing based on the selected mode.
 
 ## Feature Flags
 
 Three mutually exclusive modes:
 
 | Feature    | Description                                                                                           |
-|------------|-------------------------------------------------------------------------------------------------------|
+| ---------- | ----------------------------------------------------------------------------------------------------- |
 | `std-sync` | Desktop/PC usage, wraps `std::io` and requires `embedded-hal` for timing                              |
 | `sync`     | Embedded no_std sync via `embedded-io` + `embedded-hal`                                               |
 | `async`    | Embedded no_std async via `embedded-io-async` + `embedded-hal-async`                                  |
@@ -41,7 +41,7 @@ Three mutually exclusive modes:
 ## Build and Test
 
 ```bash
-# Build with std (default)
+# Build with std-sync (default)
 cargo build
 
 # Build for no_std async (embedded)
@@ -50,8 +50,8 @@ cargo build --no-default-features --features async
 # Run all tests (hardware must be connected; single-threaded required)
 cargo test --no-fail-fast -- --test-threads=1
 
-# Run with std feature
-cargo test --features std -- --test-threads=1
+# Run with std-sync feature
+cargo test --features std-sync -- --test-threads=1
 
 # Run a specific test
 cargo test --test <test_file> -- <test_name> --exact --nocapture
@@ -68,12 +68,12 @@ Some tests require physical hardware (JSY-MK-194 device connected via serial).
 
 ## Examples
 
-Examples live in `examples/` and require the `std` feature:
+Examples live in `examples/` and require the `std-sync` feature:
 
 ```bash
-cargo run --example getters --features std
+cargo run --example getters --features std-sync
 ```
 
 ## Utils
 
-A `utils` module exists for helper functions and implemention of a std delay provider for the `std` feature. It is not intended for public use and should not be exposed in the public API.
+A `utils` module exists for helper functions and implemention of a std delay provider for the `std-sync` feature. It is not intended for public use and should not be exposed in the public API.

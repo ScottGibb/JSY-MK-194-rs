@@ -6,7 +6,7 @@ use crate::{
         constants::{MODBUS_DEVICE_ADDRESS_OFFSET, MODBUS_FUNCTION_CODE_OFFSET},
         types::FunctionCode,
     },
-    registers::system_configuration_paramater::Id,
+    registers::system_configuration_parameter::Id,
 };
 
 pub const REQUEST_RESPONSE_DELAY: Duration = Duration::from_millis(400);

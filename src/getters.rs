@@ -1,10 +1,10 @@
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
 use crate::registers::misc_registers::{FrequencyRegister, PowerDirection, PowerDirectionRegister};
-use crate::registers::system_configuration_paramater::{
+use crate::registers::system_configuration_parameter::{
     Baudrate, SystemConfigurationParameterRegister,
 };
-use crate::registers::system_paramaters::{
+use crate::registers::system_parameters::{
     CurrentRangeRegister, ModelOneRegister, VoltageRangeRegister,
 };
 use crate::types::{Id, SystemParameters};

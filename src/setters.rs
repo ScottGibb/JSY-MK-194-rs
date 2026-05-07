@@ -1,13 +1,13 @@
 use crate::error::JSYMk194Error;
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
-use crate::registers::channel_one_measuring_electrical_paramaters::{
+use crate::registers::channel_one_measuring_electrical_parameters::{
     FirstChannelNegativeActiveEnergyRegister, FirstChannelPositiveActiveEnergyRegister,
 };
-use crate::registers::channel_two_measuring_electrical_paramaters::{
+use crate::registers::channel_two_measuring_electrical_parameters::{
     SecondChannelNegativeActiveEnergyRegister, SecondChannelPositiveActiveEnergyRegister,
 };
-use crate::registers::system_configuration_paramater::{
+use crate::registers::system_configuration_parameter::{
     Baudrate, Id, SystemConfigurationParameterRegister,
 };
 use crate::types::Channel;

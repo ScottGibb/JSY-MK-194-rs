@@ -36,7 +36,7 @@ fn main() {
     let system_parameters = driver
         .get_system_parameters()
         .expect("Failed to read system parameters");
-    println!("System Paramaters: {system_parameters}");
+    println!("System parameters: {system_parameters}");
 
     let baudrate = driver.get_baudrate().expect("Failed to read baudrate");
     println!("Baudrate: {baudrate:?}");

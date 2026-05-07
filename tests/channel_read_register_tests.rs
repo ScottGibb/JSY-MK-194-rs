@@ -2,10 +2,10 @@
 
 use jsy_mk_194_rs::{
     registers::{
-        channel_one_measuring_electrical_paramaters::{
+        channel_one_measuring_electrical_parameters::{
             FirstChannelCurrentRegister, FirstChannelVoltageRegister,
         },
-        channel_two_measuring_electrical_paramaters::{
+        channel_two_measuring_electrical_parameters::{
             SecondChannelCurrentRegister, SecondChannelVoltageRegister,
         },
     },
@@ -68,10 +68,10 @@ mod mains_tests {
 #[cfg(test)]
 mod no_load_tests {
     use jsy_mk_194_rs::registers::{
-        channel_one_measuring_electrical_paramaters::{
+        channel_one_measuring_electrical_parameters::{
             FirstChannelActivePowerRegister, FirstChannelPowerFactorRegister,
         },
-        channel_two_measuring_electrical_paramaters::{
+        channel_two_measuring_electrical_parameters::{
             SecondChannelActivePowerRegister, SecondChannelPowerFactorRegister,
         },
     };

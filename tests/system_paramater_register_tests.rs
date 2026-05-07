@@ -1,7 +1,7 @@
 #![cfg(all(feature = "std-sync", feature = "advanced"))]
 
 use jsy_mk_194_rs::{
-    registers::system_paramaters::{CurrentRangeRegister, ModelOneRegister, VoltageRangeRegister},
+    registers::system_parameters::{CurrentRangeRegister, ModelOneRegister, VoltageRangeRegister},
     types::{Baudrate, Id},
 };
 
