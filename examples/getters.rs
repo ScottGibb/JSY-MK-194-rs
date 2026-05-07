@@ -1,11 +1,11 @@
-#![cfg_attr(not(feature = "std"), allow(dead_code))]
+#![cfg_attr(not(feature = "std-sync"), allow(dead_code))]
 
-#[cfg(not(feature = "std"))]
+#[cfg(not(feature = "std-sync"))]
 fn main() {
     println!("This example needs std enabled");
 }
 
-#[cfg(feature = "std")]
+#[cfg(feature = "std-sync")]
 fn main() {
     use std::println;
     use std::time::Duration;

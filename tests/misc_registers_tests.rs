@@ -1,4 +1,4 @@
-#![cfg(feature = "std")]
+#![cfg(feature = "std-sync")]
 
 use jsy_mk_194_rs::{
     registers::misc_registers::{FrequencyRegister, PowerDirection, PowerDirectionRegister},

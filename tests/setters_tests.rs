@@ -1,4 +1,4 @@
-#![cfg(feature = "std")]
+#![cfg(feature = "std-sync")]
 
 mod common;
 use common::setup_device;

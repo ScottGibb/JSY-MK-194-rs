@@ -1,4 +1,4 @@
-#![cfg(feature = "std")]
+#![cfg(feature = "std-sync")]
 
 use std::time::Duration;
 
