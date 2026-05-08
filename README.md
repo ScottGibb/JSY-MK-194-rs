@@ -41,6 +41,13 @@ jsy-mk-194-rs = { version = "x.x", default-features = false, features = ["async"
 jsy-mk-194-rs = { version = "x.x", default-features = false, features = ["tokio-async"] }
 ```
 
+`defmt` with embedded runtime example:
+
+```toml
+[dependencies]
+jsy-mk-194-rs = { version = "x.x", default-features = false, features = ["sync", "defmt"] }
+```
+
 ## Why this crate
 
 - Multi-platform support via feature flags.
@@ -55,6 +62,7 @@ Only one runtime mode should be enabled at a time:
 - `tokio-async`: async desktop/std usage with `tokio::io`.
 - `sync`: no_std synchronous embedded usage.
 - `async`: no_std asynchronous embedded usage.
+- `defmt`: enables `defmt::Format` implementations for embedded logging.
 - `advanced`: exposes low-level register modules and direct register read/write access.
 
 ## Run examples

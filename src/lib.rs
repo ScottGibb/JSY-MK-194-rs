@@ -28,6 +28,22 @@
 //! jsy-mk-194-rs = { version = "x.y.z", default-features = false, features = ["async"] }
 //! ```
 //!
+//! ## `defmt` feature
+//!
+//! Enable `defmt` when targeting embedded logging stacks that use
+//! [`defmt`](https://crates.io/crates/defmt). This adds `defmt::Format`
+//! implementations for driver types and errors.
+//!
+//! `defmt` is additive and should be combined with exactly one runtime mode:
+//!
+//! ```toml
+//! # sync + defmt
+//! jsy-mk-194-rs = { version = "x.y.z", default-features = false, features = ["sync", "defmt"] }
+//!
+//! # async + defmt
+//! jsy-mk-194-rs = { version = "x.y.z", default-features = false, features = ["async", "defmt"] }
+//! ```
+//!
 //! ## `advanced` feature
 //!
 //! The optional `advanced` feature exposes low-level register APIs (including the public
