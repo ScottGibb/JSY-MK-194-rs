@@ -8,6 +8,9 @@ license = "Apache-2.0"
 repository = "https://github.com/ScottGibb/jsy-mk-194-rs"
 rust-version = "1.85.1"
 
+[package.metadata.docs.rs]
+features = ["std-sync"]
+
 [features]
 default = ["std-sync"]
 
