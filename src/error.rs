@@ -1,3 +1,4 @@
+//! Error types for the JSY MK-194 driver, including I/O errors, conversion errors, and device error responses.
 use core::num::TryFromIntError;
 
 use crate::hal;

@@ -96,15 +96,22 @@ impl WriteResponse {
 
 #[derive(Debug)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
+/// Represents a Modbus exception response returned by the device when a protocol error occurs.
 pub struct ModbusErrorResponse {
+    /// Device ID that the error response is associated with.
     pub id: Id,
+    /// Function code that was attempted when the error occurred. This can be used to identify which operation caused the error.
     pub function_code: FunctionCode,
+    /// Specific error code returned by the device, indicating the type of protocol error that occurred.
     pub error_code: ErrorCode,
+    /// CRC value for the error response, used to verify data integrity.
     pub crc: u16,
 }
 
 impl ModbusErrorResponse {
+    /// The expected size of a Modbus error response packet
     pub const RESPONSE_SIZE: usize = 5;
+    /// Parses a Modbus error response from a byte slice, validating the CRC and extracting the device ID, function code, and error code.
     pub fn from_bytes(bytes: &[u8]) -> Result<Self, JSYMk194Error> {
         if bytes.len() != Self::RESPONSE_SIZE {
             return Err(JSYMk194Error::InvalidHeader);

@@ -1,3 +1,4 @@
+//! Types used across the driver, such as measurement structs and enums for configuration.
 pub use crate::registers::misc_registers::PowerDirection;
 pub use crate::registers::system_configuration_parameter::{Baudrate, Id};
 use crate::registers::system_parameters::ModelOneRegister;
