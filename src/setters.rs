@@ -20,6 +20,23 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     /// is now configured at the wrong speed. To communicate with the device again,
     /// you must reconstruct the driver with a new serial port opened at the updated
     /// baud rate.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # fn example<S, D>(
+    /// #     driver: jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
+    /// # where
+    /// #     S: std::io::Read + std::io::Write,
+    /// #     D: embedded_hal::delay::DelayNs,
+    /// # {
+    /// driver.set_baudrate(jsy_mk_194_rs::types::Baudrate::_9600)?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// For a full runnable example, see
+    /// [`examples/setters.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/setters.rs).
     #[maybe_async::maybe_async]
     pub async fn set_baudrate(mut self, baudrate: Baudrate) -> Result<(), JSYMk194Error> {
         let previous_register = self
@@ -33,6 +50,27 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         Ok(())
     }
 
+    /// Sets the Modbus device ID.
+    ///
+    /// The driver updates its local `device_address` field after writing the
+    /// register so subsequent requests target the new ID.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # fn example<S, D>(
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
+    /// # where
+    /// #     S: std::io::Read + std::io::Write,
+    /// #     D: embedded_hal::delay::DelayNs,
+    /// # {
+    /// driver.set_id(jsy_mk_194_rs::types::Id::new(2)?)?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// For a full runnable example, see
+    /// [`examples/setters.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/setters.rs).
     #[maybe_async::maybe_async]
     pub async fn set_id(&mut self, id: Id) -> Result<(), JSYMk194Error> {
         let previous_register = self
@@ -47,6 +85,29 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         Ok(())
     }
 
+    /// Sets the positive active energy register for a channel.
+    ///
+    /// The `energy` value is written in kilowatt-hours.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # fn example<S, D>(
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
+    /// # where
+    /// #     S: std::io::Read + std::io::Write,
+    /// #     D: embedded_hal::delay::DelayNs,
+    /// # {
+    /// driver.set_positive_active_energy(
+    ///     jsy_mk_194_rs::types::Channel::One,
+    ///     jsy_mk_194_rs::units::Energy::new::<jsy_mk_194_rs::units::kilowatt_hour>(100.0),
+    /// )?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// For a full runnable example, see
+    /// [`examples/setters.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/setters.rs).
     #[maybe_async::maybe_async]
     pub async fn set_positive_active_energy(
         &mut self,
@@ -68,6 +129,29 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         }
     }
 
+    /// Sets the negative active energy register for a channel.
+    ///
+    /// The `energy` value is written in kilowatt-hours.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # fn example<S, D>(
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
+    /// # where
+    /// #     S: std::io::Read + std::io::Write,
+    /// #     D: embedded_hal::delay::DelayNs,
+    /// # {
+    /// driver.set_negative_active_energy(
+    ///     jsy_mk_194_rs::types::Channel::One,
+    ///     jsy_mk_194_rs::units::Energy::new::<jsy_mk_194_rs::units::kilowatt_hour>(150.0),
+    /// )?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// For a full runnable example, see
+    /// [`examples/setters.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/setters.rs).
     #[maybe_async::maybe_async]
     pub async fn set_negative_active_energy(
         &mut self,
