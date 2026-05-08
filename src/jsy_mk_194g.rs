@@ -1,6 +1,13 @@
 use crate::error::JSYMk194Error;
 use crate::hal::*;
 use crate::registers::system_configuration_parameter::Id;
+
+/// Driver for communicating with a JSY MK-194 power monitor over Modbus RTU.
+///
+/// The driver is generic over a serial transport and a delay provider so it can
+/// be used in desktop (`std-sync`) and embedded (`sync` / `async`) contexts.
+/// Construct with [`Self::new`] when you already know the device ID, or
+/// [`Self::new_default`] to probe connectivity using the default address.
 pub struct JsyMk194g<Serial: Read + Write, D: DelayNs> {
     pub(crate) device_address: Id,
     pub(crate) serial: Serial,
