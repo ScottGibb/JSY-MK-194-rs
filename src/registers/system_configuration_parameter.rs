@@ -16,23 +16,35 @@ pub struct SystemConfigurationParameterRegister {
 #[derive(Debug, PartialEq, Clone, Default)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
+/// Supported serial baud rates reported by the device.
 pub enum Baudrate {
+    /// 1200 baud.
     _1200 = 3,
+    /// 2400 baud.
     _2400 = 4,
+    /// 4800 baud.
     #[default]
     _4800 = 5,
+    /// 9600 baud.
     _9600 = 6,
+    /// 19200 baud.
     _19200 = 7,
+    /// 38400 baud.
     _38400 = 8,
 }
 
 #[derive(Debug, PartialEq, Clone)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
+/// Modbus device identifier used by the driver when addressing the meter.
 pub struct Id {
     id: u8,
 }
 
 impl Id {
+    /// Creates a validated device ID.
+    ///
+    /// The JSY MK-194 uses non-zero IDs. Passing `0` returns
+    /// [`JSYMk194Error::ConversionError`].
     pub fn new(id: u8) -> Result<Self, JSYMk194Error> {
         if id == 0 {
             return Err(JSYMk194Error::ConversionError(

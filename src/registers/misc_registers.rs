@@ -71,8 +71,11 @@ impl Register for PowerDirectionRegister {
 #[derive(Debug, PartialEq, Clone)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u16)]
+/// Indicates whether active power is flowing in the positive or negative direction.
 pub enum PowerDirection {
+    /// Power is flowing in the positive direction.
     Positive = 0,
+    /// Power is flowing in the negative direction.
     Negative = 1,
 }
 impl TryFrom<u16> for PowerDirection {
