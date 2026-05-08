@@ -13,7 +13,7 @@ use crate::{
     error::JSYMk194Error,
     types::{Channel, ChannelStatistics, Statistics},
 };
-impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     /// Reads the configured Modbus device ID.
     ///
     /// # Examples
@@ -107,7 +107,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     }
 }
 
-impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     /// Reads measurements for both channels in a single call.
     ///
     /// # Examples

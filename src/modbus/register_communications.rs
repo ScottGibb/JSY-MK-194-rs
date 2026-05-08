@@ -6,7 +6,7 @@ use crate::modbus::requests::{ReadRequest, WriteRequest};
 use crate::modbus::responses::{ReadResponse, WriteResponse};
 use crate::registers::traits::{self, Register};
 
-impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     #[cfg_attr(feature = "advanced", visibility::make(pub))]
     pub(crate) async fn read_register<Register>(&mut self) -> Result<Register, JSYMk194Error>

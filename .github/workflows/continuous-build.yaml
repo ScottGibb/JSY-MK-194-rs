@@ -74,7 +74,7 @@ jobs:
       - name: Build with defmt feature
         run: cargo build --no-default-features --features "async defmt"
 
-  build-std:
+  build-std-sync:
     name: Build with std-sync feature
     runs-on: ${{ matrix.os }}
     strategy:
@@ -94,7 +94,27 @@ jobs:
         run: cargo build --no-default-features --features "std-sync"
       - name: Build with advanced feature
         run: cargo build --no-default-features --features "std-sync advanced"
-
+  
+  build-tokio-async:
+    name: Build with tokio-async feature
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build
+        run: cargo build --no-default-features --features "tokio-async"
+      - name: Build with advanced feature
+        run: cargo build --no-default-features --features "tokio-async advanced"
   build-esp32c3:
     name: Build for ESP32-C3 target
     runs-on: ubuntu-latest

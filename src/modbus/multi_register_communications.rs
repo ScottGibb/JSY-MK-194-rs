@@ -28,7 +28,7 @@ use crate::{
     units::*,
 };
 
-impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub async fn read_channel_statistics(
         &mut self,
@@ -166,7 +166,7 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
     }
 }
 
-impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub async fn read_statistics(&mut self) -> Result<Statistics, JSYMk194Error> {
         let write_request = ReadRequest::new(

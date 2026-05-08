@@ -1,5 +1,5 @@
 #![deny(unsafe_code)]
-#![cfg_attr(not(feature = "std-sync"), no_std)]
+#![cfg_attr(not(any(feature = "std-sync", feature = "tokio-async")), no_std)]
 //! Rust driver for the JSY MK-194 power monitor IC.
 //!
 //! # Feature flags
@@ -59,8 +59,13 @@ compile_error!("Choose only one of sync, async, or std-sync.");
 compile_error!("Choose only one of sync, async, or std-sync.");
 #[cfg(all(feature = "async", feature = "std-sync"))]
 compile_error!("Choose only one of sync, async, or std-sync.");
-#[cfg(not(any(feature = "sync", feature = "async", feature = "std-sync")))]
-compile_error!("Choose one of sync, async, or std-sync.");
+#[cfg(not(any(
+    feature = "sync",
+    feature = "async",
+    feature = "std-sync",
+    feature = "tokio-async"
+)))]
+compile_error!("Choose one of sync, async, std-sync, or tokio-async.");
 
 /// Sync Based HAL Imports
 #[cfg(feature = "sync")]
@@ -70,6 +75,8 @@ mod hal {
     pub use embedded_io::ErrorKind;
     pub use embedded_io::Read;
     pub use embedded_io::Write;
+    pub trait ReadWrite: Read + Write {}
+    impl<T: Read + Write> ReadWrite for T {}
 }
 
 /// Async Based HAL Imports
@@ -80,12 +87,35 @@ mod hal {
     pub use embedded_io_async::ErrorKind;
     pub use embedded_io_async::Read;
     pub use embedded_io_async::Write;
+    pub trait ReadWrite: Read + Write {}
+    impl<T: Read + Write> ReadWrite for T {}
 }
 
 #[cfg(feature = "std-sync")]
 mod hal {
     pub use embedded_hal::delay::DelayNs;
     pub use std::io::{ErrorKind, Read, Write};
+    pub trait ReadWrite: Read + Write {}
+    impl<T: Read + Write> ReadWrite for T {}
+    pub trait Error {
+        fn kind(&self) -> ErrorKind;
+    }
+
+    impl Error for std::io::Error {
+        fn kind(&self) -> ErrorKind {
+            std::io::Error::kind(self)
+        }
+    }
+}
+
+#[cfg(feature = "tokio-async")]
+mod hal {
+    pub use embedded_hal_async::delay::DelayNs;
+    pub use std::io::ErrorKind;
+    pub use tokio::io::{AsyncRead, AsyncWrite};
+    pub use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    pub trait ReadWrite: AsyncRead + AsyncWrite + Unpin {}
+    impl<T: AsyncRead + AsyncWrite + Unpin> ReadWrite for T {}
     pub trait Error {
         fn kind(&self) -> ErrorKind;
     }

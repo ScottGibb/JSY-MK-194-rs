@@ -16,7 +16,7 @@ default = ["std-sync"]
 
 # Required embedded-hal for the Delay construct
 std-sync = ["maybe-async/is_sync", "dep:embedded-hal"]
-
+tokio-async = ["dep:embedded-hal-async", "dep:tokio"]
 
 sync = ["maybe-async/is_sync", "dep:embedded-io", "dep:embedded-hal"]
 async = ["dep:embedded-io-async", "dep:embedded-hal-async"]
@@ -37,7 +37,12 @@ embedded-io-async = { version = "0.7", optional = true }
 defmt = { version = "1", optional = true }
 embedded-hal = { version = "1", optional = true }
 embedded-hal-async = { version = "1", optional = true }
+tokio = { version = "1", features = ["full"], optional = true }
 
 [dev-dependencies]
+# Serial Ports
 serialport = "4"
+tokio-serial = "5"
+tokio = { version = "1", features = ["full"] }
+# Delay Implementations
 utils = { path = "./utils" }

@@ -12,7 +12,7 @@ use crate::registers::system_configuration_parameter::{
 };
 use crate::types::Channel;
 use crate::units::*;
-impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     /// Sets the baud rate of the device.
     ///
     /// This method intentionally consumes `self` because changing the baud rate

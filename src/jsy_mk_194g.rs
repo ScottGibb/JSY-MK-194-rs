@@ -8,13 +8,13 @@ use crate::registers::system_configuration_parameter::Id;
 /// be used in desktop (`std-sync`) and embedded (`sync` / `async`) contexts.
 /// Construct with [`Self::new`] when you already know the device ID, or
 /// [`Self::new_default`] to probe connectivity using the default address.
-pub struct JsyMk194g<Serial: Read + Write, D: DelayNs> {
+pub struct JsyMk194g<Serial: ReadWrite, D: DelayNs> {
     pub(crate) device_address: Id,
     pub(crate) serial: Serial,
     pub(crate) delay: D,
 }
 
-impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     /// Creates a driver with an explicit device address.
     ///
     /// This constructor does not perform bus I/O. If you want to verify device
