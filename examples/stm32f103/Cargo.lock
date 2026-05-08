@@ -174,12 +174,6 @@ dependencies = [
 
 [[package]]
 name = "embedded-io"
-version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "edd0f118536f44f5ccd48bcb8b111bdc3de888b58c74639dfb034a357d0f206d"
-
-[[package]]
-name = "embedded-io"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9eb1aa714776b75c7e67e1da744b81a129b3ff919c8712b5e1b32252c1f07cc7"
@@ -234,7 +228,7 @@ version = "0.1.1"
 dependencies = [
  "defmt",
  "embedded-hal 1.0.0",
- "embedded-io 0.7.1",
+ "embedded-io",
  "maybe-async",
  "uom",
  "visibility",
@@ -395,7 +389,7 @@ dependencies = [
  "defmt-rtt",
  "embedded-hal 1.0.0",
  "embedded-hal-nb",
- "embedded-io 0.7.1",
+ "embedded-io",
  "jsy-mk-194-rs",
  "nb 1.1.0",
  "panic-probe",
@@ -405,8 +399,7 @@ dependencies = [
 [[package]]
 name = "stm32f1xx-hal"
 version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f15ad470c8df998f9ef3a28dd625c7696179f091122235a971266999f8b0a66"
+source = "git+https://github.com/ScottGibb/stm32f1xx-hal.git?branch=master#20f8906bdb20a83d6f29c469c5e59282f5a33823"
 dependencies = [
  "bitflags",
  "bxcan",
@@ -416,7 +409,7 @@ dependencies = [
  "embedded-hal 0.2.7",
  "embedded-hal 1.0.0",
  "embedded-hal-nb",
- "embedded-io 0.6.1",
+ "embedded-io",
  "fugit",
  "fugit-timer",
  "nb 1.1.0",

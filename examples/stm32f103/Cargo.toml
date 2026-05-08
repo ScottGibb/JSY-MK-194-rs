@@ -30,5 +30,6 @@ panic-probe = { version = "1", features = ["print-defmt"] }
 
 
 [dependencies.stm32f1xx-hal]
-version = "0.11.0"
+git = "https://github.com/ScottGibb/stm32f1xx-hal.git"
+branch = "master"
 features = ["stm32f103", "medium"]

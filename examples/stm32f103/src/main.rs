@@ -7,13 +7,10 @@
 #![no_main]
 #![no_std]
 
-mod adapter;
-
 use defmt_rtt as _;
 use jsy_mk_194_rs::{jsy_mk_194g::JsyMk194g, types::Baudrate};
 use panic_probe as _;
 
-use adapter::SerialAdapter;
 use cortex_m_rt::entry;
 use stm32f1xx_hal::{pac, prelude::*, serial::Config};
 
@@ -62,9 +59,7 @@ fn main() -> ! {
 
     let delay = syst.delay(&rcc.clocks);
 
-    let serial_adapter = SerialAdapter::new(serial);
-
-    let mut device = JsyMk194g::new_default(serial_adapter, delay).expect("This should not fail");
+    let mut device = JsyMk194g::new_default(serial, delay).expect("This should not fail");
 
     loop {
         let stats = device.get_all_channels().unwrap();
