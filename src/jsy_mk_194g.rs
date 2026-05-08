@@ -2,7 +2,7 @@ use crate::error::JSYMk194Error;
 use crate::hal::*;
 use crate::registers::system_configuration_parameter::Id;
 pub struct JsyMk194g<Serial: Read + Write, D: DelayNs> {
-    pub device_address: Id,
+    pub(crate) device_address: Id,
     pub(crate) serial: Serial,
     pub(crate) delay: D,
 }
