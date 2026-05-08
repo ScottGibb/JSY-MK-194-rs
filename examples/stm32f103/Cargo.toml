@@ -1,0 +1,34 @@
+[package]
+name = "stm32f103"
+version = "0.1.0"
+edition = "2021"
+autotests = false
+
+[[bin]]
+name = "stm32f103"
+path = "src/main.rs"
+test = false
+bench = false
+
+
+[dependencies]
+embedded-hal = "1"
+embedded-hal-nb = "1"
+embedded-io = "0.7"
+nb = "1"
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+
+jsy-mk-194-rs = { path = "../../", features = [
+    "sync",
+    "defmt",
+], default-features = false }
+
+defmt = "1"
+defmt-rtt = "1"
+panic-probe = { version = "1", features = ["print-defmt"] }
+
+
+[dependencies.stm32f1xx-hal]
+version = "0.11.0"
+features = ["stm32f103", "medium"]

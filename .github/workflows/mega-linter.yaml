@@ -201,3 +201,30 @@ jobs:
         run: |
           cd examples/esp32c3 &
           cargo ${{ matrix.action.command }} ${{ matrix.action.args }}
+    
+  STM32F1_Example:
+    name: Lint STM32F1 Example
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        action:
+          - command: fmt
+            args: --all -- --check
+          - command: clippy
+            args: -- -D warnings
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          target: thumbv7m-none-eabi
+          toolchain: stable
+          components: rust-src, rustfmt, clippy
+      - name: Enable caching
+        uses: Swatinem/rust-cache@v2
+      - name: Run command
+        run: |
+          cd examples/stm32f103 &
+          cargo ${{ matrix.action.command }} ${{ matrix.action.args }}
