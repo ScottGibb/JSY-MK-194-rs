@@ -43,8 +43,8 @@ mod registers;
 pub mod error;
 pub mod jsy_mk_194g;
 
-pub mod getters;
-pub mod setters;
+mod getters;
+mod setters;
 
 pub mod types;
 pub mod units;
