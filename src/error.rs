@@ -4,34 +4,46 @@ use crate::hal;
 use crate::modbus::ModbusErrorResponse;
 use crate::modbus::types::FunctionCode;
 use crate::registers::RegisterAddress;
+
+/// The error type for all operations in this driver.
 #[derive(Debug)]
 #[non_exhaustive]
 pub enum JSYMk194Error {
-    /// An error occurred during I/O operations, such as reading from or writing to the device.
+    /// A low-level error occurred during I/O operations, such as reading from or writing to the device.
     Io(hal::ErrorKind),
-    /// The device returned an unexpected response or data format.
+    /// The device returned an unexpected response header that could not be parsed correctly, indicating a
+    /// potential communication issue or misalignment in the expected response format.
     InvalidHeader,
     /// The Write failed to write the expected number of bytes to the device.
     FailedToWrite {
+        /// Number of bytes actually written.
         written: usize,
+        /// Number of bytes expected to be written.
         expected: usize,
     },
     /// The Read failed to read the expected number of bytes from the device.
     FailedToRead {
+        /// Number of bytes actually read.
         read: usize,
+        /// Number of bytes expected to be read.
         expected: usize,
     },
-    /// An error occurred during a conversion process, this could mean data is corrupted, or this library has
-    /// not implemented the correct conversion for a specific type. That type should then be seen in the error string.
+    /// An error occurred during a conversion process, this could mean data is corrupted.
+    /// The specific conversion error is detailed in the [`ConversionError`] enum.
     ConversionError(ConversionError),
     /// The CRC check failed, indicating that the data received from the device may be corrupted or tampered with.
     CrcError {
+        /// CRC value computed from the received payload.
         actual: u16,
+        /// CRC value received from the device.
         expected: u16,
     },
-    /// The device responded with an error function code, indicating that the requested operation could not be completed successfully.
+    /// The device responded with an error [`FunctionCode`], indicating that the requested operation could not be completed successfully.
     DeviceErrorResponse(FunctionCode),
 
+    /// The device returned a [`ModbusErrorResponse`]. Inside this error we can see the full error response,
+    /// which includes the [`FunctionCode`] and the specific [`crate::modbus::ErrorCode`] returned by the device.
+    /// This allows for more detailed error handling based on the type of Modbus exception that occurred.
     ModBusDeviceError(ModbusErrorResponse),
 }
 
@@ -41,19 +53,28 @@ impl<E: hal::Error> From<E> for JSYMk194Error {
     }
 }
 
+/// Errors that occur while parsing, converting, or validating register data.
 #[derive(Debug)]
 #[non_exhaustive]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub enum ConversionError {
+    /// Register payload length did not match the expected length for the register.
     InvalidRegisterDataLength {
+        /// Number of bytes received.
         given_length: usize,
+        /// Register address that failed validation.
         address: RegisterAddress,
     },
+    /// Quantity of registers could not be converted to the required integer type.
     InvalidQuantityOfRegisters(TryFromIntError),
+    /// Byte count could not be converted to the required integer type.
     InvalidByteCount(TryFromIntError),
+    /// Register address is unknown to this library.
     UnknownRegister {
+        /// Raw register address value reported by the device.
         address: u16,
     },
+    /// Register value is outside supported bounds or an invalid enum discriminant.
     InvalidValue,
 }
 
