@@ -201,7 +201,7 @@ jobs:
         run: |
           cd examples/esp32c3 &
           cargo ${{ matrix.action.command }} ${{ matrix.action.args }}
-    
+
   STM32F1_Example:
     name: Lint STM32F1 Example
     runs-on: ubuntu-latest
