@@ -3,6 +3,9 @@ use crate::error::{ConversionError, JSYMk194Error};
 #[derive(Debug, Clone)]
 #[non_exhaustive]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
+/// Modbus function codes used by the JSY-MK-194 device.
+/// These function codes represent the various operations that can be performed on the device,
+/// such as reading and writing registers, and handling error responses.
 pub enum FunctionCode {
     ReadOneOrMoreRegisters = 0x03,
     WriteOneOrMoreRegisters = 0x10,
@@ -59,6 +62,7 @@ impl TryFrom<u8> for FunctionCode {
 #[allow(clippy::enum_variant_names)]
 #[non_exhaustive]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
+/// JSY-MK-194 Specific Error Code returned by the device in the case of an internal error, unrelated to the modbus protocol
 pub enum ErrorCode {
     /// Illegal function code, that is, the received function code module is not supported.
     IllegalFunction = 0x81,
