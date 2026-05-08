@@ -1,8 +1,8 @@
 use core::num::TryFromIntError;
 
 use crate::hal;
+use crate::modbus::FunctionCode;
 use crate::modbus::ModbusErrorResponse;
-use crate::modbus::types::FunctionCode;
 use crate::registers::RegisterAddress;
 
 /// The error type for all operations in this driver.

@@ -5,8 +5,9 @@ mod protocol;
 mod register_communications;
 mod requests;
 mod responses;
-pub mod types;
+mod types;
 
 pub use protocol::REQUEST_RESPONSE_DELAY;
 pub use responses::ModbusErrorResponse;
 pub use types::ErrorCode;
+pub use types::FunctionCode;

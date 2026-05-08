@@ -34,6 +34,9 @@
 //! `advanced` when you need direct register access.
 
 mod modbus;
+pub use modbus::ErrorCode;
+pub use modbus::FunctionCode;
+pub use modbus::ModbusErrorResponse;
 pub use modbus::REQUEST_RESPONSE_DELAY;
 #[cfg(feature = "advanced")]
 pub mod registers;
