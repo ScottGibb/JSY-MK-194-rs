@@ -15,8 +15,8 @@ pub struct ChannelStatistics {
     /// RMS current. Root mean square current is the effective current value that represents
     /// the equivalent DC current that would deliver the same power to a load.
     pub current: ElectricCurrent,
-    /// Active power. Active power is the real power consumed by a load in an AC circuit,
-    /// measured in watts (W). It represents the actual work done by the electrical energy.
+    /// Active power. Active power is the real power consumed by a load in an AC circuit.
+    /// It represents the actual work done by the electrical energy.
     pub active_power: Power,
     /// Positive active energy counter. This counter accumulates the total active energy consumed
     /// by the load in the positive direction.
