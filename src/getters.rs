@@ -14,6 +14,25 @@ use crate::{
     types::{Channel, ChannelStatistics, Statistics},
 };
 impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
+    /// Reads the configured Modbus device ID.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # fn example<S, D>(
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
+    /// # where
+    /// #     S: std::io::Read + std::io::Write,
+    /// #     D: embedded_hal::delay::DelayNs,
+    /// # {
+    /// let id = driver.get_id()?;
+    /// println!("Device ID: {id:?}");
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// For a full runnable example, see
+    /// [`examples/getters.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/getters.rs).
     #[maybe_async::maybe_async]
     pub async fn get_id(&mut self) -> Result<Id, JSYMk194Error> {
         let configuration_register = self
@@ -22,6 +41,25 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         let id = configuration_register.id;
         Ok(id)
     }
+    /// Reads the configured baud rate from the system configuration register.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # fn example<S, D>(
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
+    /// # where
+    /// #     S: std::io::Read + std::io::Write,
+    /// #     D: embedded_hal::delay::DelayNs,
+    /// # {
+    /// let baudrate = driver.get_baudrate()?;
+    /// println!("Baudrate: {baudrate:?}");
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// For a full runnable example, see
+    /// [`examples/getters.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/getters.rs).
     #[maybe_async::maybe_async]
     pub async fn get_baudrate(&mut self) -> Result<Baudrate, JSYMk194Error> {
         let configuration_register = self
@@ -31,6 +69,25 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         Ok(baudrate)
     }
 
+    /// Reads system-level parameters such as model and hardware ranges.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # fn example<S, D>(
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
+    /// # where
+    /// #     S: std::io::Read + std::io::Write,
+    /// #     D: embedded_hal::delay::DelayNs,
+    /// # {
+    /// let params = driver.get_system_parameters()?;
+    /// println!("{params}");
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// For a full runnable example, see
+    /// [`examples/getters.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/getters.rs).
     #[maybe_async::maybe_async]
     pub async fn get_system_parameters(&mut self) -> Result<SystemParameters, JSYMk194Error> {
         //TODO: replace this with a custom read to get all registers at the same time
@@ -51,12 +108,50 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
 }
 
 impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
+    /// Reads measurements for both channels in a single call.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # fn example<S, D>(
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
+    /// # where
+    /// #     S: std::io::Read + std::io::Write,
+    /// #     D: embedded_hal::delay::DelayNs,
+    /// # {
+    /// let stats = driver.get_all_channels()?;
+    /// println!("{stats}");
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// For a full runnable example, see
+    /// [`examples/getters.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/getters.rs).
     #[maybe_async::maybe_async]
     pub async fn get_all_channels(&mut self) -> Result<Statistics, JSYMk194Error> {
         let stats = self.read_statistics().await?;
         Ok(stats)
     }
 
+    /// Reads measurements for a specific channel.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # fn example<S, D>(
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
+    /// # where
+    /// #     S: std::io::Read + std::io::Write,
+    /// #     D: embedded_hal::delay::DelayNs,
+    /// # {
+    /// let channel_one = driver.get_channel(jsy_mk_194_rs::types::Channel::One)?;
+    /// println!("{channel_one}");
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// For a full runnable example, see
+    /// [`examples/getters.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/getters.rs).
     #[maybe_async::maybe_async]
     pub async fn get_channel(
         &mut self,
@@ -66,6 +161,25 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
         Ok(channel_statistics)
     }
 
+    /// Reads the measured line frequency.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # fn example<S, D>(
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
+    /// # where
+    /// #     S: std::io::Read + std::io::Write,
+    /// #     D: embedded_hal::delay::DelayNs,
+    /// # {
+    /// let frequency = driver.get_frequency()?;
+    /// println!("{} Hz", frequency.get::<jsy_mk_194_rs::units::hertz>());
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// For a full runnable example, see
+    /// [`examples/getters.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/getters.rs).
     #[maybe_async::maybe_async]
     pub async fn get_frequency(&mut self) -> Result<Frequency, JSYMk194Error> {
         let frequency_register = self.read_register::<FrequencyRegister>().await?;
@@ -73,6 +187,25 @@ impl<Serial: Read + Write, D: DelayNs> JsyMk194g<Serial, D> {
 
         Ok(Frequency::new::<hertz>(scaled_value))
     }
+    /// Reads the active power flow direction for a channel.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # fn example<S, D>(
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
+    /// # where
+    /// #     S: std::io::Read + std::io::Write,
+    /// #     D: embedded_hal::delay::DelayNs,
+    /// # {
+    /// let direction = driver.get_power_direction(jsy_mk_194_rs::types::Channel::One)?;
+    /// println!("{direction:?}");
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// For a full runnable example, see
+    /// [`examples/getters.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/getters.rs).
     #[maybe_async::maybe_async]
     pub async fn get_power_direction(
         &mut self,
