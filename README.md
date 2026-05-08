@@ -34,10 +34,17 @@ jsy-mk-194-rs = { version = "x.x", features = ["std-sync"] }
 jsy-mk-194-rs = { version = "x.x", default-features = false, features = ["async"] }
 ```
 
+`tokio-async` mode example:
+
+```toml
+[dependencies]
+jsy-mk-194-rs = { version = "x.x", default-features = false, features = ["tokio-async"] }
+```
+
 ## Why this crate
 
 - Multi-platform support via feature flags.
-- `sync` and `async` operation modes.
+- `sync`, `async`, `std-sync` and `tokio-async` operation modes.
 - Strongly typed measurements using uom (units of measurement), so APIs return quantities like voltage, current, frequency, and energy as typed values instead of raw floats.
 
 ## Feature flags
@@ -45,6 +52,7 @@ jsy-mk-194-rs = { version = "x.x", default-features = false, features = ["async"
 Only one runtime mode should be enabled at a time:
 
 - `std-sync` (default): desktop/std usage.
+- `tokio-async`: async desktop/std usage with `tokio::io`.
 - `sync`: no_std synchronous embedded usage.
 - `async`: no_std asynchronous embedded usage.
 - `advanced`: exposes low-level register modules and direct register read/write access.

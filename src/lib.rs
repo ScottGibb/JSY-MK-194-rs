@@ -7,6 +7,7 @@
 //! Exactly one runtime mode must be enabled:
 //!
 //! - `std-sync` (default): Synchronous desktop/`std` mode using `std::io`.
+//! - `tokio-async`: Asynchronous desktop/`std` mode using `tokio::io`.
 //! - `sync`: Synchronous `no_std` embedded mode using `embedded-io` and `embedded-hal`.
 //! - `async`: Asynchronous `no_std` embedded mode using `embedded-io-async` and
 //!   `embedded-hal-async`.
@@ -16,6 +17,9 @@
 //! ```toml
 //! # std-sync (default)
 //! jsy-mk-194-rs = { version = "x.y.z", features = ["std-sync"] }
+//!
+//! # tokio-async
+//! jsy-mk-194-rs = { version = "x.y.z", default-features = false, features = ["tokio-async"] }
 //!
 //! # sync
 //! jsy-mk-194-rs = { version = "x.y.z", default-features = false, features = ["sync"] }
