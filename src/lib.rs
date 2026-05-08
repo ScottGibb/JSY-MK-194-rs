@@ -1,5 +1,37 @@
 #![deny(unsafe_code)]
 #![cfg_attr(not(feature = "std-sync"), no_std)]
+//! Rust driver for the JSY MK-194 power monitor IC.
+//!
+//! # Feature flags
+//!
+//! Exactly one runtime mode must be enabled:
+//!
+//! - `std-sync` (default): Synchronous desktop/`std` mode using `std::io`.
+//! - `sync`: Synchronous `no_std` embedded mode using `embedded-io` and `embedded-hal`.
+//! - `async`: Asynchronous `no_std` embedded mode using `embedded-io-async` and
+//!   `embedded-hal-async`.
+//!
+//! You can select a runtime mode in your `Cargo.toml`:
+//!
+//! ```toml
+//! # std-sync (default)
+//! jsy-mk-194-rs = { version = "x.y.z", features = ["std-sync"] }
+//!
+//! # sync
+//! jsy-mk-194-rs = { version = "x.y.z", default-features = false, features = ["sync"] }
+//!
+//! # async
+//! jsy-mk-194-rs = { version = "x.y.z", default-features = false, features = ["async"] }
+//! ```
+//!
+//! ## `advanced` feature
+//!
+//! The optional `advanced` feature exposes low-level register APIs (including the public
+//! `registers` module and direct register read/write methods).
+//!
+//! This is intended for advanced usage where you need register-level control beyond the
+//! high-level getter/setter API. Prefer the high-level API when possible, and only enable
+//! `advanced` when you need direct register access.
 
 mod modbus;
 pub use modbus::REQUEST_RESPONSE_DELAY;
