@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2](https://github.com/ScottGibb/JSY-MK-194-rs/compare/v0.1.1...v0.1.2) - 2026-05-09
+
+### Added
+
+- add tokio support!
+- add patch release instead of fork
+- add sync embedded-hal example for stm32
+
+### Fixed
+
+- docs test
+- tokio dep
+- reduce tokio feature set
+- reduce scope of device id
+- public modules set to private
+- remove adapter from stm32 example
+
+### Other
+
+- defmt
+- add tokio-async feature
+- add missing sections
+- add missing types
+- add function code and Error Code
+- add delay description
+- change visibility of types
+- remove unwanted unit description
+- add types description
+- add Error descriptions
+- add struct docs
+- add missing units examples
+- :art: Applied MegaLinter Changes
+- Add docs test workflow
+- add docs.rs metadata to build with std-sync feature
+- *(api)* document constructors and setter methods
+- *(getters)* add rustdoc examples for getter APIs
+- add crate-level feature flag documentation
+
 ## [0.1.1](https://github.com/ScottGibb/JSY-MK-194-rs/compare/v0.1.0...v0.1.1) - 2026-05-07
 
 ### Other
