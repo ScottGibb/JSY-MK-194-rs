@@ -67,13 +67,9 @@ Only one runtime mode should be enabled at a time:
 
 ## Run examples
 
-The repository currently includes examples in the [examples](./examples/) directory. There is also an ESP32C3 example using embassy.
+The repository currently includes examples in the [examples](./examples/) directory. There is also an [ESP32C3 example](./examples/esp32c3/) using [embassy](https://embassy.dev/) and. a bare metal on [STM32F103C8T6](./examples/stm32f103/).
 
-You can run them like so:
-
-```bash
-cargo run --example getters --features std-sync
-```
+You more information on running the examples, please see the [Example README](./examples/README.md).
 
 ## Run tests
 
