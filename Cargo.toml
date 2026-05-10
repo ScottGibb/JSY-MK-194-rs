@@ -21,22 +21,27 @@ tokio-async = ["dep:embedded-hal-async", "dep:tokio"]
 sync = ["maybe-async/is_sync", "dep:embedded-io", "dep:embedded-hal"]
 async = ["dep:embedded-io-async", "dep:embedded-hal-async"]
 defmt = ["dep:defmt"]
-advanced = []
+advanced = []                                                         # Used to enable Register Access
 
 [dependencies]
-maybe-async = "0.2"
 uom = { version = "0.38", default-features = false, features = [
     "autoconvert",
     "si",
     "f32",
 ] }
 visibility = "0.1"
-
-embedded-io = { version = "0.7", optional = true }
-embedded-io-async = { version = "0.7", optional = true }
 defmt = { version = "1", optional = true }
+maybe-async = "0.2"
+
+# Sync HAL
 embedded-hal = { version = "1", optional = true }
+embedded-io = { version = "0.7", optional = true }
+
+# Async HAL
 embedded-hal-async = { version = "1", optional = true }
+embedded-io-async = { version = "0.7", optional = true }
+
+# Std Deps
 tokio = { version = "1", features = ["io-util", "time"], optional = true }
 
 [dev-dependencies]
