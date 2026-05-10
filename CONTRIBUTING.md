@@ -1,4 +1,4 @@
-# Contributing to AP33772S
+# Contributing to JSY-MK-194-rs
 
 Thank you for considering contributing to the JSY-MK-194-rs project! Contributions from everyone are welcome. Below are some guidelines to help you get started.
 
@@ -38,7 +38,7 @@ Thank you for considering contributing to the JSY-MK-194-rs project! Contributio
 
 ## Code Style
 
-- Follow the existing code style. This can be done by running `mega-linter-runner --fix` before your commit. This check will also run in the CI when doing a merge and point out any fixes that are required. More information on MegaLinter can be found o their [website here](https://megalinter.io/latest/)
+- Follow the existing code style. This can be done by running `mega-linter-runner --fix` before your commit. This check will also run in CI during merge checks and point out any required fixes. More information on MegaLinter can be found on their [website](https://megalinter.io/latest/).
 - Include comments where necessary.
 
 ## Reporting Issues

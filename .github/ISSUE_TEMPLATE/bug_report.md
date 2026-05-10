@@ -17,7 +17,7 @@ Steps to reproduce the behavior:
 2. Called Method Y
 3. See error / wrong value
 
-**Expected behaviour**
+**Expected behavior**
 A clear and concise description of what you expected to happen.
 
 **Screenshots**
@@ -27,7 +27,7 @@ If applicable, add screenshots to help explain your problem.
 
 - Device: [e.g. ESP32, STM32, Raspberry Pi]
 - OS: [e.g. Linux, MacOS] (if applicable)
-- OS Version: [e.g. Ubuntu 24.04.1, Sequioa 15.0.1]
+- OS Version: [e.g. Ubuntu 24.04.1, Sequoia 15.0.1]
 - Rust Version: [e.g. 1.83.0]
 - JSY-MK-194-rs Crate Version: [e.g. 0.1.0]
 - Other Crate Versions: [e.g. ESP-HAL]
