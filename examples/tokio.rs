@@ -8,9 +8,8 @@ fn main() {
 #[cfg(feature = "tokio-async")]
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    use jsy_mk_194_rs::{jsy_mk_194g::JsyMk194g, types::Baudrate};
+    use jsy_mk_194_rs::{delay::StdDelay, jsy_mk_194g::JsyMk194g, types::Baudrate};
     use tokio_serial::SerialPortBuilderExt;
-    use utils::StdDelay;
 
     let port = tokio_serial::new("/dev/tty.usbserial-0001", Baudrate::default().into())
         .open_native_async()?;
