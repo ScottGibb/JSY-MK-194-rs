@@ -1,6 +1,6 @@
 #![cfg_attr(not(all(feature = "std-sync", feature = "advanced")), allow(dead_code))]
 
-#[cfg(not(feature = "advanced"))]
+#[cfg(not(all(feature = "std-sync", feature = "advanced")))]
 fn main() {
     println!("This example needs advanced and std-sync enabled");
 }
