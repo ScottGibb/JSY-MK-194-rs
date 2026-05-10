@@ -155,7 +155,7 @@ jobs:
         run: |
           cd examples/esp32c3
           cargo build
-  
+
   build-stm32f103:
     name: Build for STM32F103 target
     runs-on: ubuntu-latest
@@ -177,4 +177,3 @@ jobs:
         run: |
           cd examples/stm32f103
           cargo build
-          
