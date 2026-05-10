@@ -45,11 +45,11 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Build (sync)
-        run: cargo build --no-default-features --features sync
+        run: cargo build --no-default-features --features sync --all-targets
       - name: Build with advanced feature
-        run: cargo build --no-default-features --features "sync advanced"
+        run: cargo build --no-default-features --features "sync advanced" --all-targets
       - name: Build with defmt feature
-        run: cargo build --no-default-features --features "sync defmt"
+        run: cargo build --no-default-features --features "sync defmt" --all-targets
 
   build-async:
     name: Build with async feature
@@ -68,11 +68,11 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Build
-        run: cargo build --no-default-features --features async
+        run: cargo build --no-default-features --features async --all-targets
       - name: Build with advanced feature
-        run: cargo build --no-default-features --features "async advanced"
+        run: cargo build --no-default-features --features "async advanced" --all-targets
       - name: Build with defmt feature
-        run: cargo build --no-default-features --features "async defmt"
+        run: cargo build --no-default-features --features "async defmt" --all-targets
 
   build-std-sync:
     name: Build with std-sync feature
@@ -91,9 +91,9 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Build
-        run: cargo build --no-default-features --features "std-sync"
+        run: cargo build --no-default-features --features "std-sync" --all-targets
       - name: Build with advanced feature
-        run: cargo build --no-default-features --features "std-sync advanced"
+        run: cargo build --no-default-features --features "std-sync advanced" --all-targets
 
   build-tokio-async:
     name: Build with tokio-async feature
@@ -112,9 +112,9 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Build
-        run: cargo build --no-default-features --features "tokio-async"
+        run: cargo build --no-default-features --features "tokio-async" --all-targets
       - name: Build with advanced feature
-        run: cargo build --no-default-features --features "tokio-async advanced"
+        run: cargo build --no-default-features --features "tokio-async advanced" --all-targets
 
   build-esp32c3:
     name: Build for ESP32-C3 target
