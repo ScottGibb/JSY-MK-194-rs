@@ -1,6 +1,6 @@
 [package]
 name = "jsy-mk-194-rs"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 authors = ["Scott Gibb <ssmgibb@yahoo.com>"]
 description = "A Rust driver for the JSY MK-194 power monitor IC, supporting both synchronous and asynchronous operation modes."
