@@ -94,7 +94,7 @@ jobs:
         run: cargo build --no-default-features --features "std-sync"
       - name: Build with advanced feature
         run: cargo build --no-default-features --features "std-sync advanced"
-  
+
   build-tokio-async:
     name: Build with tokio-async feature
     runs-on: ${{ matrix.os }}
