@@ -43,5 +43,3 @@ tokio = { version = "1", features = ["io-util"], optional = true }
 # Serial Ports
 serialport = "4"
 tokio-serial = "5"
-# Delay Implementations
-utils = { path = "./utils" }

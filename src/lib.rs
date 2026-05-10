@@ -63,6 +63,9 @@ pub mod registers;
 #[cfg(not(feature = "advanced"))]
 mod registers;
 
+#[cfg(any(feature = "tokio-async", feature = "std-sync"))]
+pub mod delay;
+
 pub mod error;
 pub mod jsy_mk_194g;
 
