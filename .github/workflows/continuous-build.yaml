@@ -115,6 +115,7 @@ jobs:
         run: cargo build --no-default-features --features "tokio-async"
       - name: Build with advanced feature
         run: cargo build --no-default-features --features "tokio-async advanced"
+
   build-esp32c3:
     name: Build for ESP32-C3 target
     runs-on: ubuntu-latest
@@ -131,4 +132,22 @@ jobs:
       - name: Install Rust target
         run: rustup target add riscv32imc-unknown-none-elf
       - name: Build for ESP32-C3
+        run: cargo build
+  
+  build-stm32f103:
+    name: Build for STM32F103 target
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Rust target
+        run: rustup target add thumbv7m-none-eabi
+      - name: Build for STM32F103
         run: cargo build
