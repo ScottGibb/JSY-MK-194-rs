@@ -4,7 +4,7 @@ Please include a summary of the changes and the related issue. Please also inclu
 
 ## Type of change
 
-Please Tick the options that are relevant.
+Please tick the options that are relevant.
 
 - [ ] Bug fix (non-breaking change which fixes an issue)
 - [ ] New feature (non-breaking change which adds functionality)
