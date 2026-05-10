@@ -7,7 +7,7 @@
 [![Crates.io Version](https://img.shields.io/crates/v/jsy-mk-194-rs?color=green)](https://crates.io/crates/jsy-mk-194-rs)
 [![Crates.io Downloads](https://img.shields.io/crates/dv/jsy-mk-194-rs)](https://crates.io/crates/jsy-mk-194-rs)
 
-Rust driver for the JSY MK-194 power monitor IC, designed for both desktop and embedded environments. Using `embedded-io` and `embedded-io-async` traits, allowing for true cross platform enablement.
+Rust driver for the JSY MK-194 power monitor IC, designed for both desktop and embedded environments. It uses `embedded-io` and `embedded-io-async` traits to enable true cross-platform support.
 
 ## Add to Cargo.toml
 
@@ -67,15 +67,15 @@ Only one runtime mode should be enabled at a time:
 
 ## Run examples
 
-The repository currently includes examples in the [examples](./examples/) directory. There is also an [ESP32C3 example](./examples/esp32c3/) using [embassy](https://embassy.dev/) and. a bare metal on [STM32F103C8T6](./examples/stm32f103/).
+The repository currently includes examples in the [examples](./examples/) directory. There is also an [ESP32C3 example](./examples/esp32c3/) using [Embassy](https://embassy.dev/) and a bare-metal example on [STM32F103C8T6](./examples/stm32f103/).
 
-You more information on running the examples, please see the [Example README](./examples/README.md).
+For more information on running the examples, please see the [Example README](./examples/README.md).
 
 ## Run tests
 
 Some integration tests require real JSY MK-194 hardware connected over serial. Tests should be run single-threaded to avoid hardware access conflicts.
 
-Run the full test suite with the `std-sync` flag, this is the easiest way and doesnt require any extra hardware other than a serial converter:
+Run the full test suite with the `std-sync` flag. This is the easiest way and doesn't require any extra hardware other than a serial converter:
 
 Run tests in std-sync mode explicitly:
 
