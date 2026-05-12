@@ -224,7 +224,7 @@ dependencies = [
 
 [[package]]
 name = "jsy-mk-194-rs"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "defmt",
  "embedded-hal 1.0.0",

@@ -6,7 +6,6 @@ use crate::{
         constants::{
             ALL_CHANNELS_NUM_READ_BYTES, CHANNEL_ONE_NUM_READ_BYTES, CHANNEL_TWO_NUM_READ_BYTES,
         },
-        protocol::DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY,
         requests::ReadRequest,
         responses::ReadResponse,
     },
