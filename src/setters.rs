@@ -52,7 +52,36 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
         Ok(())
     }
 
-    /// Sets the response delay used between request write and response read.
+    /// This method configures two separate delay values:
+    /// - `response_delay`: Applied after general register read/write operations
+    /// - `channel_response_delay`: Applied after channel-specific operations
+    ///
+    /// Adjusting these delays may be necessary when:
+    /// - Using longer serial cables that introduce propagation delays
+    /// - Operating at lower baud rates where device response is slower
+    /// - Experiencing communication timeouts or errors
+    ///
+    /// # Examples
+    /// ```rust
+    /// # fn example<S, D>(
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
+    /// # where
+    /// #     S: std::io::Read + std::io::Write,
+    /// #     D: embedded_hal::delay::DelayNs,
+    /// # {
+    /// use core::time::Duration;
+    ///
+    /// driver.set_response_delay(
+    ///     Duration::from_millis(100),
+    ///     Duration::from_millis(150),
+    /// );
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// For a full runnable example, see
+    /// [`examples/response_delay.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/response_delay.rs).
     pub fn set_response_delay(
         &mut self,
         response_delay: Duration,

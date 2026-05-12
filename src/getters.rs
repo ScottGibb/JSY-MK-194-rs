@@ -72,6 +72,32 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     }
 
     /// Gets the current response delay used between request write and response read.
+    ///
+    /// Returns a tuple containing:
+    /// - The general `response_delay` (first element)
+    /// - The `channel_response_delay` (second element)
+    ///
+    /// These values represent the configured wait times applied after Modbus
+    /// operations to ensure the device has sufficient time to respond.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # fn example<S, D>(
+    /// #     driver: &jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
+    /// # where
+    /// #     S: std::io::Read + std::io::Write,
+    /// #     D: embedded_hal::delay::DelayNs,
+    /// # {
+    /// let (response_delay, channel_response_delay) = driver.get_response_delay();
+    /// println!("Response delay: {:?}", response_delay);
+    /// println!("Channel response delay: {:?}", channel_response_delay);
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// For a full runnable example, see
+    /// [`examples/response_delay.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/response_delay.rs).
     pub fn get_response_delay(&self) -> (Duration, Duration) {
         (self.response_delay, self.channel_response_delay)
     }
