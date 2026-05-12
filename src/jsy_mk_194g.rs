@@ -26,6 +26,14 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     /// This constructor does not perform bus I/O. If you want to verify device
     /// connectivity during construction, use [`Self::new_default`] instead.
     ///
+    /// Note that if the provided `response_delay` and `channel_response_delay` are too short, the
+    /// driver may not wait long enough for the device to respond, which can lead to errors such as timeouts or CRC errors.
+    /// If you encounter such issues, consider increasing these delays to ensure reliable communication.
+    ///
+    /// Due to the `embedded-hal` traits used for DelayNs, the underlying duration implementation uses u32
+    /// where core uses u64, If an invalid duration is provided (e.g. one that exceeds the maximum value of u32 in nanoseconds), the driver will panic when it attempts to apply the delay. It's the caller's responsibility to ensure that the provided durations are valid and won't cause overflow issues.
+    /// the driver will throw a [`ConversionError`](crate::error::ConversionError) during a request.
+    ///
     /// # Examples
     /// ```rust
     /// # fn example<S, D>(serial: S, delay: D) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
