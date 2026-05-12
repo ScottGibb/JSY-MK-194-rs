@@ -2,7 +2,9 @@
 
 mod common;
 use common::setup_device;
+use core::time::Duration;
 use jsy_mk_194_rs::types::{Baudrate, Id};
+use jsy_mk_194_rs::{DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY, DEFAULT_REQUEST_RESPONSE_DELAY};
 use jsy_mk_194_rs::{types::Channel, units::Energy, units::kilowatt_hour};
 
 mod configuration_tests {
@@ -19,7 +21,7 @@ mod configuration_tests {
             println!("Original ID: {original_id:?}");
 
             device.set_id(new_id.clone()).expect("Failed to set new ID");
-            std::thread::sleep(jsy_mk_194_rs::REQUEST_RESPONSE_DELAY); // Give the device some time to process the change
+            std::thread::sleep(jsy_mk_194_rs::DEFAULT_REQUEST_RESPONSE_DELAY); // Give the device some time to process the change
             let updated_id = device.get_id().expect("Failed to read ID after update");
             println!("Updated ID: {:?}", updated_id.clone());
             assert_eq!(updated_id, new_id);
@@ -30,6 +32,34 @@ mod configuration_tests {
             println!("Reset ID: {reset_id:?}");
             assert_eq!(reset_id, Id::default());
         }
+    }
+    #[test]
+    fn test_set_response_delay() {
+        let new_duration = Duration::from_millis(100);
+        let mut device = setup_device(Id::default(), Baudrate::default());
+        assert_eq!(
+            device.get_response_delay(),
+            (
+                DEFAULT_REQUEST_RESPONSE_DELAY,
+                DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY
+            )
+        );
+
+        device.set_response_delay(new_duration, new_duration);
+        assert_eq!(device.get_response_delay(), (new_duration, new_duration));
+
+        // Reset the response delay back to the default value so it doesn't affect other tests
+        device.set_response_delay(
+            DEFAULT_REQUEST_RESPONSE_DELAY,
+            DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY,
+        );
+        assert_eq!(
+            device.get_response_delay(),
+            (
+                DEFAULT_REQUEST_RESPONSE_DELAY,
+                DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY
+            )
+        );
     }
     #[test]
     fn set_baudrate() {
@@ -43,7 +73,7 @@ mod configuration_tests {
             device
                 .set_baudrate(new_baudrate.clone())
                 .expect("Failed to set new Baudrate");
-            std::thread::sleep(jsy_mk_194_rs::REQUEST_RESPONSE_DELAY); // Give the device some time to process the change
+            std::thread::sleep(jsy_mk_194_rs::DEFAULT_REQUEST_RESPONSE_DELAY); // Give the device some time to process the change
         }
 
         {
@@ -87,11 +117,11 @@ mod energy_tests {
             "Original Active Energy: {:?} kWh",
             original_active_energy.get::<kilowatt_hour>()
         );
-        std::thread::sleep(jsy_mk_194_rs::REQUEST_RESPONSE_DELAY); // Give the device some time to process the read request
+        std::thread::sleep(jsy_mk_194_rs::DEFAULT_REQUEST_RESPONSE_DELAY); // Give the device some time to process the read request
         device
             .set_positive_active_energy(Channel::One, new_active_energy)
             .expect("Failed to set new active energy");
-        std::thread::sleep(jsy_mk_194_rs::REQUEST_RESPONSE_DELAY); // Give the device some time to process the write request
+        std::thread::sleep(jsy_mk_194_rs::DEFAULT_REQUEST_RESPONSE_DELAY); // Give the device some time to process the write request
 
         let updated_active_energy = device
             .get_channel(Channel::One)
@@ -132,11 +162,11 @@ mod energy_tests {
             "Original Active Energy: {:?} kWh",
             original_active_energy.get::<kilowatt_hour>()
         );
-        std::thread::sleep(jsy_mk_194_rs::REQUEST_RESPONSE_DELAY); // Give the device some time to process the read request
+        std::thread::sleep(jsy_mk_194_rs::DEFAULT_REQUEST_RESPONSE_DELAY); // Give the device some time to process the read request
         device
             .set_negative_active_energy(Channel::One, new_active_energy)
             .expect("Failed to set new active energy");
-        std::thread::sleep(jsy_mk_194_rs::REQUEST_RESPONSE_DELAY); // Give the device some time to process the write request
+        std::thread::sleep(jsy_mk_194_rs::DEFAULT_REQUEST_RESPONSE_DELAY); // Give the device some time to process the write request
 
         let updated_active_energy = device
             .get_channel(Channel::One)
@@ -177,11 +207,11 @@ mod energy_tests {
             "Original Active Energy: {:?} kWh",
             original_active_energy.get::<kilowatt_hour>()
         );
-        std::thread::sleep(jsy_mk_194_rs::REQUEST_RESPONSE_DELAY); // Give the device some time to process the read request
+        std::thread::sleep(jsy_mk_194_rs::DEFAULT_REQUEST_RESPONSE_DELAY); // Give the device some time to process the read request
         device
             .set_positive_active_energy(Channel::Two, new_active_energy)
             .expect("Failed to set new active energy");
-        std::thread::sleep(jsy_mk_194_rs::REQUEST_RESPONSE_DELAY); // Give the device some time to process the write request
+        std::thread::sleep(jsy_mk_194_rs::DEFAULT_REQUEST_RESPONSE_DELAY); // Give the device some time to process the write request
 
         let updated_active_energy = device
             .get_channel(Channel::Two)
@@ -221,11 +251,11 @@ mod energy_tests {
             "Original Active Energy: {:?} kWh",
             original_active_energy.get::<kilowatt_hour>()
         );
-        std::thread::sleep(jsy_mk_194_rs::REQUEST_RESPONSE_DELAY); // Give the device some time to process the read request
+        std::thread::sleep(jsy_mk_194_rs::DEFAULT_REQUEST_RESPONSE_DELAY); // Give the device some time to process the read request
         device
             .set_negative_active_energy(Channel::Two, new_active_energy)
             .expect("Failed to set new active energy");
-        std::thread::sleep(jsy_mk_194_rs::REQUEST_RESPONSE_DELAY); // Give the device some time to process the write request
+        std::thread::sleep(jsy_mk_194_rs::DEFAULT_REQUEST_RESPONSE_DELAY); // Give the device some time to process the write request
 
         let updated_active_energy = device
             .get_channel(Channel::Two)

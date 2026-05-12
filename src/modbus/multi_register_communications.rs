@@ -1,12 +1,12 @@
 use crate::{
-    error::JSYMk194Error,
+    error::{ConversionError, JSYMk194Error},
     hal::*,
     jsy_mk_194g::JsyMk194g,
     modbus::{
         constants::{
             ALL_CHANNELS_NUM_READ_BYTES, CHANNEL_ONE_NUM_READ_BYTES, CHANNEL_TWO_NUM_READ_BYTES,
         },
-        protocol::CHANNEL_REQUEST_RESPONSE_DELAY,
+        protocol::DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY,
         requests::ReadRequest,
         responses::ReadResponse,
     },
@@ -49,8 +49,9 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
         self.write_buffer(&read_request.to_bytes()).await?;
         self.delay
             .delay_ms(
-                u32::try_from(CHANNEL_REQUEST_RESPONSE_DELAY.as_millis())
-                    .expect("This should not fail to convert"),
+                u32::try_from(self.channel_response_delay.as_millis()).map_err(|err| {
+                    JSYMk194Error::ConversionError(ConversionError::InvalidTimingParameter(err))
+                })?,
             )
             .await;
 
@@ -177,8 +178,9 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
         self.write_buffer(&write_request.to_bytes()).await?;
         self.delay
             .delay_ms(
-                u32::try_from(CHANNEL_REQUEST_RESPONSE_DELAY.as_millis())
-                    .expect("This should not fail to convert"),
+                u32::try_from(self.channel_response_delay.as_millis()).map_err(|err| {
+                    JSYMk194Error::ConversionError(ConversionError::InvalidTimingParameter(err))
+                })?,
             )
             .await;
         let mut response_buff = [0u8; 256];

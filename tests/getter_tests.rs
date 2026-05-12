@@ -9,6 +9,7 @@ use jsy_mk_194_rs::types::{Baudrate, Id};
 use jsy_mk_194_rs::units::volt;
 use jsy_mk_194_rs::units::{Energy, Power};
 use jsy_mk_194_rs::units::{ampere, kilowatt_hour, watt};
+use jsy_mk_194_rs::{DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY, DEFAULT_REQUEST_RESPONSE_DELAY};
 use jsy_mk_194_rs::{
     types::ChannelStatistics,
     units::{ElectricCurrent, ElectricPotential},
@@ -33,8 +34,6 @@ fn fresh_channel_statistics() -> ChannelStatistics {
 #[cfg(test)]
 mod fresh_device_tests {
 
-    use jsy_mk_194_rs::types::PowerDirection;
-
     use super::*;
 
     #[test]
@@ -43,6 +42,18 @@ mod fresh_device_tests {
         let id = device.get_id().expect("This should not fail");
         println!("device Id {id:?}");
         assert_eq!(id, Id::default())
+    }
+
+    #[test]
+    fn test_get_response_delay() {
+        let device = setup_device(Id::default(), Baudrate::default());
+        assert_eq!(
+            device.get_response_delay(),
+            (
+                DEFAULT_REQUEST_RESPONSE_DELAY,
+                DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY
+            )
+        );
     }
 
     #[test]

@@ -1,3 +1,5 @@
+use core::time::Duration;
+
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
 use crate::registers::misc_registers::{FrequencyRegister, PowerDirection, PowerDirectionRegister};
@@ -67,6 +69,11 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
             .await?;
         let baudrate = configuration_register.baudrate;
         Ok(baudrate)
+    }
+
+    /// Gets the current response delay used between request write and response read.
+    pub fn get_response_delay(&self) -> (Duration, Duration) {
+        (self.response_delay, self.channel_response_delay)
     }
 
     /// Reads system-level parameters such as model and hardware ranges.

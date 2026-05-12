@@ -77,6 +77,8 @@ pub enum ConversionError {
     },
     /// Register value is outside supported bounds or an invalid enum discriminant.
     InvalidValue,
+    /// Invalid Timing Parameter value provided (e.g. for delay configuration).
+    InvalidTimingParameter(TryFromIntError),
 }
 
 #[cfg(feature = "defmt")]

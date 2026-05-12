@@ -1,3 +1,5 @@
+use core::time::Duration;
+
 use crate::error::JSYMk194Error;
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
@@ -48,6 +50,16 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
         };
         self.write_register(register).await?;
         Ok(())
+    }
+
+    /// Sets the response delay used between request write and response read.
+    pub fn set_response_delay(
+        &mut self,
+        response_delay: Duration,
+        channel_response_delay: Duration,
+    ) {
+        self.response_delay = response_delay;
+        self.channel_response_delay = channel_response_delay;
     }
 
     /// Sets the Modbus device ID.

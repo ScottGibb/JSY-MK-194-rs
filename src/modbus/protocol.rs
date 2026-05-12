@@ -11,14 +11,9 @@ use crate::{
 
 /// The JSY-MK-194 device has a minimum response time, this is used to ensure we wait long enoough,
 /// that the device can give us the correct information without erroring.
-pub const REQUEST_RESPONSE_DELAY: Duration = Duration::from_millis(400);
+pub const DEFAULT_REQUEST_RESPONSE_DELAY: Duration = Duration::from_millis(400);
 // When requesting channel data, the device takes longer to respond, so we need to wait a bit longer.
-pub const CHANNEL_REQUEST_RESPONSE_DELAY: Duration = Duration::from_millis(800);
-// Verify that REQUEST_RESPONSE_DELAY can fit in a u32 when converted to milliseconds, since that's the type used in the driver implementation. This is important to prevent overflow issues when converting the duration to milliseconds.
-const _: () = assert!(
-    REQUEST_RESPONSE_DELAY.as_millis() <= u32::MAX as u128,
-    "REQUEST_RESPONSE_DELAY must be less than or equal to u32::MAX milliseconds"
-);
+pub const DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY: Duration = Duration::from_millis(800);
 
 pub fn calculate_crc(data: &[u8]) -> u16 {
     let mut crc: u16 = 0xFFFF;
