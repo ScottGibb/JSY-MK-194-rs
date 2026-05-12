@@ -2,8 +2,10 @@
 
 use std::time::Duration;
 
+use jsy_mk_194_rs::DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY;
 use jsy_mk_194_rs::delay::StdDelay;
 use jsy_mk_194_rs::{
+    DEFAULT_REQUEST_RESPONSE_DELAY,
     jsy_mk_194g::JsyMk194g,
     types::{Baudrate, Id},
 };
@@ -16,7 +18,13 @@ pub fn setup_device(device_id: Id, baud: Baudrate) -> JsyMk194g<Box<dyn SerialPo
         .open()
         .expect("Failed to open port");
     let delay = StdDelay;
-    JsyMk194g::new(port, device_id, delay)
+    JsyMk194g::new(
+        port,
+        device_id,
+        delay,
+        DEFAULT_REQUEST_RESPONSE_DELAY,
+        DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY,
+    )
 }
 
 #[test]
@@ -43,8 +51,13 @@ pub fn find_device_test() {
                 .open();
             match port {
                 Ok(port) => {
-                    let mut device: JsyMk194g<Box<dyn SerialPort>, StdDelay> =
-                        JsyMk194g::new(port, Id::new(id).expect("This should not fail"), StdDelay);
+                    let mut device: JsyMk194g<Box<dyn SerialPort>, StdDelay> = JsyMk194g::new(
+                        port,
+                        Id::new(id).expect("This should not fail"),
+                        StdDelay,
+                        DEFAULT_REQUEST_RESPONSE_DELAY,
+                        DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY,
+                    );
                     let device_id = Id::new(id).expect("Should not fail");
                     match device.get_id() {
                         Ok(id) => {

@@ -1,7 +1,6 @@
 use crate::error::{ConversionError, JSYMk194Error};
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
-use crate::modbus::protocol::REQUEST_RESPONSE_DELAY;
 use crate::modbus::requests::{ReadRequest, WriteRequest};
 use crate::modbus::responses::{ReadResponse, WriteResponse};
 use crate::registers::traits::{self, Register};
@@ -18,7 +17,7 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
         self.write_buffer(&buff).await?;
         self.delay
             .delay_ms(
-                u32::try_from(REQUEST_RESPONSE_DELAY.as_millis())
+                u32::try_from(self.response_delay.as_millis())
                     .expect("This should not fail to convert"),
             )
             .await;
@@ -79,7 +78,7 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
 
         self.delay
             .delay_ms(
-                u32::try_from(REQUEST_RESPONSE_DELAY.as_millis())
+                u32::try_from(self.response_delay.as_millis())
                     .expect("This should not fail to convert"),
             )
             .await;

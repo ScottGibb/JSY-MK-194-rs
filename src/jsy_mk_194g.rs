@@ -1,5 +1,9 @@
+use core::time::Duration;
+
 use crate::error::JSYMk194Error;
 use crate::hal::*;
+use crate::modbus::DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY;
+use crate::modbus::DEFAULT_REQUEST_RESPONSE_DELAY;
 use crate::registers::system_configuration_parameter::Id;
 
 /// Driver for communicating with a JSY MK-194 power monitor over Modbus RTU.
@@ -12,6 +16,8 @@ pub struct JsyMk194g<Serial: ReadWrite, D: DelayNs> {
     pub(crate) device_address: Id,
     pub(crate) serial: Serial,
     pub(crate) delay: D,
+    pub(crate) response_delay: Duration,
+    pub(crate) channel_response_delay: Duration,
 }
 
 impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
@@ -31,16 +37,26 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     ///     serial,
     ///     jsy_mk_194_rs::types::Id::new(1)?,
     ///     delay,
+    ///     jsy_mk_194_rs::DEFAULT_REQUEST_RESPONSE_DELAY,
+    ///     jsy_mk_194_rs::DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY,
     /// );
     /// # let _ = driver;
     /// # Ok(())
     /// # }
     /// ```
-    pub fn new(serial: Serial, device_address: Id, delay: D) -> Self {
+    pub fn new(
+        serial: Serial,
+        device_address: Id,
+        delay: D,
+        response_delay: Duration,
+        channel_response_delay: Duration,
+    ) -> Self {
         Self {
             serial,
             device_address,
             delay,
+            response_delay,
+            channel_response_delay,
         }
     }
     /// Creates a driver using the default device address and validates
@@ -69,6 +85,8 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
             serial,
             device_address: Id::default(),
             delay,
+            response_delay: DEFAULT_REQUEST_RESPONSE_DELAY,
+            channel_response_delay: DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY,
         };
         // Check if we can get the ID
         device.get_id().await?;

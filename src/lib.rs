@@ -54,10 +54,11 @@
 //! `advanced` when you need direct register access.
 
 mod modbus;
+pub use modbus::DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY;
+pub use modbus::DEFAULT_REQUEST_RESPONSE_DELAY;
 pub use modbus::ErrorCode;
 pub use modbus::FunctionCode;
 pub use modbus::ModbusErrorResponse;
-pub use modbus::REQUEST_RESPONSE_DELAY;
 #[cfg(feature = "advanced")]
 pub mod registers;
 #[cfg(not(feature = "advanced"))]
