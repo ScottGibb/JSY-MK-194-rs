@@ -13,10 +13,15 @@ use crate::registers::system_configuration_parameter::Id;
 /// Construct with [`Self::new`] when you already know the device ID, or
 /// [`Self::new_default`] to probe connectivity using the default address.
 pub struct JsyMk194g<Serial: ReadWrite, D: DelayNs> {
+    /// The Modbus device ID of the JSY MK-194. This is used in the Modbus request
     pub(crate) device_address: Id,
+    /// The serial transport for communicating with the device.
     pub(crate) serial: Serial,
+    /// The delay provider for timing Modbus requests.
     pub(crate) delay: D,
+    /// The delay to wait after sending a request before attempting to read the response.
     pub(crate) response_delay: Duration,
+    /// The delay to wait after sending a channel data request before attempting to read the response.
     pub(crate) channel_response_delay: Duration,
 }
 
