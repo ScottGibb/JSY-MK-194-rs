@@ -61,6 +61,9 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     /// - Operating at lower baud rates where device response is slower
     /// - Experiencing communication timeouts or errors
     ///
+    ///  Due to the `embedded-hal` traits used for DelayNs, the underlying duration implementation uses u32
+    ///  where core uses u64, If an invalid duration is provided (e.g. one that exceeds the maximum value of u32 in nanoseconds), the driver will panic when it attempts to apply the delay. It's the caller's responsibility to ensure that the provided durations are valid and won't cause overflow issues.
+    ///  the driver will throw a [`ConversionError`](crate::error::ConversionError) during a request.
     /// # Examples
     /// ```rust
     /// # fn example<S, D>(
