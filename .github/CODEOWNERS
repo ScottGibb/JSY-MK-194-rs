@@ -5,6 +5,10 @@
 # Override the default owners and remove ownership for Cargo.toml files to allow auto dependabot updates
 
 Cargo.toml
+examples/esp32c3/Cargo.toml
+examples/esp32c3/Cargo.lock
+examples/stm32f103/Cargo.toml
+examples/stm32f103/Cargo.lock
 
 # Override the default owners and remove ownership for the .github/workflows directory
 
