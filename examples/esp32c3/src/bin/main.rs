@@ -14,6 +14,7 @@ use esp_hal::clock::CpuClock;
 use esp_hal::timer::timg::TimerGroup;
 use esp_hal::uart::{Config, Uart};
 use jsy_mk_194_rs::jsy_mk_194g::JsyMk194g;
+use jsy_mk_194_rs::types::Baudrate;
 
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
@@ -48,23 +49,28 @@ async fn main(spawner: Spawner) -> ! {
 
     // Use UART1 for meter communication (UART0 is typically console/bootloader)
     // ESP32C3 default UART1 pins: GPIO9=TX, GPIO10=RX
-    let uart = Uart::new(peripherals.UART1, Config::default())
+    let baud = u32::from(Baudrate::default());
+    info!("Configuring UART1 at {} baud", baud);
+
+    let uart_config = Config::default().with_baudrate(baud);
+    let uart = Uart::new(peripherals.UART1, uart_config)
         .expect("UART1 init failed")
         .with_tx(peripherals.GPIO9)
         .with_rx(peripherals.GPIO10)
         .into_async();
-    info!("UART1 configured on GPIO9(TX)/GPIO10(RX)");
+    info!("UART1 configured on GPIO9(TX)/GPIO10(RX) at {} baud", baud);
 
     let delay = embassy_time::Delay;
 
-    info!("Initializing JSY driver...");
+    info!("Initializing JSY driver (will attempt to read device ID)...");
     let mut driver = match JsyMk194g::new_default(uart, delay).await {
         Ok(d) => {
-            info!("JSY driver initialized successfully");
+            info!("JSY driver initialized successfully!");
             d
         }
         Err(e) => {
             error!("JSY driver init failed: {:?}", e);
+            error!("Check wiring: ESP32 GPIO9→Meter RX, GPIO10→Meter TX, GND connected");
             loop {}
         }
     };
