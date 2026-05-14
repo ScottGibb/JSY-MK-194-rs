@@ -7,7 +7,7 @@
 )]
 #![deny(clippy::large_stack_frames)]
 
-use defmt::info;
+use defmt::{error, info};
 use embassy_executor::Spawner;
 use embassy_time::{Duration, Timer};
 use esp_hal::clock::CpuClock;
@@ -16,7 +16,8 @@ use esp_hal::uart::{Config, Uart};
 use jsy_mk_194_rs::jsy_mk_194g::JsyMk194g;
 
 #[panic_handler]
-fn panic(_: &core::panic::PanicInfo) -> ! {
+fn panic(info: &core::panic::PanicInfo) -> ! {
+    error!("PANIC: {}", defmt::Display2Format(info));
     loop {}
 }
 
@@ -33,37 +34,52 @@ async fn main(spawner: Spawner) -> ! {
     // generator version: 1.2.0
 
     rtt_target::rtt_init_defmt!();
+    info!("RTT initialized, starting ESP32C3 JSY example...");
 
     let config = esp_hal::Config::default().with_cpu_clock(CpuClock::max());
     let peripherals = esp_hal::init(config);
+    info!("Peripherals initialized");
 
     let timg0 = TimerGroup::new(peripherals.TIMG0);
     let sw_interrupt =
         esp_hal::interrupt::software::SoftwareInterruptControl::new(peripherals.SW_INTERRUPT);
     esp_rtos::start(timg0.timer0, sw_interrupt.software_interrupt0);
+    info!("Embassy RTOS started");
 
-    // Get the Serial Port for the device
-    let uart = Uart::new(peripherals.UART0, Config::default())
-        .expect("This shouldnt fail.")
-        .with_rx(peripherals.GPIO1)
-        .with_tx(peripherals.GPIO2)
+    // Use UART1 for meter communication (UART0 is typically console/bootloader)
+    // ESP32C3 default UART1 pins: GPIO9=TX, GPIO10=RX
+    let uart = Uart::new(peripherals.UART1, Config::default())
+        .expect("UART1 init failed")
+        .with_tx(peripherals.GPIO9)
+        .with_rx(peripherals.GPIO10)
         .into_async();
+    info!("UART1 configured on GPIO9(TX)/GPIO10(RX)");
 
     let delay = embassy_time::Delay;
 
-    let mut driver = JsyMk194g::new_default(uart, delay)
-        .await
-        .expect("Should not fail");
+    info!("Initializing JSY driver...");
+    let mut driver = match JsyMk194g::new_default(uart, delay).await {
+        Ok(d) => {
+            info!("JSY driver initialized successfully");
+            d
+        }
+        Err(e) => {
+            error!("JSY driver init failed: {:?}", e);
+            loop {}
+        }
+    };
 
     info!("Embassy initialized!");
 
     let _ = spawner;
 
     loop {
-        info!("Reading some Async Measurements!");
+        info!("Reading async measurements...");
         Timer::after(Duration::from_secs(1)).await;
-        let stats = driver.read_statistics().await.expect("Should not fail");
-        info!("Stats: {}", stats);
+        match driver.read_statistics().await {
+            Ok(stats) => info!("Stats: {}", stats),
+            Err(e) => error!("Read failed: {:?}", e),
+        }
     }
 
     // for inspiration have a look at the examples at https://github.com/esp-rs/esp-hal/tree/esp-hal-v1.0.0/examples
