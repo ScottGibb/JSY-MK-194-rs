@@ -9,7 +9,7 @@
 
 use defmt::{error, info};
 use embassy_executor::Spawner;
-use embassy_time::{Duration, Timer};
+use embassy_time::{Duration, Timer, with_timeout};
 use esp_hal::clock::CpuClock;
 use esp_hal::timer::timg::TimerGroup;
 use esp_hal::uart::{Config, Uart};
@@ -63,17 +63,23 @@ async fn main(spawner: Spawner) -> ! {
     let delay = embassy_time::Delay;
 
     info!("Initializing JSY driver (will attempt to read device ID)...");
-    let mut driver = match JsyMk194g::new_default(uart, delay).await {
-        Ok(d) => {
-            info!("JSY driver initialized successfully!");
-            d
-        }
-        Err(e) => {
-            error!("JSY driver init failed: {:?}", e);
-            error!("Check wiring: ESP32 GPIO9→Meter RX, GPIO10→Meter TX, GND connected");
-            loop {}
-        }
-    };
+    let mut driver =
+        match with_timeout(Duration::from_secs(3), JsyMk194g::new_default(uart, delay)).await {
+            Ok(Ok(d)) => {
+                info!("JSY driver initialized successfully!");
+                d
+            }
+            Ok(Err(e)) => {
+                error!("JSY driver init failed: {:?}", e);
+                error!("Check wiring: ESP32 GPIO9→Meter RX, GPIO10→Meter TX, GND connected");
+                panic!("JSY driver initialization failed");
+            }
+            Err(_) => {
+                error!("JSY driver init timed out after 3 seconds");
+                error!("Check: 1) Meter powered 2) Wiring correct 3) Baud rate matches");
+                panic!("JSY driver initialization timed out");
+            }
+        };
 
     info!("Embassy initialized!");
 
@@ -82,9 +88,11 @@ async fn main(spawner: Spawner) -> ! {
     loop {
         info!("Reading async measurements...");
         Timer::after(Duration::from_secs(1)).await;
-        match driver.read_statistics().await {
-            Ok(stats) => info!("Stats: {}", stats),
-            Err(e) => error!("Read failed: {:?}", e),
+
+        match with_timeout(Duration::from_secs(2), driver.read_statistics()).await {
+            Ok(Ok(stats)) => info!("Stats: {}", stats),
+            Ok(Err(e)) => error!("Read failed: {:?}", e),
+            Err(_) => error!("Read timed out after 2 seconds - meter not responding"),
         }
     }
 
