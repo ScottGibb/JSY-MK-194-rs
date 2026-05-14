@@ -49,7 +49,7 @@ fn main() -> ! {
     // Set up the usart device. Take ownership over the USART register and tx/rx pins. The rest of
     // the registers are used to enable and configure the device.
 
-    let baudrate = u32::from(u8::from(Baudrate::_4800));
+    let baudrate = u32::from(Baudrate::default());
 
     let serial = p.USART3.serial(
         (tx, rx),
