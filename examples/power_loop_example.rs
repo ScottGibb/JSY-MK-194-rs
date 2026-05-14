@@ -34,33 +34,27 @@ fn main() {
     let mut driver =
         JsyMk194g::new_default(port, delay).expect(" The Device should be on this port");
 
-    let system_parameters = driver
-        .get_system_parameters()
-        .expect("Failed to read system parameters");
+    let system_parameters = driver.get_system_parameters().unwrap();
     println!("System parameters: {system_parameters}");
 
-    let baudrate = driver.get_baudrate().expect("Failed to read baudrate");
+    let baudrate = driver.get_baudrate().unwrap();
     println!("Baudrate: {baudrate:?}");
 
-    let frequency = driver.get_frequency().expect("Failed to read frequency");
+    let frequency = driver.get_frequency().unwrap();
     println!("Frequency: {} Hz", frequency.get::<hertz>());
 
     println!("------------------------");
     println!("Reading Voltages...");
 
     loop {
-        let channel_one = driver
-            .get_channel(Channel::One)
-            .expect("Failed to read channel one");
+        let channel_one = driver.get_channel(Channel::One).unwrap();
         println!(
             "Channel One Power: {} W",
             channel_one.active_power.get::<watt>()
         );
         println!("Power direction: {}", channel_one.power_direction);
 
-        let channel_two = driver
-            .get_channel(Channel::Two)
-            .expect("Failed to read channel two");
+        let channel_two = driver.get_channel(Channel::Two).unwrap();
         println!(
             "Channel Two Power: {} W",
             channel_two.active_power.get::<watt>()

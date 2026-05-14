@@ -14,9 +14,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let port = tokio_serial::new("/dev/tty.usbserial-0001", Baudrate::default().into())
         .open_native_async()?;
 
-    let mut device = JsyMk194g::new_default(port, StdDelay)
-        .await
-        .expect("this should not fail");
+    let mut device = JsyMk194g::new_default(port, StdDelay).await.unwrap();
 
     // Example: Read the device ID
     let id = device.get_id().await.unwrap();

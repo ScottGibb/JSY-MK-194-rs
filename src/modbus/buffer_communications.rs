@@ -7,16 +7,16 @@ use crate::modbus::responses::ModbusErrorResponse;
 impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub(crate) async fn write_buffer(&mut self, buffer: &[u8]) -> Result<(), JSYMk194Error> {
-        let bytes_written = self.serial.write(buffer).await?;
-        // println!(
-        //     "[Modbus] Raw request bytes   :  {:02X?}",
-        //     &buffer[..bytes_written]
-        // );
-        if bytes_written < buffer.len() {
-            return Err(JSYMk194Error::FailedToWrite {
-                written: bytes_written,
-                expected: buffer.len(),
-            });
+        let mut total_written = 0;
+        while total_written < buffer.len() {
+            let bytes_written = self.serial.write(&buffer[total_written..]).await?;
+            if bytes_written == 0 {
+                return Err(JSYMk194Error::FailedToWrite {
+                    written: total_written,
+                    expected: buffer.len(),
+                });
+            }
+            total_written += bytes_written;
         }
         Ok(())
     }

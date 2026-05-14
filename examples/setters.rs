@@ -34,22 +34,18 @@ fn main() {
     let mut driver =
         JsyMk194g::new_default(port, delay).expect(" The Device should be on this port");
 
-    let channel_stats = driver
-        .get_channel(Channel::One)
-        .expect("Failed to read channel one");
+    let channel_stats = driver.get_channel(Channel::One).unwrap();
     println!("Channel One :\n  {channel_stats}");
     println!("------------------------");
 
     driver
         .set_positive_active_energy(Channel::One, Energy::new::<kilowatt_hour>(100.0))
-        .expect("Failed to set positive active energy");
+        .unwrap();
 
     driver
         .set_negative_active_energy(Channel::One, Energy::new::<kilowatt_hour>(150.0))
-        .expect("Failed to set negative active energy");
+        .unwrap();
 
-    let new_stats = driver
-        .get_channel(Channel::One)
-        .expect("Failed to read channel one");
+    let new_stats = driver.get_channel(Channel::One).unwrap();
     println!("Channel One after setting energy : \n  {new_stats}");
 }

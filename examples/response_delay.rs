@@ -29,6 +29,6 @@ fn main() {
     driver.set_response_delay(Duration::from_millis(600), Duration::from_millis(700));
     println!("Updated response delay: {:?}", driver.get_response_delay());
 
-    let id = driver.get_id().expect("Failed to read ID");
+    let id = driver.get_id().unwrap();
     println!("Device ID: {id:?}");
 }

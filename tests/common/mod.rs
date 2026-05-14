@@ -53,7 +53,7 @@ pub fn find_device_test() {
                 Ok(port) => {
                     let mut device: JsyMk194g<Box<dyn SerialPort>, StdDelay> = JsyMk194g::new(
                         port,
-                        Id::new(id).expect("This should not fail"),
+                        Id::new(id).unwrap(),
                         StdDelay,
                         DEFAULT_REQUEST_RESPONSE_DELAY,
                         DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY,

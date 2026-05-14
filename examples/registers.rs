@@ -36,7 +36,7 @@ fn main() {
 
     let system_configuration_parameters_register = driver
         .read_register::<SystemConfigurationParameterRegister>()
-        .expect("Failed to read System Configuration Parameter register");
+        .unwrap();
 
     println!(
         "System Configuration Parameter Register: {system_configuration_parameters_register:?}"

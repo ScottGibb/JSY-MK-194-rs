@@ -34,48 +34,36 @@ fn main() {
     let mut driver =
         JsyMk194g::new_default(port, delay).expect(" The Device should be on this port");
 
-    let system_parameters = driver
-        .get_system_parameters()
-        .expect("Failed to read system parameters");
+    let system_parameters = driver.get_system_parameters().unwrap();
     println!("System parameters: {system_parameters}");
 
-    let baudrate = driver.get_baudrate().expect("Failed to read baudrate");
+    let baudrate = driver.get_baudrate().unwrap();
     println!("Baudrate: {baudrate:?}");
 
-    let frequency = driver.get_frequency().expect("Failed to read frequency");
+    let frequency = driver.get_frequency().unwrap();
     println!("Frequency: {} Hz", frequency.get::<hertz>());
 
     println!("------------------------");
     println!("Reading all channels...");
-    let stats = driver
-        .get_all_channels()
-        .expect("Failed to read all channels");
+    let stats = driver.get_all_channels().unwrap();
     println!("Statistics: {stats}");
 
     println!("------------------------");
     println!("Reading channels individually...");
-    let channel_one = driver
-        .get_channel(Channel::One)
-        .expect("Failed to read channel one");
+    let channel_one = driver.get_channel(Channel::One).unwrap();
     println!("Channel One: {channel_one}");
 
-    let channel_two = driver
-        .get_channel(Channel::Two)
-        .expect("Failed to read channel two");
+    let channel_two = driver.get_channel(Channel::Two).unwrap();
     println!("Channel Two: {channel_two}");
 
     println!("------------------------");
-    let frequency = driver.get_frequency().expect("Failed to read frequency");
+    let frequency = driver.get_frequency().unwrap();
     println!("Frequency: {} Hz", frequency.get::<hertz>());
 
     println!("------------------------");
-    let power_direction = driver
-        .get_power_direction(Channel::One)
-        .expect("Failed to read power direction");
+    let power_direction = driver.get_power_direction(Channel::One).unwrap();
     println!(" Channel One Power Direction: {power_direction:?}");
 
-    let power_direction = driver
-        .get_power_direction(Channel::Two)
-        .expect("Failed to read power direction");
+    let power_direction = driver.get_power_direction(Channel::Two).unwrap();
     println!(" Channel Two Power Direction: {power_direction:?}");
 }

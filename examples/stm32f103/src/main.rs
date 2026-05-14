@@ -59,7 +59,7 @@ fn main() -> ! {
 
     let delay = syst.delay(&rcc.clocks);
 
-    let mut device = JsyMk194g::new_default(serial, delay).expect("This should not fail");
+    let mut device = JsyMk194g::new_default(serial, delay).unwrap();
 
     loop {
         let stats = device.get_all_channels().unwrap();
