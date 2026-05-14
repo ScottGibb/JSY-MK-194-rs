@@ -40,8 +40,11 @@ impl Register for PowerDirectionRegister {
                 },
             ));
         }
-        let first_channel = PowerDirection::try_from(u16::from_le_bytes([bytes[0], bytes[1]]))?;
-        let second_channel = PowerDirection::try_from(u16::from_le_bytes([bytes[2], bytes[3]]))?;
+        // Datasheet layout for 0x004E stores direction flags in the first two bytes:
+        // byte 0 -> channel one (0=positive, 1=negative)
+        // byte 1 -> channel two (0=positive, 1=negative)
+        let first_channel = PowerDirection::try_from(bytes[0])?;
+        let second_channel = PowerDirection::try_from(bytes[1])?;
         Ok(Self {
             first_channel,
             second_channel,
@@ -58,12 +61,11 @@ impl Register for PowerDirectionRegister {
             ));
         }
 
-        let first_channel_bytes = (u16::from(self.first_channel.clone())).to_be_bytes();
-        let second_channel_bytes = (u16::from(self.second_channel.clone())).to_be_bytes();
-        bytes[0] = first_channel_bytes[0];
-        bytes[1] = first_channel_bytes[1];
-        bytes[2] = second_channel_bytes[0];
-        bytes[3] = second_channel_bytes[1];
+        bytes[0] = u8::from(self.first_channel.clone());
+        bytes[1] = u8::from(self.second_channel.clone());
+        // The remaining two bytes are reserved for this register in current protocol docs.
+        bytes[2] = 0;
+        bytes[3] = 0;
         Ok(())
     }
 }
@@ -78,10 +80,11 @@ pub enum PowerDirection {
     /// Power is flowing in the negative direction.
     Negative = 1,
 }
-impl TryFrom<u16> for PowerDirection {
+
+impl TryFrom<u8> for PowerDirection {
     type Error = JSYMk194Error;
 
-    fn try_from(value: u16) -> Result<Self, Self::Error> {
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
             0 => Ok(PowerDirection::Positive),
             1 => Ok(PowerDirection::Negative),
@@ -91,9 +94,10 @@ impl TryFrom<u16> for PowerDirection {
         }
     }
 }
-impl From<PowerDirection> for u16 {
+
+impl From<PowerDirection> for u8 {
     fn from(direction: PowerDirection) -> Self {
-        direction as u16
+        direction as u8
     }
 }
 

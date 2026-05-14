@@ -56,6 +56,7 @@ fn main() {
             "Channel One Power: {} W",
             channel_one.active_power.get::<watt>()
         );
+        println!("Power direction: {}", channel_one.power_direction);
 
         let channel_two = driver
             .get_channel(Channel::Two)
@@ -64,7 +65,7 @@ fn main() {
             "Channel Two Power: {} W",
             channel_two.active_power.get::<watt>()
         );
-
+        println!("Power direction: {}", channel_two.power_direction);
         println!("------------------------");
         std::thread::sleep(Duration::from_secs(1));
     }
