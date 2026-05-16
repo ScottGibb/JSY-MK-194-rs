@@ -1,5 +1,4 @@
 use crate::{
-    define_scaled_register,
     error::{ConversionError, JSYMk194Error},
     registers::{
         RegisterAddress, scalars,

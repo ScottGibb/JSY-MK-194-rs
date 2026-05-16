@@ -1,4 +1,3 @@
-#[macro_export]
 macro_rules! define_register {
     // With explicit default
     ($name:ident, $data_type:ty, $address:expr, $default:expr) => {
@@ -72,7 +71,6 @@ macro_rules! define_register {
     };
 }
 
-#[macro_export]
 macro_rules! define_scaled_register {
     // With explicit default
     ($name:ident, $data_type:ty, $address:expr, $default:expr, $scale:expr) => {

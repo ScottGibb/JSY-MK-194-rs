@@ -1,10 +1,7 @@
-use crate::{
-    define_scaled_register,
-    registers::{
-        RegisterAddress,
-        scalars::{self, VOLTAGE_SCALAR},
-        traits::{ReadRegister, WriteRegister},
-    },
+use crate::registers::{
+    RegisterAddress,
+    scalars::{self, VOLTAGE_SCALAR},
+    traits::{ReadRegister, WriteRegister},
 };
 
 define_scaled_register!(
