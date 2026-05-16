@@ -109,6 +109,14 @@ impl core::fmt::Display for PowerDirection {
         }
     }
 }
+impl AsRef<str> for PowerDirection {
+    fn as_ref(&self) -> &str {
+        match self {
+            PowerDirection::Positive => "Positive",
+            PowerDirection::Negative => "Negative",
+        }
+    }
+}
 
 define_scaled_register!(
     FrequencyRegister,

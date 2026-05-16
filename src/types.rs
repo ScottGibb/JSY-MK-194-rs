@@ -40,13 +40,14 @@ impl core::fmt::Display for ChannelStatistics {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(
             f,
-            "Voltage: {} V, Current: {} A, Active Power: {} W, Positive Active Energy: {} kWh, Negative Active Energy: {} kWh, Power Factor: {}",
+            "Voltage: {} V, Current: {} A, Active Power: {} W, Positive Active Energy: {} kWh, Negative Active Energy: {} kWh, Power Factor: {}, Power Direction: {}",
             self.voltage.get::<volt>(),
             self.current.get::<ampere>(),
             self.active_power.get::<watt>(),
             self.positive_active_energy.get::<kilowatt_hour>(),
             self.negative_active_energy.get::<kilowatt_hour>(),
-            self.power_factor
+            self.power_factor,
+            self.power_direction.as_ref()
         )
     }
 }
@@ -56,13 +57,14 @@ impl defmt::Format for ChannelStatistics {
     fn format(&self, fmt: defmt::Formatter) {
         defmt::write!(
             fmt,
-            "Voltage: {} V, Current: {} A, Active Power: {} W, Positive Active Energy: {} kWh, Negative Active Energy: {} kWh, Power Factor: {}",
+            "Voltage: {} V, Current: {} A, Active Power: {} W, Positive Active Energy: {} kWh, Negative Active Energy: {} kWh, Power Factor: {}, Power Direction: {}",
             self.voltage.get::<volt>(),
             self.current.get::<ampere>(),
             self.active_power.get::<watt>(),
             self.positive_active_energy.get::<kilowatt_hour>(),
             self.negative_active_energy.get::<kilowatt_hour>(),
-            self.power_factor
+            self.power_factor,
+            self.power_direction.as_ref()
         );
     }
 }
