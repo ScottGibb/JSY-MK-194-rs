@@ -1,9 +1,6 @@
-use crate::{
-    define_register, define_scaled_register,
-    registers::{
-        scalars::{CURRENT_RANGE_SCALAR, VOLTAGE_RANGE_SCALAR},
-        traits::ReadRegister,
-    },
+use crate::registers::{
+    scalars::{CURRENT_RANGE_SCALAR, VOLTAGE_RANGE_SCALAR},
+    traits::ReadRegister,
 };
 
 define_register!(

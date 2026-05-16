@@ -1,8 +1,9 @@
 use crate::error::{ConversionError, JSYMk194Error};
 
+#[macro_use]
+mod macros;
 pub mod channel_one_measuring_electrical_parameters;
 pub mod channel_two_measuring_electrical_parameters;
-mod macros;
 pub mod misc_registers;
 mod scalars;
 pub mod system_configuration_parameter;
