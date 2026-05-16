@@ -8,7 +8,7 @@ use crate::units::*;
 /// Measurements for a single channel.
 ///
 /// Values are represented with strongly-typed units from [`crate::units`].
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct ChannelStatistics {
     /// RMS voltage. Root mean square voltage is the effective voltage value that represents
     /// the equivalent DC voltage that would deliver the same power to a load.
@@ -68,7 +68,7 @@ impl defmt::Format for ChannelStatistics {
 }
 
 /// Combined measurements for both channels plus line frequency.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Statistics {
     /// Statistics for channel one.
     pub channel_one: ChannelStatistics,
@@ -115,7 +115,7 @@ pub enum Channel {
 }
 
 /// Static device parameters read from system registers.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct SystemParameters {
     /// Device model identifier (model one register).
     pub model_one: u16,
