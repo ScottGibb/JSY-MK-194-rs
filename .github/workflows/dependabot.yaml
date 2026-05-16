@@ -33,10 +33,9 @@ jobs:
       github.actor == 'dependabot[bot]' &&
       !contains(join(github.event.pull_request.labels.*.name), 'github_actions')
     runs-on: ubuntu-latest
-
     steps:
       - uses: fastify/github-action-merge-dependabot@v3
         with:
           github-token: ${{ secrets.dependabot }}
           merge-method: rebase
-          target: minor    # Let Fastify enforce SemVer filtering
+          target: minor # Let Fastify enforce SemVer filtering
