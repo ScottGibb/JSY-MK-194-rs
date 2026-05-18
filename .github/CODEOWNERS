@@ -9,6 +9,8 @@ examples/esp32c3/Cargo.toml
 examples/esp32c3/Cargo.lock
 examples/stm32f103/Cargo.toml
 examples/stm32f103/Cargo.lock
+examples/rp2040/Cargo.toml
+examples/rp2040/Cargo.lock
 
 # Override the default owners and remove ownership for the .github/workflows directory
 

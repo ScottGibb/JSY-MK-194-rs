@@ -1,0 +1,30 @@
+[package]
+name = "rp2040"
+version = "0.1.0"
+edition = "2024"
+
+
+[dependencies]
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+cortex-m-rtic = "1"
+critical-section = { version = "1" }
+defmt = "1"
+defmt-rtt = "1"
+
+
+panic-probe = { version = "1", features = ["print-defmt"] }
+
+rp2040-boot2 = "0.3.0"
+rp2040-hal = { version = "0.12", features = [
+    "binary-info",
+    "critical-section-impl",
+    "rt",
+    "defmt",
+] }
+
+
+jsy-mk-194-rs = { path = "../../", default-features = false, features = [
+    "sync",
+    "defmt",
+] }
