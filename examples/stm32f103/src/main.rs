@@ -8,7 +8,11 @@
 #![no_std]
 
 use defmt_rtt as _;
-use jsy_mk_194_rs::{jsy_mk_194g::JsyMk194g, types::Baudrate};
+use jsy_mk_194_rs::{
+    DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY, DEFAULT_REQUEST_RESPONSE_DELAY,
+    jsy_mk_194g::JsyMk194g,
+    types::{Baudrate, Id},
+};
 use panic_probe as _;
 
 use cortex_m_rt::entry;
@@ -59,11 +63,20 @@ fn main() -> ! {
 
     let delay = syst.delay(&rcc.clocks);
 
-    let mut device = JsyMk194g::new_default(serial, delay).unwrap();
+    // Skip startup probing so bus traffic happens immediately, like the RP2040 example.
+    let mut device = JsyMk194g::new(
+        serial,
+        Id::default(),
+        delay,
+        DEFAULT_REQUEST_RESPONSE_DELAY,
+        DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY,
+    );
 
     loop {
-        let stats = device.get_all_channels().unwrap();
-        defmt::info!("Stats: {:?}", stats);
+        match device.get_all_channels() {
+            Ok(stats) => defmt::info!("Stats: {:?}", stats),
+            Err(err) => defmt::warn!("Channel read failed: {:?}", err),
+        }
         cortex_m::asm::delay(8_000_000);
     }
 }
