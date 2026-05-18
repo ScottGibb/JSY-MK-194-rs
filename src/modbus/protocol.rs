@@ -9,10 +9,11 @@ use crate::{
     registers::system_configuration_parameter::Id,
 };
 
-/// The JSY-MK-194 device has a minimum response time, this is used to ensure we wait long enoough,
+/// The JSY-MK-194 device has a minimum response time, this is used to ensure we wait long enough,
 /// that the device can give us the correct information without erroring.
 pub const DEFAULT_REQUEST_RESPONSE_DELAY: Duration = Duration::from_millis(400);
-// When requesting channel data, the device takes longer to respond, so we need to wait a bit longer.
+/// The JSY-MK-194 device takes longer to respond to channel data requests, this is used to ensure we wait long enough,
+/// that the device can give us the correct information without erroring.
 pub const DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY: Duration = Duration::from_millis(800);
 
 pub fn calculate_crc(data: &[u8]) -> u16 {
