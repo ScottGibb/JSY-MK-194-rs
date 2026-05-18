@@ -5,11 +5,7 @@
       "label": "build",
       "type": "shell",
       "command": "cargo",
-      "args": [
-        "build",
-        "--target",
-        "thumbv7m-none-eabi"
-      ],
+      "args": ["build", "--target", "thumbv7m-none-eabi"],
       "group": {
         "kind": "build",
         "isDefault": true
