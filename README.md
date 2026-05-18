@@ -67,7 +67,7 @@ Only one runtime mode should be enabled at a time:
 
 ## Run examples
 
-The repository currently includes examples in the [examples](./examples/) directory. There is also an [ESP32C3 example](./examples/esp32c3/) using [Embassy](https://embassy.dev/) and a bare-metal example on [STM32F103C8T6](./examples/stm32f103/).
+The repository currently includes examples in the [examples](./examples/) directory. There is also an [ESP32C3 example](./examples/esp32c3/) using [Embassy](https://embassy.dev/) and a bare-metal example on [STM32F103C8T6](./examples/stm32f103/) and [RP2040](./examples/rp2040/) using the `sync` mode.
 
 For more information on running the examples, please see the [Example README](./examples/README.md).
 
