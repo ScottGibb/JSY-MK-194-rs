@@ -59,7 +59,7 @@ pub struct WriteRequest<'a> {
 
 impl<'a> WriteRequest<'a> {
     const REQUEST_SIZE: usize = 7; // Device address, function code, starting address (2 bytes), quantity of registers (2 bytes), and byte count
-    const HEADER_SIZE: usize = Self::REQUEST_SIZE + 2; // Device address, function code, starting address (2 bytes), quantity of registers (2 bytes), and byte count plus CRC (2 bytes)
+    pub const HEADER_SIZE: usize = Self::REQUEST_SIZE + 2; // Device address, function code, starting address (2 bytes), quantity of registers (2 bytes), and byte count plus CRC (2 bytes)
     pub fn new(
         device_address: Id,
         starting_address: RegisterAddress,

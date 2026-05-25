@@ -15,7 +15,7 @@ use crate::{
 pub struct ReadResponse<'a> {
     pub _device_address: Id,
     pub _function_code: FunctionCode,
-    pub byte_count: u8,
+    pub _byte_count: u8,
     pub register_data: &'a [u8],
     pub _crc: u16,
 }
@@ -48,7 +48,7 @@ impl<'a> ReadResponse<'a> {
         Ok(Self {
             _device_address: device_address,
             _function_code: function_code,
-            byte_count: bytes[2],
+            _byte_count: bytes[2],
             register_data,
             _crc: crc,
         })

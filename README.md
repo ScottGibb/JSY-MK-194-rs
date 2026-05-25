@@ -80,7 +80,7 @@ Run the full test suite with the `std-sync` flag. This is the easiest way and do
 Run tests in std-sync mode explicitly:
 
 ```bash
-cargo test --features std-sync -- --test-threads=1
+cargo test --features std-sync advanced -- --test-threads=1
 ```
 
 ## Useful Links

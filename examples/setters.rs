@@ -25,7 +25,7 @@ fn main() {
     // Open the first available port
     let port_name = "/dev/tty.usbserial-0001";
     let port = serialport::new(port_name, u32::from(Baudrate::default()))
-        .timeout(Duration::from_secs(1))
+        .timeout(Duration::from_secs(3))
         .open()
         .expect("Failed to open port");
 

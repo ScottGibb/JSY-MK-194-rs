@@ -13,25 +13,21 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
         Register: traits::Register + traits::ReadRegister,
     {
         let read_request = ReadRequest::new(self.device_address.clone(), Register::ADDRESS, 1);
-        let buff = read_request.to_bytes();
-        self.write_buffer(&buff).await?;
+        let tx_buff = read_request.to_bytes();
+        self.write_buffer(&tx_buff).await?;
         self.delay
             .delay_ms(
                 u32::try_from(self.response_delay.as_millis())
                     .expect("This should not fail to convert"),
             )
             .await;
+
         let mut response_buff = [0u8; 256];
-        let bytes_read = self.read_buffer(&mut response_buff).await?;
-        let read_response = ReadResponse::from_bytes(&response_buff[..bytes_read])?;
-        if usize::from(read_response.byte_count) != Register::NUM_BYTES {
-            return Err(JSYMk194Error::ConversionError(
-                ConversionError::InvalidRegisterDataLength {
-                    given_length: usize::from(read_response.byte_count),
-                    address: Register::ADDRESS,
-                },
-            ));
-        }
+        let response_buff_size = ReadResponse::RESPONSE_SIZE + usize::from(Register::NUM_BYTES);
+
+        self.read_buffer(&mut response_buff[..response_buff_size])
+            .await?;
+        let read_response = ReadResponse::from_bytes(&response_buff[..response_buff_size])?;
         Register::try_from_bytes(read_response.register_data)
     }
 
@@ -50,7 +46,7 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
                     register.address(),
                     &register_data,
                 )?;
-                let mut write_request_buffer = [0u8; 11];
+                let mut write_request_buffer = [0u8; WriteRequest::HEADER_SIZE + 2]; // 2 extra bytes for the register data
                 write_request.to_bytes(&mut write_request_buffer)?;
                 self.write_buffer(&write_request_buffer).await?;
             }
@@ -62,7 +58,7 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
                     register.address(),
                     &register_data,
                 )?;
-                let mut write_request_buffer = [0u8; 13]; // 2 extra bytes for the additional register data
+                let mut write_request_buffer = [0u8; WriteRequest::HEADER_SIZE + 4]; // 4 extra bytes for the additional register data
                 write_request.to_bytes(&mut write_request_buffer)?;
                 self.write_buffer(&write_request_buffer).await?;
             }
@@ -82,9 +78,9 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
                     .expect("This should not fail to convert"),
             )
             .await;
-        let mut response_buff = [0u8; 256]; // Error response is smaller than normal response, so this will work for both
-        let bytes_read = self.read_buffer(&mut response_buff).await?;
-        let _write_response = WriteResponse::from_bytes(&response_buff[..bytes_read])?;
+        let mut response_buff = [0u8; WriteResponse::RESPONSE_SIZE]; // Error response is smaller than normal response, so this will work for both
+        self.read_buffer(&mut response_buff).await?;
+        let _write_response = WriteResponse::from_bytes(&response_buff)?;
         Ok(())
     }
 }

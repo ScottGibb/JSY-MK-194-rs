@@ -55,25 +55,14 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
             .await;
 
         let mut response_buff = [0u8; 256];
-        let bytes_read = self.read_buffer(&mut response_buff).await?;
-        let read_response = ReadResponse::from_bytes(&response_buff[..bytes_read])?;
-        // Check if bytes read are enough to contain the registers we expect to read
-        if bytes_read
-            < ReadResponse::RESPONSE_SIZE
-                + match channel {
-                    Channel::One => CHANNEL_ONE_NUM_READ_BYTES,
-                    Channel::Two => CHANNEL_TWO_NUM_READ_BYTES,
-                }
-        {
-            return Err(JSYMk194Error::FailedToRead {
-                read: bytes_read,
-                expected: ReadResponse::RESPONSE_SIZE
-                    + match channel {
-                        Channel::One => CHANNEL_ONE_NUM_READ_BYTES,
-                        Channel::Two => CHANNEL_TWO_NUM_READ_BYTES,
-                    },
-            });
-        }
+        let response_buff_size = ReadResponse::RESPONSE_SIZE
+            + match channel {
+                Channel::One => CHANNEL_ONE_NUM_READ_BYTES,
+                Channel::Two => CHANNEL_TWO_NUM_READ_BYTES,
+            };
+        self.read_buffer(&mut response_buff[..response_buff_size])
+            .await?;
+        let read_response = ReadResponse::from_bytes(&response_buff[..response_buff_size])?;
 
         // Perform an extra read for the power direction register
         self.extract_channel_statistics_from_response(channel, read_response)
@@ -183,16 +172,12 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
             )
             .await;
         let mut response_buff = [0u8; 256];
-        let bytes_read = self.read_buffer(&mut response_buff).await?;
-        let read_response = ReadResponse::from_bytes(&response_buff[..bytes_read])?;
+        let response_buff_size = ReadResponse::RESPONSE_SIZE + ALL_CHANNELS_NUM_READ_BYTES;
 
-        // Check if bytes read are enough to contain the registers we expect to read
-        if bytes_read < ReadResponse::RESPONSE_SIZE + ALL_CHANNELS_NUM_READ_BYTES {
-            return Err(JSYMk194Error::FailedToRead {
-                read: bytes_read,
-                expected: ReadResponse::RESPONSE_SIZE + ALL_CHANNELS_NUM_READ_BYTES, // 56 bytes for the 14 registers we expect to read (4 bytes each)
-            });
-        }
+        self.read_buffer(&mut response_buff[..response_buff_size])
+            .await?;
+        let read_response = ReadResponse::from_bytes(&response_buff[..response_buff_size])?;
+
         self.extract_statistics_from_response(read_response)
     }
 

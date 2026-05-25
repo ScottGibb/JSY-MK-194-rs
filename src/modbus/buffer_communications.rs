@@ -1,41 +1,32 @@
-use crate::error::JSYMk194Error;
-use crate::hal::*;
+use crate::error::JSYMk194Error::{self, DeviceErrorResponse};
 use crate::jsy_mk_194g::JsyMk194g;
 use crate::modbus::protocol::extract_modbus_response_header;
-use crate::modbus::responses::ModbusErrorResponse;
+use crate::{ModbusErrorResponse, hal::*};
 
 impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub(crate) async fn write_buffer(&mut self, buffer: &[u8]) -> Result<(), JSYMk194Error> {
-        let mut total_written = 0;
-        while total_written < buffer.len() {
-            let bytes_written = self.serial.write(&buffer[total_written..]).await?;
-            if bytes_written == 0 {
-                return Err(JSYMk194Error::FailedToWrite {
-                    written: total_written,
-                    expected: buffer.len(),
-                });
-            }
-            total_written += bytes_written;
-        }
+        self.serial.write_all(&buffer).await?;
         Ok(())
     }
     #[maybe_async::maybe_async]
-    pub(crate) async fn read_buffer(&mut self, buffer: &mut [u8]) -> Result<usize, JSYMk194Error> {
-        let bytes_read = self.serial.read(buffer).await?;
-        // println!(
-        //     "[Modbus] Raw response bytes  :  {:02X?}",
-        //     &buffer[..bytes_read]
-        // );
-        if bytes_read == ModbusErrorResponse::RESPONSE_SIZE {
-            return Err(JSYMk194Error::ModBusDeviceError(
-                ModbusErrorResponse::from_bytes(&buffer[..bytes_read])?,
-            ));
-        }
-        let (_, function_code) = extract_modbus_response_header(&buffer[..bytes_read])?;
+    pub(crate) async fn read_buffer(&mut self, buffer: &mut [u8]) -> Result<(), JSYMk194Error> {
+        // Read the minimum number of bytes required to determine if the response is an error response or a normal response
+        self.serial
+            .read_exact(&mut buffer[..ModbusErrorResponse::RESPONSE_SIZE])
+            .await?;
+
+        // Check if the response is an error response based on the function code in the header
+        let (_, function_code) =
+            extract_modbus_response_header(&buffer[..ModbusErrorResponse::RESPONSE_SIZE])?;
         if function_code.is_exception_response() {
             return Err(JSYMk194Error::DeviceErrorResponse(function_code));
         }
-        Ok(bytes_read)
+        // Now read the rest of the response based on the expected length for a normal response. This will read the remaining bytes for a normal response, or read extra bytes that can be ignored for an error response (since we've already determined it's an error response based on the function code).
+        self.serial
+            .read_exact(&mut buffer[ModbusErrorResponse::RESPONSE_SIZE..])
+            .await?;
+
+        Ok(())
     }
 }
