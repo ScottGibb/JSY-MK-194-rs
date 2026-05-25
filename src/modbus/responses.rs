@@ -23,22 +23,14 @@ impl<'a> ReadResponse<'a> {
     const FRONT_HEADER_SIZE: usize = 3; // Device address, function code, and byte count
     pub const RESPONSE_SIZE: usize = 5; // Device address, function code, byte count, and CRC
     pub fn from_bytes(bytes: &'a [u8]) -> Result<Self, JSYMk194Error> {
-        if bytes.len() < Self::RESPONSE_SIZE {
-            return Err(JSYMk194Error::FailedToRead {
-                read: bytes.len(),
-                expected: Self::RESPONSE_SIZE,
-            });
+        if let Some(error_response) = ModbusErrorResponse::is_error_response(bytes)? {
+            return Err(JSYMk194Error::ModBusDeviceError(error_response));
         }
+
         let device_address = Id::new(bytes[0])?;
         let function_code = FunctionCode::try_from(bytes[1])?;
         let byte_count = usize::from(bytes[2]);
-        if bytes.len() != (Self::FRONT_HEADER_SIZE + byte_count + 2) {
-            // 3 bytes for device address, function code, and byte count, plus byte_count bytes for register data, plus 2 bytes for CRC
-            return Err(JSYMk194Error::FailedToRead {
-                read: bytes.len(),
-                expected: Self::FRONT_HEADER_SIZE + byte_count + 2,
-            });
-        }
+
         let register_data = &bytes[Self::FRONT_HEADER_SIZE..(Self::FRONT_HEADER_SIZE + byte_count)];
         let crc = u16::from_le_bytes([
             bytes[Self::FRONT_HEADER_SIZE + byte_count],
@@ -67,16 +59,10 @@ impl WriteResponse {
     pub const RESPONSE_SIZE: usize = 8;
 
     pub fn from_bytes(bytes: &[u8]) -> Result<Self, JSYMk194Error> {
-        if bytes.len() == ModbusErrorResponse::RESPONSE_SIZE {
-            let error_response = ModbusErrorResponse::from_bytes(bytes)?;
+        if let Some(error_response) = ModbusErrorResponse::is_error_response(bytes)? {
             return Err(JSYMk194Error::ModBusDeviceError(error_response));
         }
-        if bytes.len() != Self::RESPONSE_SIZE {
-            return Err(JSYMk194Error::FailedToRead {
-                read: bytes.len(),
-                expected: Self::RESPONSE_SIZE,
-            });
-        }
+
         let device_address = Id::new(bytes[0])?;
         let function_code = FunctionCode::try_from(bytes[1])?;
         let starting_address = RegisterAddress::try_from(u16::from_be_bytes([bytes[2], bytes[3]]))?;
@@ -112,7 +98,7 @@ impl ModbusErrorResponse {
     /// The expected size of a Modbus error response packet
     pub const RESPONSE_SIZE: usize = 5;
     /// Parses a Modbus error response from a byte slice, validating the CRC and extracting the device ID, function code, and error code.
-    pub fn from_bytes(bytes: &[u8]) -> Result<Self, JSYMk194Error> {
+    fn from_bytes(bytes: &[u8]) -> Result<Self, JSYMk194Error> {
         if bytes.len() != Self::RESPONSE_SIZE {
             return Err(JSYMk194Error::InvalidHeader);
         }
@@ -125,5 +111,12 @@ impl ModbusErrorResponse {
             error_code: ErrorCode::try_from(bytes[MODBUS_ERROR_CODE_OFFSET])?,
             crc,
         })
+    }
+    pub fn is_error_response(bytes: &[u8]) -> Result<Option<Self>, JSYMk194Error> {
+        if bytes.len() == ModbusErrorResponse::RESPONSE_SIZE {
+            let error_response = ModbusErrorResponse::from_bytes(bytes)?;
+            return Err(JSYMk194Error::ModBusDeviceError(error_response));
+        }
+        Ok(None)
     }
 }

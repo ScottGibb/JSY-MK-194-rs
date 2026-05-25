@@ -98,6 +98,7 @@ mod hal {
     pub use embedded_io::Error;
     pub use embedded_io::ErrorKind;
     pub use embedded_io::Read;
+    pub use embedded_io::ReadExactError;
     pub use embedded_io::Write;
     pub trait ReadWrite: Read + Write {}
     impl<T: Read + Write> ReadWrite for T {}
@@ -110,6 +111,7 @@ mod hal {
     pub use embedded_io_async::Error;
     pub use embedded_io_async::ErrorKind;
     pub use embedded_io_async::Read;
+    pub use embedded_io_async::ReadExactError;
     pub use embedded_io_async::Write;
     pub trait ReadWrite: Read + Write {}
     impl<T: Read + Write> ReadWrite for T {}

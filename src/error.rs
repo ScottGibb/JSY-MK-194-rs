@@ -12,23 +12,11 @@ use crate::registers::RegisterAddress;
 pub enum JSYMk194Error {
     /// A low-level error occurred during I/O operations, such as reading from or writing to the device.
     Io(hal::ErrorKind),
-    /// The device returned an unexpected response header that could not be parsed correctly, indicating a
+    /// The device stopped responding before `read_exact` could fill the requested buffer.
     /// potential communication issue or misalignment in the expected response format.
     InvalidHeader,
-    /// The Write failed to write the expected number of bytes to the device.
-    FailedToWrite {
-        /// Number of bytes actually written.
-        written: usize,
-        /// Number of bytes expected to be written.
-        expected: usize,
-    },
-    /// The Read failed to read the expected number of bytes from the device.
-    FailedToRead {
-        /// Number of bytes actually read.
-        read: usize,
-        /// Number of bytes expected to be read.
-        expected: usize,
-    },
+    /// The device stopped responding before `read_exact` could fill the requested buffer.
+    UnexpectedEof,
     /// An error occurred during a conversion process, this could mean data is corrupted.
     /// The specific conversion error is detailed in the [`ConversionError`] enum.
     ConversionError(ConversionError),
@@ -48,9 +36,20 @@ pub enum JSYMk194Error {
     ModBusDeviceError(ModbusErrorResponse),
 }
 
+#[cfg(any(feature = "std-sync", feature = "tokio-async"))]
 impl<E: hal::Error> From<E> for JSYMk194Error {
     fn from(e: E) -> Self {
         JSYMk194Error::Io(e.kind())
+    }
+}
+
+#[cfg(any(feature = "sync", feature = "async"))]
+impl<E: hal::Error> From<hal::ReadExactError<E>> for JSYMk194Error {
+    fn from(e: hal::ReadExactError<E>) -> Self {
+        match e {
+            hal::ReadExactError::UnexpectedEof => JSYMk194Error::UnexpectedEof,
+            hal::ReadExactError::Other(io_error) => JSYMk194Error::Io(io_error.kind()),
+        }
     }
 }
 
@@ -86,19 +85,8 @@ impl defmt::Format for JSYMk194Error {
     fn format(&self, fmt: defmt::Formatter) {
         match self {
             JSYMk194Error::Io(_io_error) => defmt::write!(fmt, "I/O error occurred"),
+            JSYMk194Error::UnexpectedEof => defmt::write!(fmt, "Unexpected end of input"),
             JSYMk194Error::InvalidHeader => defmt::write!(fmt, "Invalid response header"),
-            JSYMk194Error::FailedToWrite { written, expected } => defmt::write!(
-                fmt,
-                "Failed to write the expected number of bytes. Written: {}, Expected: {}",
-                written,
-                expected
-            ),
-            JSYMk194Error::FailedToRead { read, expected } => defmt::write!(
-                fmt,
-                "Failed to read the expected number of bytes. Read: {}, Expected: {}",
-                read,
-                expected
-            ),
             JSYMk194Error::ConversionError(conversion_error) => {
                 defmt::write!(fmt, "Conversion error: {:?}", conversion_error)
             }

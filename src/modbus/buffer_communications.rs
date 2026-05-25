@@ -1,4 +1,4 @@
-use crate::error::JSYMk194Error::{self, DeviceErrorResponse};
+use crate::error::JSYMk194Error;
 use crate::jsy_mk_194g::JsyMk194g;
 use crate::modbus::protocol::extract_modbus_response_header;
 use crate::{ModbusErrorResponse, hal::*};
@@ -15,7 +15,6 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
         self.serial
             .read_exact(&mut buffer[..ModbusErrorResponse::RESPONSE_SIZE])
             .await?;
-
         // Check if the response is an error response based on the function code in the header
         let (_, function_code) =
             extract_modbus_response_header(&buffer[..ModbusErrorResponse::RESPONSE_SIZE])?;
