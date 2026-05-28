@@ -190,7 +190,7 @@ jobs:
         uses: Swatinem/rust-cache@v2
       - name: Run clippy check
         run: cargo clippy -- -D warnings
-        
+
   ESP32C3_Example:
     name: Lint ESP32C3 Example
     runs-on: ubuntu-latest
