@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3](https://github.com/ScottGibb/JSY-MK-194-rs/compare/v0.1.2...v0.1.3) - 2026-05-28
+
+### Added
+
+- add rp-hal example
+- add Clone to public types
+- *(examples)* add vscode debugger to stm32
+- esp32c3 embassy async now has timeout functionality
+- stm32 example code size optimisation
+- make request/response delay configurable
+
+### Fixed
+
+- clippy warnings
+- hal from compilation error
+- Now embedded-io error traits are fully intigrated
+- use absolute traits instead of partial read/writes
+- *(deps)* bump defmt-rtt from 1.1.0 to 1.2.0 in /examples/stm32f103
+- lint issue
+- add missing str conversion for power direction
+- *(ci)* re enable auto merge
+- esp32c3 example now works however
+- panic handler in esp32c3 example
+- *(examples)* baudrate was wrong
+- power direction register
+- *(deps)* esp32c3 example
+- *(deps)* bump esp-hal from 1.0.0 to 1.1.1 in /examples/esp32c3
+- *(deps)* bump esp-bootloader-esp-idf in /examples/esp32c3
+- *(deps)* bump defmt from 1.0.1 to 1.1.0 in /examples/esp32c3
+- *(deps)* bump defmt from 1.0.1 to 1.1.0 in /examples/stm32f103
+- codeownerss
+- clippy warnings
+
+### Other
+
+- example to make it easier to see failures
+- add RP2040 example to notes
+- add missing comment for Delay type
+- :art: Applied MegaLinter Changes
+- make define_register and define_scaled_register macros private
+- reduce unwanted actions
+- removing expect from examples
+- add a bit more detail around the device struct
+- elaborate on timing issues
+- add documentation around delay
+
 ## [0.1.2](https://github.com/ScottGibb/JSY-MK-194-rs/compare/v0.1.1...v0.1.2) - 2026-05-10
 
 ### Added
