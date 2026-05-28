@@ -23,7 +23,7 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
             .await;
 
         let mut response_buff = [0u8; 256];
-        let response_buff_size = ReadResponse::RESPONSE_SIZE + usize::from(Register::NUM_BYTES);
+        let response_buff_size = ReadResponse::RESPONSE_SIZE + Register::NUM_BYTES;
 
         self.read_buffer(&mut response_buff[..response_buff_size])
             .await?;

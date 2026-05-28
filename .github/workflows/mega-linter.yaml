@@ -175,6 +175,22 @@ jobs:
       - name: Run fmt check
         run: cargo fmt --all -- --check
 
+  Library_clippy:
+    name: Lint Library with clippy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: stable
+          components: rust-src, clippy
+      - name: Enable caching
+        uses: Swatinem/rust-cache@v2
+      - name: Run clippy check
+        run: cargo clippy -- -D warnings
+        
   ESP32C3_Example:
     name: Lint ESP32C3 Example
     runs-on: ubuntu-latest

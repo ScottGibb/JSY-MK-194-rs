@@ -7,7 +7,7 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     #[maybe_async::maybe_async]
     pub(crate) async fn write_buffer(&mut self, buffer: &[u8]) -> Result<(), JSYMk194Error> {
         self.serial
-            .write_all(&buffer)
+            .write_all(buffer)
             .await
             .map_err(|e| JSYMk194Error::Io(e.kind()))?;
         Ok(())
