@@ -43,7 +43,7 @@ impl<E: hal::Error> From<E> for JSYMk194Error {
     }
 }
 
-#[cfg(any(feature = "sync", feature = "async"))]
+#[cfg(not(any(feature = "std-sync", feature = "tokio-async")))]
 impl<E: hal::Error> From<hal::ReadExactError<E>> for JSYMk194Error {
     fn from(e: hal::ReadExactError<E>) -> Self {
         match e {
