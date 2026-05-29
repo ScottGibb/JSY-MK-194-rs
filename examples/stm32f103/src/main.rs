@@ -63,7 +63,9 @@ fn main() -> ! {
 
     let delay = syst.delay(&rcc.clocks);
 
-    // Skip startup probing so bus traffic happens immediately, like the RP2040 example.
+    defmt::info!("Waiting for JSY-MK-194G startup...");
+    delay.delay_ms(1000);
+
     let mut device = JsyMk194g::new(
         serial,
         Id::default(),
