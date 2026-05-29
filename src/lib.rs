@@ -83,6 +83,8 @@ compile_error!("Choose only one of sync, async, or std-sync.");
 compile_error!("Choose only one of sync, async, or std-sync.");
 #[cfg(all(feature = "async", feature = "std-sync"))]
 compile_error!("Choose only one of sync, async, or std-sync.");
+#[cfg(all(feature = "defmt", any(feature = "std-sync", feature = "tokio-async")))]
+compile_error!("The defmt feature is only supported with sync or async runtime modes.");
 #[cfg(not(any(
     feature = "sync",
     feature = "async",
