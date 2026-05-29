@@ -84,7 +84,56 @@ pub enum ConversionError {
 impl defmt::Format for JSYMk194Error {
     fn format(&self, fmt: defmt::Formatter) {
         match self {
-            JSYMk194Error::Io(_io_error) => defmt::write!(fmt, "I/O error occurred"),
+            JSYMk194Error::Io(io_error) => {
+                #[cfg(any(feature = "sync", feature = "async"))]
+                match io_error {
+                    hal::ErrorKind::Other => defmt::write!(fmt, "I/O error: Other"),
+                    hal::ErrorKind::NotFound => defmt::write!(fmt, "I/O error: Not found"),
+                    hal::ErrorKind::PermissionDenied => {
+                        defmt::write!(fmt, "I/O error: Permission denied")
+                    }
+                    hal::ErrorKind::ConnectionRefused => {
+                        defmt::write!(fmt, "I/O error: Connection refused")
+                    }
+                    hal::ErrorKind::ConnectionReset => {
+                        defmt::write!(fmt, "I/O error: Connection reset")
+                    }
+                    hal::ErrorKind::ConnectionAborted => {
+                        defmt::write!(fmt, "I/O error: Connection aborted")
+                    }
+                    hal::ErrorKind::NotConnected => {
+                        defmt::write!(fmt, "I/O error: Not connected")
+                    }
+                    hal::ErrorKind::AddrInUse => defmt::write!(fmt, "I/O error: Address in use"),
+                    hal::ErrorKind::AddrNotAvailable => {
+                        defmt::write!(fmt, "I/O error: Address not available")
+                    }
+                    hal::ErrorKind::BrokenPipe => defmt::write!(fmt, "I/O error: Broken pipe"),
+                    hal::ErrorKind::AlreadyExists => {
+                        defmt::write!(fmt, "I/O error: Already exists")
+                    }
+                    hal::ErrorKind::InvalidInput => defmt::write!(fmt, "I/O error: Invalid input"),
+                    hal::ErrorKind::InvalidData => defmt::write!(fmt, "I/O error: Invalid data"),
+                    hal::ErrorKind::TimedOut => defmt::write!(fmt, "I/O error: Timed out"),
+                    hal::ErrorKind::Interrupted => defmt::write!(fmt, "I/O error: Interrupted"),
+                    hal::ErrorKind::Unsupported => defmt::write!(fmt, "I/O error: Unsupported"),
+                    hal::ErrorKind::OutOfMemory => defmt::write!(fmt, "I/O error: Out of memory"),
+                    hal::ErrorKind::WriteZero => defmt::write!(fmt, "I/O error: Write zero"),
+                    _ => defmt::write!(fmt, "I/O error: Other kind"),
+                }
+
+                #[cfg(any(feature = "std-sync", feature = "tokio-async"))]
+                match io_error {
+                    hal::ErrorKind::TimedOut => defmt::write!(fmt, "I/O error: Timed out"),
+                    hal::ErrorKind::Interrupted => defmt::write!(fmt, "I/O error: Interrupted"),
+                    hal::ErrorKind::WouldBlock => defmt::write!(fmt, "I/O error: Would block"),
+                    hal::ErrorKind::UnexpectedEof => {
+                        defmt::write!(fmt, "I/O error: Unexpected EOF")
+                    }
+                    hal::ErrorKind::Other => defmt::write!(fmt, "I/O error: Other"),
+                    _ => defmt::write!(fmt, "I/O error: Other kind"),
+                }
+            }
             JSYMk194Error::UnexpectedEof => defmt::write!(fmt, "Unexpected end of input"),
             JSYMk194Error::InvalidHeader => defmt::write!(fmt, "Invalid response header"),
             JSYMk194Error::ConversionError(conversion_error) => {
