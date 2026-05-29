@@ -34,7 +34,7 @@ version = "0.11"
 features = ["stm32f103", "medium"]
 
 [patch.crates-io]
-stm32f1xx-hal = { git = "https://github.com/stm32-rs/stm32f1xx-hal.git", rev = "ddcbf78f42b8230cd96c9b58f5d1c8cbc57fa280" }
+stm32f1xx-hal = { git = "https://github.com/stm32-rs/stm32f1xx-hal.git", rev = "8863048ab0aab8cdbafe3bceb4db312390ae85a0" }
 
 [profile.dev]
 # Optimize for size in debug builds — the STM32F103C8T6 only has 64K flash.
