@@ -13,7 +13,7 @@ rust-version = "1.85.1"
 features = ["std-sync"]
 
 [features]
-default = ["std-sync"]
+default = ["sync", "defmt"]
 
 # Required embedded-hal for the Delay construct
 std-sync = ["maybe-async/is_sync", "dep:embedded-hal"]

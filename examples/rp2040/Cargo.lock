@@ -918,6 +918,7 @@ dependencies = [
  "critical-section",
  "defmt 1.1.0",
  "defmt-rtt",
+ "embedded-io",
  "jsy-mk-194-rs",
  "panic-probe",
  "rp2040-boot2",

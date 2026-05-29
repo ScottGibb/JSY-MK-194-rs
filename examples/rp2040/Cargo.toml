@@ -28,3 +28,4 @@ jsy-mk-194-rs = { path = "../../", default-features = false, features = [
     "sync",
     "defmt",
 ] }
+embedded-io = "0.7.1"

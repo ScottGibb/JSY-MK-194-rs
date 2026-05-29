@@ -10,12 +10,11 @@
 
 #![no_std]
 #![no_main]
+use embedded_io::Write as _;
+use embedded_io::{Read as _, ReadExactError}; // brings write_all into scope // brings read_exact into scope
 
-use jsy_mk_194_rs::{
-    DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY, DEFAULT_REQUEST_RESPONSE_DELAY,
-    jsy_mk_194g::JsyMk194g,
-    types::{Baudrate, Id},
-};
+use jsy_mk_194_rs::types::Baudrate;
+
 // Ensure we halt the program on panic (if we don't mention this crate it won't
 // be linked)
 use panic_probe as _;
@@ -75,7 +74,7 @@ fn main() -> ! {
         &mut watchdog,
     )
     .unwrap();
-    let timer = hal::Timer::new(pac.TIMER, &mut pac.RESETS, &clocks);
+    let _timer = hal::Timer::new(pac.TIMER, &mut pac.RESETS, &clocks);
     let mut delay = cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().to_Hz());
 
     // The single-cycle I/O block controls our GPIO pins
@@ -100,7 +99,7 @@ fn main() -> ! {
     let baudrate = u32::from(baudrate);
     defmt::info!("Setting baudrate to {} bps", baudrate);
 
-    let uart = hal::uart::UartPeripheral::new(pac.UART0, uart_pins, &mut pac.RESETS)
+    let mut uart = hal::uart::UartPeripheral::new(pac.UART0, uart_pins, &mut pac.RESETS)
         .enable(
             UartConfig::new(baudrate.Hz(), DataBits::Eight, None, StopBits::One),
             clocks.peripheral_clock.freq(),
@@ -111,22 +110,78 @@ fn main() -> ! {
     defmt::info!("Waiting for JSY-MK-194G startup...");
     delay.delay_ms(1000);
 
-    defmt::info!("Setting up JSY-MK-194G driver");
-    let mut device = JsyMk194g::new(
-        uart,
-        Id::default(),
-        timer,
-        DEFAULT_REQUEST_RESPONSE_DELAY,
-        DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY,
-    );
+    // defmt::info!("Setting up JSY-MK-194G driver");
+    // let mut device = JsyMk194g::new(
+    //     uart,
+    //     Id::default(),
+    //     timer,
+    //     DEFAULT_REQUEST_RESPONSE_DELAY,
+    //     DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY,
+    // );
 
     loop {
-        defmt::info!("Scanning Channels...");
-        match device.get_all_channels() {
-            Ok(channels) => defmt::info!("Channels: {:?}", channels),
-            Err(err) => defmt::warn!("Channel read failed: {:?}", err),
+        let write_request = [0x01, 0x03, 0x00, 0x48, 0x00, 0x0E, 0x44, 0x18];
+        if let Err(err) = uart.write_all(&write_request) {
+            defmt::warn!("write_all failed: {:?}", err);
+            delay.delay_ms(100);
+            continue;
         }
-        delay.delay_ms(1000);
+
+        // Read promptly to avoid UART FIFO overrun on RP2040.
+        let mut read_response = [0u8; 61];
+        if let Err(err) = uart.read_exact(&mut read_response[0..3]) {
+            match err {
+                ReadExactError::UnexpectedEof => {
+                    defmt::warn!("Header read hit EOF")
+                }
+                ReadExactError::Other(io_err) => {
+                    defmt::warn!("Header read I/O error: {:?}", io_err)
+                }
+            }
+            delay.delay_ms(100);
+            continue;
+        }
+
+        let byte_count = read_response[2] as usize;
+        defmt::info!(
+            "Received response header: id={} function={} byte_count={}",
+            read_response[0],
+            read_response[1],
+            read_response[2]
+        );
+
+        // Read remaining bytes: payload + CRC16.
+        let remaining_len = byte_count + 2;
+        if remaining_len > (read_response.len() - 3) {
+            defmt::warn!("Invalid byte_count {}", byte_count);
+            delay.delay_ms(100);
+            continue;
+        }
+
+        let response = uart.read_exact(&mut read_response[3..3 + remaining_len]);
+        match response {
+            Ok(()) => defmt::info!(
+                "Received response payload+crc: {:?}",
+                &read_response[3..3 + remaining_len]
+            ),
+            Err(e) => match e {
+                ReadExactError::UnexpectedEof => defmt::warn!(
+                    "Response payload was shorter than expected (expected {} bytes)",
+                    remaining_len
+                ),
+                ReadExactError::Other(err) => {
+                    defmt::warn!("I/O error while reading response payload: {:?}", err)
+                }
+            },
+        }
+        // Create a Read for all Channels request
+
+        // defmt::info!("Scanning Channels...");
+        // match device.get_all_channels() {
+        //     Ok(channels) => defmt::info!("Channels: {:?}", channels),
+        //     Err(err) => defmt::warn!("Channel read failed: {:?}", err),
+        // }
+        delay.delay_ms(200);
     }
 }
 
