@@ -1,4 +1,3 @@
-
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
 use crate::registers::misc_registers::{FrequencyRegister, PowerDirection, PowerDirectionRegister};

@@ -1,4 +1,3 @@
-
 use crate::error::JSYMk194Error;
 use crate::hal::*;
 

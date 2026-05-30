@@ -11,7 +11,7 @@
 #![no_std]
 #![no_main]
 
- // brings write_all into scope // brings read_exact into scope
+// brings write_all into scope // brings read_exact into scope
 
 use jsy_mk_194_rs::jsy_mk_194g::JsyMk194g;
 use jsy_mk_194_rs::types::{Baudrate, Id};
