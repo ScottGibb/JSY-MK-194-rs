@@ -36,11 +36,11 @@ maybe-async = "0.2"
 
 # Sync HAL
 embedded-hal = { version = "1", optional = true }
-embedded-io = { version = "0.7", optional = true }
+embedded-io = { version = "0.7", optional = true, features = ["defmt"] }
 
 # Async HAL
 embedded-hal-async = { version = "1", optional = true }
-embedded-io-async = { version = "0.7", optional = true }
+embedded-io-async = { version = "0.7", optional = true, features = ["defmt"] }
 
 # Std Deps
 tokio = { version = "1", features = ["io-util", "time"], optional = true }
