@@ -24,11 +24,10 @@ impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// # Examples
     /// ```rust
     /// # fn example<S, D>(
-    /// #     driver: jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// #     driver: jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S>,
     /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
     /// # where
     /// #     S: std::io::Read + std::io::Write,
-    /// #     D: embedded_hal::delay::DelayNs,
     /// # {
     /// driver.set_baudrate(jsy_mk_194_rs::types::Baudrate::_9600)?;
     /// # Ok(())
@@ -58,11 +57,10 @@ impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// # Examples
     /// ```rust
     /// # fn example<S, D>(
-    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S>,
     /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
     /// # where
     /// #     S: std::io::Read + std::io::Write,
-    /// #     D: embedded_hal::delay::DelayNs,
     /// # {
     /// driver.set_id(jsy_mk_194_rs::types::Id::new(2)?)?;
     /// # Ok(())
@@ -92,11 +90,10 @@ impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// # Examples
     /// ```rust
     /// # fn example<S, D>(
-    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S>,
     /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
     /// # where
     /// #     S: std::io::Read + std::io::Write,
-    /// #     D: embedded_hal::delay::DelayNs,
     /// # {
     /// driver.set_positive_active_energy(
     ///     jsy_mk_194_rs::types::Channel::One,
@@ -136,11 +133,10 @@ impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// # Examples
     /// ```rust
     /// # fn example<S, D>(
-    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S>,
     /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
     /// # where
     /// #     S: std::io::Read + std::io::Write,
-    /// #     D: embedded_hal::delay::DelayNs,
     /// # {
     /// driver.set_negative_active_energy(
     ///     jsy_mk_194_rs::types::Channel::One,

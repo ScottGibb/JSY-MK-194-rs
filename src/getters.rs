@@ -19,11 +19,10 @@ impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// # Examples
     /// ```rust
     /// # fn example<S, D>(
-    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S>,
     /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
     /// # where
     /// #     S: std::io::Read + std::io::Write,
-    /// #     D: embedded_hal::delay::DelayNs,
     /// # {
     /// let id = driver.get_id()?;
     /// println!("Device ID: {id:?}");
@@ -46,11 +45,10 @@ impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// # Examples
     /// ```rust
     /// # fn example<S, D>(
-    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S>,
     /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
     /// # where
     /// #     S: std::io::Read + std::io::Write,
-    /// #     D: embedded_hal::delay::DelayNs,
     /// # {
     /// let baudrate = driver.get_baudrate()?;
     /// println!("Baudrate: {baudrate:?}");
@@ -74,11 +72,10 @@ impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// # Examples
     /// ```rust
     /// # fn example<S, D>(
-    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S>,
     /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
     /// # where
     /// #     S: std::io::Read + std::io::Write,
-    /// #     D: embedded_hal::delay::DelayNs,
     /// # {
     /// let params = driver.get_system_parameters()?;
     /// println!("{params}");
@@ -113,11 +110,10 @@ impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// # Examples
     /// ```rust
     /// # fn example<S, D>(
-    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S>,
     /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
     /// # where
     /// #     S: std::io::Read + std::io::Write,
-    /// #     D: embedded_hal::delay::DelayNs,
     /// # {
     /// let stats = driver.get_all_channels()?;
     /// println!("{stats}");
@@ -138,11 +134,10 @@ impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// # Examples
     /// ```rust
     /// # fn example<S, D>(
-    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S>,
     /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
     /// # where
     /// #     S: std::io::Read + std::io::Write,
-    /// #     D: embedded_hal::delay::DelayNs,
     /// # {
     /// let channel_one = driver.get_channel(jsy_mk_194_rs::types::Channel::One)?;
     /// println!("{channel_one}");
@@ -166,11 +161,10 @@ impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// # Examples
     /// ```rust
     /// # fn example<S, D>(
-    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S>,
     /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
     /// # where
     /// #     S: std::io::Read + std::io::Write,
-    /// #     D: embedded_hal::delay::DelayNs,
     /// # {
     /// let frequency = driver.get_frequency()?;
     /// println!("{} Hz", frequency.get::<jsy_mk_194_rs::units::hertz>());
@@ -192,11 +186,10 @@ impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// # Examples
     /// ```rust
     /// # fn example<S, D>(
-    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
+    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S>,
     /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
     /// # where
     /// #     S: std::io::Read + std::io::Write,
-    /// #     D: embedded_hal::delay::DelayNs,
     /// # {
     /// let direction = driver.get_power_direction(jsy_mk_194_rs::types::Channel::One)?;
     /// println!("{direction:?}");

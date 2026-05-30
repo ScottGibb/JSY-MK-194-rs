@@ -40,9 +40,6 @@ impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// let driver = jsy_mk_194_rs::jsy_mk_194g::JsyMk194g::new(
     ///     serial,
     ///     jsy_mk_194_rs::types::Id::new(1)?,
-    ///     delay,
-    ///     jsy_mk_194_rs::DEFAULT_REQUEST_RESPONSE_DELAY,
-    ///     jsy_mk_194_rs::DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY,
     /// );
     /// # let _ = driver;
     /// # Ok(())
@@ -59,12 +56,11 @@ impl<Serial: ReadWrite> JsyMk194g<Serial> {
     ///
     /// # Examples
     /// ```rust
-    /// # fn example<S, D>(serial: S, delay: D) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
+    /// # fn example<S>(serial: S) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
     /// # where
     /// #     S: std::io::Read + std::io::Write,
-    /// #     D: embedded_hal::delay::DelayNs,
     /// # {
-    /// let driver = jsy_mk_194_rs::jsy_mk_194g::JsyMk194g::new_default(serial, delay)?;
+    /// let driver = jsy_mk_194_rs::jsy_mk_194g::JsyMk194g::new_default(serial)?;
     /// # let _ = driver;
     /// # Ok(())
     /// # }
