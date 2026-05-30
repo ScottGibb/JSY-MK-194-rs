@@ -52,4 +52,5 @@ pub use uom::si::f32::Energy;
 pub use uom::si::f32::Frequency;
 pub use uom::si::f32::Power;
 pub use uom::si::frequency::hertz;
+pub use uom::si::power::kilowatt;
 pub use uom::si::power::watt;
