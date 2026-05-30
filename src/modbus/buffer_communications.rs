@@ -15,22 +15,11 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
 
     #[maybe_async::maybe_async]
     pub(crate) async fn read_buffer(&mut self, buffer: &mut [u8]) -> Result<(), JSYMk194Error> {
-        #[cfg(feature = "defmt")]
-        defmt::info!(
-            "read_buffer: waiting for header ({} bytes)",
-            ModbusErrorResponse::RESPONSE_SIZE as u32
-        );
         // Read the minimum number of bytes required to determine if the response is an error response or a normal response
         self.serial
             .read_exact(&mut buffer[..ModbusErrorResponse::RESPONSE_SIZE])
             .await?;
-        #[cfg(feature = "defmt")]
-        defmt::info!(
-            "read_buffer: header received id={} function={} byte_count={}",
-            buffer[0],
-            buffer[1],
-            buffer[2]
-        );
+
         // Check if the response is an error response based on the function code in the header
         let (_, function_code) =
             extract_modbus_response_header(&buffer[..ModbusErrorResponse::RESPONSE_SIZE])?;
@@ -42,21 +31,11 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
             );
             return Err(JSYMk194Error::DeviceErrorResponse(function_code));
         }
-        #[cfg(feature = "defmt")]
-        defmt::info!(
-            "read_buffer: reading payload and crc ({} bytes)",
-            (buffer.len() - ModbusErrorResponse::RESPONSE_SIZE) as u32
-        );
+
         // Now read the rest of the response based on the expected length for a normal response. This will read the remaining bytes for a normal response, or read extra bytes that can be ignored for an error response (since we've already determined it's an error response based on the function code).
         self.serial
             .read_exact(&mut buffer[ModbusErrorResponse::RESPONSE_SIZE..])
             .await?;
-
-        #[cfg(feature = "defmt")]
-        defmt::info!(
-            "read_buffer: frame complete ({} bytes)",
-            buffer.len() as u32
-        );
 
         Ok(())
     }
