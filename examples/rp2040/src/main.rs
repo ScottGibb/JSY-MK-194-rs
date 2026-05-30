@@ -122,14 +122,14 @@ fn main() -> ! {
     loop {
         let write_request = [0x01, 0x03, 0x00, 0x48, 0x00, 0x0E, 0x44, 0x18];
         if let Err(err) = uart.write_all(&write_request) {
-            defmt::warn!("write_all failed: {:?}", err);
-            delay.delay_ms(100);
+            // defmt::warn!("write_all failed: {:?}", err);
+            // delay.delay_ms(100);
             continue;
         }
 
         // Read promptly to avoid UART FIFO overrun on RP2040.
         let mut read_response = [0u8; 61];
-        if let Err(err) = uart.read_exact(&mut read_response[0..3]) {
+        if let Err(err) = uart.read_exact(&mut read_response[0..5]) {
             match err {
                 ReadExactError::UnexpectedEof => {
                     defmt::warn!("Header read hit EOF")
@@ -138,7 +138,7 @@ fn main() -> ! {
                     defmt::warn!("Header read I/O error: {:?}", io_err)
                 }
             }
-            delay.delay_ms(100);
+            // delay.delay_ms(100);
             continue;
         }
 
@@ -151,19 +151,11 @@ fn main() -> ! {
         );
 
         // Read remaining bytes: payload + CRC16.
-        let remaining_len = byte_count + 2;
-        if remaining_len > (read_response.len() - 3) {
-            defmt::warn!("Invalid byte_count {}", byte_count);
-            delay.delay_ms(100);
-            continue;
-        }
+        let remaining_len = byte_count;
 
-        let response = uart.read_exact(&mut read_response[3..3 + remaining_len]);
+        let response = uart.read_exact(&mut read_response[5..5 + remaining_len]);
         match response {
-            Ok(()) => defmt::info!(
-                "Received response payload+crc: {:?}",
-                &read_response[3..3 + remaining_len]
-            ),
+            Ok(()) => defmt::info!("Received response payload+crc: {:?}", &read_response),
             Err(e) => match e {
                 ReadExactError::UnexpectedEof => defmt::warn!(
                     "Response payload was shorter than expected (expected {} bytes)",
@@ -181,7 +173,7 @@ fn main() -> ! {
         //     Ok(channels) => defmt::info!("Channels: {:?}", channels),
         //     Err(err) => defmt::warn!("Channel read failed: {:?}", err),
         // }
-        delay.delay_ms(200);
+        // delay.delay_ms(200);
     }
 }
 
