@@ -8,11 +8,7 @@
 #![no_std]
 
 use defmt_rtt as _;
-use jsy_mk_194_rs::{
-    DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY, DEFAULT_REQUEST_RESPONSE_DELAY,
-    jsy_mk_194g::JsyMk194g,
-    types::{Baudrate, Id},
-};
+use jsy_mk_194_rs::{jsy_mk_194g::JsyMk194g, types::Baudrate};
 use panic_probe as _;
 
 use cortex_m_rt::entry;
@@ -24,7 +20,7 @@ fn main() -> ! {
     let p = pac::Peripherals::take().unwrap();
 
     let mut rcc = p.RCC.constrain();
-    let syst = cortex_m::Peripherals::take().unwrap().SYST;
+    let _syst = cortex_m::Peripherals::take().unwrap().SYST;
 
     // Prepare the alternate function I/O registers
     //let mut afio = p.AFIO.constrain(&mut rcc);
@@ -61,18 +57,9 @@ fn main() -> ! {
         &mut rcc,
     );
 
-    let delay = syst.delay(&rcc.clocks);
-
     defmt::info!("Waiting for JSY-MK-194G startup...");
-    delay.delay_ms(1000);
 
-    let mut device = JsyMk194g::new(
-        serial,
-        Id::default(),
-        delay,
-        DEFAULT_REQUEST_RESPONSE_DELAY,
-        DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY,
-    );
+    let mut device = JsyMk194g::new_default(serial).unwrap();
 
     loop {
         match device.get_all_channels() {
