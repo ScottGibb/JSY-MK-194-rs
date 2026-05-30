@@ -25,7 +25,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Baudrate: {baudrate:? }");
     loop {
         let stats = device.read_statistics().await.unwrap();
-        println!("Statistics: {stats:?}");
+        println!("Statistics: {stats}");
         tokio::time::sleep(std::time::Duration::from_secs(1)).await;
     }
 }
