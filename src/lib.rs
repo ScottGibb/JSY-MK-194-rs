@@ -54,8 +54,6 @@
 //! `advanced` when you need direct register access.
 
 mod modbus;
-pub use modbus::DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY;
-pub use modbus::DEFAULT_REQUEST_RESPONSE_DELAY;
 pub use modbus::ErrorCode;
 pub use modbus::FunctionCode;
 pub use modbus::ModbusErrorResponse;
@@ -63,9 +61,6 @@ pub use modbus::ModbusErrorResponse;
 pub mod registers;
 #[cfg(not(feature = "advanced"))]
 mod registers;
-
-#[cfg(any(feature = "tokio-async", feature = "std-sync"))]
-pub mod delay;
 
 pub mod error;
 pub mod jsy_mk_194g;

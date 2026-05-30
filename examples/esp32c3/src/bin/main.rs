@@ -14,7 +14,7 @@ use esp_hal::clock::CpuClock;
 use esp_hal::timer::timg::TimerGroup;
 use esp_hal::uart::{Config, Uart};
 use jsy_mk_194_rs::jsy_mk_194g::JsyMk194g;
-use jsy_mk_194_rs::types::Baudrate;
+use jsy_mk_194_rs::types::{Baudrate, Id};
 
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
@@ -60,26 +60,24 @@ async fn main(spawner: Spawner) -> ! {
         .into_async();
     info!("UART1 configured on GPIO9(TX)/GPIO10(RX) at {} baud", baud);
 
-    let delay = embassy_time::Delay;
-
     info!("Initializing JSY driver (will attempt to read device ID)...");
-    let mut driver =
-        match with_timeout(Duration::from_secs(3), JsyMk194g::new_default(uart, delay)).await {
-            Ok(Ok(d)) => {
-                info!("JSY driver initialized successfully!");
-                d
-            }
-            Ok(Err(e)) => {
-                error!("JSY driver init failed: {:?}", e);
-                error!("Check wiring: ESP32 GPIO9→Meter RX, GPIO10→Meter TX, GND connected");
-                panic!("JSY driver initialization failed");
-            }
-            Err(_) => {
-                error!("JSY driver init timed out after 3 seconds");
-                error!("Check: 1) Meter powered 2) Wiring correct 3) Baud rate matches");
-                panic!("JSY driver initialization timed out");
-            }
-        };
+    let mut driver = match with_timeout(Duration::from_secs(1), JsyMk194g::new_default(uart)).await
+    {
+        Ok(Ok(d)) => {
+            info!("JSY driver initialized successfully!");
+            d
+        }
+        Ok(Err(e)) => {
+            error!("JSY driver init failed: {:?}", e);
+            error!("Check wiring: ESP32 GPIO9→Meter RX, GPIO10→Meter TX, GND connected");
+            panic!("JSY driver initialization failed");
+        }
+        Err(e) => {
+            error!("JSY driver init timed out after 3 seconds: {:?}", e);
+            error!("Check: 1) Meter powered 2) Wiring correct 3) Baud rate matches");
+            panic!("JSY driver initialization timed out");
+        }
+    };
 
     info!("Embassy initialized!");
 
@@ -92,7 +90,10 @@ async fn main(spawner: Spawner) -> ! {
         match with_timeout(Duration::from_secs(2), driver.read_statistics()).await {
             Ok(Ok(stats)) => info!("Stats: {}", stats),
             Ok(Err(e)) => error!("Read failed: {:?}", e),
-            Err(_) => error!("Read timed out after 2 seconds - meter not responding"),
+            Err(e) => error!(
+                "Read timed out after 2 seconds - meter not responding: {:?}",
+                e
+            ),
         }
     }
 

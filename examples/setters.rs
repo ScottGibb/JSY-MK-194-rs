@@ -10,7 +10,6 @@ fn main() {
     use std::println;
     use std::time::Duration;
 
-    use jsy_mk_194_rs::delay::StdDelay;
     use jsy_mk_194_rs::jsy_mk_194g::JsyMk194g;
     use jsy_mk_194_rs::types::Baudrate;
     use jsy_mk_194_rs::types::Channel;
@@ -29,10 +28,7 @@ fn main() {
         .open()
         .expect("Failed to open port");
 
-    let delay = StdDelay;
-
-    let mut driver =
-        JsyMk194g::new_default(port, delay).expect(" The Device should be on this port");
+    let mut driver = JsyMk194g::new_default(port).expect(" The Device should be on this port");
 
     let channel_stats = driver.get_channel(Channel::One).unwrap();
     println!("Channel One :\n  {channel_stats}");
@@ -43,7 +39,7 @@ fn main() {
         .unwrap();
 
     driver
-        .set_negative_active_energy(Channel::One, Energy::new::<kilowatt_hour>(150.0))
+        .set_negative_active_energy(Channel::One, Energy::new::<kilowatt_hour>(100.0))
         .unwrap();
 
     let new_stats = driver.get_channel(Channel::One).unwrap();

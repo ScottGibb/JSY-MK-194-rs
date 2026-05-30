@@ -264,7 +264,6 @@ mod set_channel_one_register_tests {
 
 #[cfg(test)]
 mod set_channel_two_register_tests {
-    // Fails to set
     #[test]
     fn test_set_channel_two_positive_active_energy_register() {
         let mut device = setup_device(Id::default(), Baudrate::default());

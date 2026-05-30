@@ -1,5 +1,5 @@
 use crate::{
-    error::{ConversionError, JSYMk194Error},
+    error::JSYMk194Error,
     hal::*,
     jsy_mk_194g::JsyMk194g,
     modbus::{
@@ -27,7 +27,7 @@ use crate::{
     units::*,
 };
 
-impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite> JsyMk194g<Serial> {
     #[maybe_async::maybe_async]
     pub async fn read_channel_statistics(
         &mut self,
@@ -46,13 +46,6 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
             ),
         };
         self.write_buffer(&read_request.to_bytes()).await?;
-        self.delay
-            .delay_ms(
-                u32::try_from(self.channel_response_delay.as_millis()).map_err(|err| {
-                    JSYMk194Error::ConversionError(ConversionError::InvalidTimingParameter(err))
-                })?,
-            )
-            .await;
 
         let mut response_buff = [0u8; 256];
         let response_buff_size = ReadResponse::RESPONSE_SIZE
@@ -155,7 +148,7 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     }
 }
 
-impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite> JsyMk194g<Serial> {
     #[maybe_async::maybe_async]
     pub async fn read_statistics(&mut self) -> Result<Statistics, JSYMk194Error> {
         let write_request = ReadRequest::new(
@@ -164,13 +157,7 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
             14,
         );
         self.write_buffer(&write_request.to_bytes()).await?;
-        self.delay
-            .delay_ms(
-                u32::try_from(self.channel_response_delay.as_millis()).map_err(|err| {
-                    JSYMk194Error::ConversionError(ConversionError::InvalidTimingParameter(err))
-                })?,
-            )
-            .await;
+
         let mut response_buff = [0u8; 256];
         let response_buff_size = ReadResponse::RESPONSE_SIZE + ALL_CHANNELS_NUM_READ_BYTES;
 

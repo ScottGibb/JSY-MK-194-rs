@@ -5,7 +5,7 @@ use crate::modbus::requests::{ReadRequest, WriteRequest};
 use crate::modbus::responses::{ReadResponse, WriteResponse};
 use crate::registers::traits::{self, Register};
 
-impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite> JsyMk194g<Serial> {
     #[maybe_async::maybe_async]
     #[cfg_attr(feature = "advanced", visibility::make(pub))]
     pub(crate) async fn read_register<Register>(&mut self) -> Result<Register, JSYMk194Error>
@@ -15,12 +15,6 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
         let read_request = ReadRequest::new(self.device_address.clone(), Register::ADDRESS, 1);
         let tx_buff = read_request.to_bytes();
         self.write_buffer(&tx_buff).await?;
-        self.delay
-            .delay_ms(
-                u32::try_from(self.response_delay.as_millis())
-                    .expect("This should not fail to convert"),
-            )
-            .await;
 
         let mut response_buff = [0u8; 256];
         let response_buff_size = ReadResponse::RESPONSE_SIZE + Register::NUM_BYTES;
@@ -72,12 +66,6 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
             }
         }
 
-        self.delay
-            .delay_ms(
-                u32::try_from(self.response_delay.as_millis())
-                    .expect("This should not fail to convert"),
-            )
-            .await;
         let mut response_buff = [0u8; WriteResponse::RESPONSE_SIZE]; // Error response is smaller than normal response, so this will work for both
         self.read_buffer(&mut response_buff).await?;
         let _write_response = WriteResponse::from_bytes(&response_buff)?;

@@ -1,4 +1,3 @@
-use core::time::Duration;
 
 use crate::hal::*;
 use crate::jsy_mk_194g::JsyMk194g;
@@ -15,7 +14,7 @@ use crate::{
     error::JSYMk194Error,
     types::{Channel, ChannelStatistics, Statistics},
 };
-impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// Reads the configured Modbus device ID.
     ///
     /// # Examples
@@ -71,37 +70,6 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
         Ok(baudrate)
     }
 
-    /// Gets the current response delay used between request write and response read.
-    ///
-    /// Returns a tuple containing:
-    /// - The general `response_delay` (first element)
-    /// - The `channel_response_delay` (second element)
-    ///
-    /// These values represent the configured wait times applied after Modbus
-    /// operations to ensure the device has sufficient time to respond.
-    ///
-    /// # Examples
-    /// ```rust
-    /// # fn example<S, D>(
-    /// #     driver: &jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
-    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
-    /// # where
-    /// #     S: std::io::Read + std::io::Write,
-    /// #     D: embedded_hal::delay::DelayNs,
-    /// # {
-    /// let (response_delay, channel_response_delay) = driver.get_response_delay();
-    /// println!("Response delay: {:?}", response_delay);
-    /// println!("Channel response delay: {:?}", channel_response_delay);
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// For a full runnable example, see
-    /// [`examples/response_delay.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/response_delay.rs).
-    pub fn get_response_delay(&self) -> (Duration, Duration) {
-        (self.response_delay, self.channel_response_delay)
-    }
-
     /// Reads system-level parameters such as model and hardware ranges.
     ///
     /// # Examples
@@ -140,7 +108,7 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     }
 }
 
-impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// Reads measurements for both channels in a single call.
     ///
     /// # Examples

@@ -1,9 +1,7 @@
-use core::time::Duration;
 
 use crate::error::JSYMk194Error;
 use crate::hal::*;
-use crate::modbus::DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY;
-use crate::modbus::DEFAULT_REQUEST_RESPONSE_DELAY;
+
 use crate::registers::system_configuration_parameter::Id;
 
 /// Driver for communicating with a JSY MK-194 power monitor over Modbus RTU.
@@ -12,20 +10,14 @@ use crate::registers::system_configuration_parameter::Id;
 /// be used in desktop (`std-sync`) and embedded (`sync` / `async`) contexts.
 /// Construct with [`Self::new`] when you already know the device ID, or
 /// [`Self::new_default`] to probe connectivity using the default address.
-pub struct JsyMk194g<Serial: ReadWrite, D: DelayNs> {
+pub struct JsyMk194g<Serial: ReadWrite> {
     /// The Modbus device ID of the JSY MK-194. This is used in the Modbus request
     pub(crate) device_address: Id,
     /// The serial transport for communicating with the device.
     pub(crate) serial: Serial,
-    /// The delay provider for timing Modbus requests.
-    pub(crate) delay: D,
-    /// The delay to wait after sending a request before attempting to read the response.
-    pub(crate) response_delay: Duration,
-    /// The delay to wait after sending a channel data request before attempting to read the response.
-    pub(crate) channel_response_delay: Duration,
 }
 
-impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// Creates a driver with an explicit device address.
     ///
     /// This constructor does not perform bus I/O. If you want to verify device
@@ -57,19 +49,10 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     /// # Ok(())
     /// # }
     /// ```
-    pub fn new(
-        serial: Serial,
-        device_address: Id,
-        delay: D,
-        response_delay: Duration,
-        channel_response_delay: Duration,
-    ) -> Self {
+    pub fn new(serial: Serial, device_address: Id) -> Self {
         Self {
             serial,
             device_address,
-            delay,
-            response_delay,
-            channel_response_delay,
         }
     }
     /// Creates a driver using the default device address and validates
@@ -92,14 +75,11 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
     /// - [`examples/getters.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/getters.rs)
     /// - [`examples/setters.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/setters.rs)
     #[maybe_async::maybe_async]
-    pub async fn new_default(serial: Serial, delay: D) -> Result<Self, JSYMk194Error> {
+    pub async fn new_default(serial: Serial) -> Result<Self, JSYMk194Error> {
         // Check if device is on the bus
         let mut device = Self {
             serial,
             device_address: Id::default(),
-            delay,
-            response_delay: DEFAULT_REQUEST_RESPONSE_DELAY,
-            channel_response_delay: DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY,
         };
         // Check if we can get the ID
         device.get_id().await?;

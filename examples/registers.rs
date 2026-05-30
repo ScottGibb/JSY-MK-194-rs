@@ -10,7 +10,6 @@ fn main() {
     use std::println;
     use std::time::Duration;
 
-    use jsy_mk_194_rs::delay::StdDelay;
     use jsy_mk_194_rs::jsy_mk_194g::JsyMk194g;
     use jsy_mk_194_rs::registers::system_configuration_parameter::{
         Baudrate, SystemConfigurationParameterRegister,
@@ -29,10 +28,7 @@ fn main() {
         .open()
         .expect("Failed to open port");
 
-    let delay = StdDelay;
-
-    let mut driver =
-        JsyMk194g::new_default(port, delay).expect(" The Device should be on this port");
+    let mut driver = JsyMk194g::new_default(port).expect(" The Device should be on this port");
 
     let system_configuration_parameters_register = driver
         .read_register::<SystemConfigurationParameterRegister>()

@@ -8,13 +8,13 @@ fn main() {
 #[cfg(feature = "tokio-async")]
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    use jsy_mk_194_rs::{delay::StdDelay, jsy_mk_194g::JsyMk194g, types::Baudrate};
+    use jsy_mk_194_rs::{jsy_mk_194g::JsyMk194g, types::Baudrate};
     use tokio_serial::SerialPortBuilderExt;
 
     let port = tokio_serial::new("/dev/tty.usbserial-0001", Baudrate::default().into())
         .open_native_async()?;
 
-    let mut device = JsyMk194g::new_default(port, StdDelay).await.unwrap();
+    let mut device = JsyMk194g::new_default(port).await.unwrap();
 
     // Example: Read the device ID
     let id = device.get_id().await.unwrap();

@@ -3,7 +3,7 @@ use crate::jsy_mk_194g::JsyMk194g;
 use crate::modbus::protocol::extract_modbus_response_header;
 use crate::{ModbusErrorResponse, hal::*};
 
-impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite> JsyMk194g<Serial> {
     #[maybe_async::maybe_async]
     pub(crate) async fn write_buffer(&mut self, buffer: &[u8]) -> Result<(), JSYMk194Error> {
         self.serial

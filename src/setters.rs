@@ -1,4 +1,3 @@
-use core::time::Duration;
 
 use crate::error::JSYMk194Error;
 use crate::hal::*;
@@ -14,7 +13,7 @@ use crate::registers::system_configuration_parameter::{
 };
 use crate::types::Channel;
 use crate::units::*;
-impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
+impl<Serial: ReadWrite> JsyMk194g<Serial> {
     /// Sets the baud rate of the device.
     ///
     /// This method intentionally consumes `self` because changing the baud rate
@@ -50,48 +49,6 @@ impl<Serial: ReadWrite, D: DelayNs> JsyMk194g<Serial, D> {
         };
         self.write_register(register).await?;
         Ok(())
-    }
-
-    /// This method configures two separate delay values:
-    /// - `response_delay`: Applied after general register read/write operations
-    /// - `channel_response_delay`: Applied after channel-specific operations
-    ///
-    /// Adjusting these delays may be necessary when:
-    /// - Using longer serial cables that introduce propagation delays
-    /// - Operating at lower baud rates where device response is slower
-    /// - Experiencing communication timeouts or errors
-    ///
-    ///  Due to the `embedded-hal` traits used for DelayNs, the underlying duration implementation uses u32
-    ///  where core uses u64, If an invalid duration is provided (e.g. one that exceeds the maximum value of u32 in nanoseconds), the driver will panic when it attempts to apply the delay. It's the caller's responsibility to ensure that the provided durations are valid and won't cause overflow issues.
-    ///  the driver will throw a [`ConversionError`](crate::error::ConversionError) during a request.
-    /// # Examples
-    /// ```rust
-    /// # fn example<S, D>(
-    /// #     driver: &mut jsy_mk_194_rs::jsy_mk_194g::JsyMk194g<S, D>,
-    /// # ) -> Result<(), jsy_mk_194_rs::error::JSYMk194Error>
-    /// # where
-    /// #     S: std::io::Read + std::io::Write,
-    /// #     D: embedded_hal::delay::DelayNs,
-    /// # {
-    /// use core::time::Duration;
-    ///
-    /// driver.set_response_delay(
-    ///     Duration::from_millis(100),
-    ///     Duration::from_millis(150),
-    /// );
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// For a full runnable example, see
-    /// [`examples/response_delay.rs`](https://github.com/ScottGibb/JSY-MK-194-rs/blob/main/examples/response_delay.rs).
-    pub fn set_response_delay(
-        &mut self,
-        response_delay: Duration,
-        channel_response_delay: Duration,
-    ) {
-        self.response_delay = response_delay;
-        self.channel_response_delay = channel_response_delay;
     }
 
     /// Sets the Modbus device ID.

@@ -10,14 +10,11 @@
 
 #![no_std]
 #![no_main]
-use core::time::Duration;
 
-use embedded_io::Write as _;
-use embedded_io::{Read as _, ReadExactError}; // brings write_all into scope // brings read_exact into scope
+ // brings write_all into scope // brings read_exact into scope
 
 use jsy_mk_194_rs::jsy_mk_194g::JsyMk194g;
 use jsy_mk_194_rs::types::{Baudrate, Id};
-use jsy_mk_194_rs::{DEFAULT_CHANNEL_REQUEST_RESPONSE_DELAY, DEFAULT_REQUEST_RESPONSE_DELAY};
 
 // Ensure we halt the program on panic (if we don't mention this crate it won't
 // be linked)
@@ -78,7 +75,7 @@ fn main() -> ! {
         &mut watchdog,
     )
     .unwrap();
-    let timer = hal::Timer::new(pac.TIMER, &mut pac.RESETS, &clocks);
+    let _timer = hal::Timer::new(pac.TIMER, &mut pac.RESETS, &clocks);
     let mut delay = cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().to_Hz());
 
     // The single-cycle I/O block controls our GPIO pins
@@ -103,7 +100,7 @@ fn main() -> ! {
     let baudrate = u32::from(baudrate);
     defmt::info!("Setting baudrate to {} bps", baudrate);
 
-    let mut uart = hal::uart::UartPeripheral::new(pac.UART0, uart_pins, &mut pac.RESETS)
+    let uart = hal::uart::UartPeripheral::new(pac.UART0, uart_pins, &mut pac.RESETS)
         .enable(
             UartConfig::new(baudrate.Hz(), DataBits::Eight, None, StopBits::One),
             clocks.peripheral_clock.freq(),
@@ -115,13 +112,7 @@ fn main() -> ! {
     delay.delay_ms(1000);
 
     defmt::info!("Setting up JSY-MK-194G driver");
-    let mut device = JsyMk194g::new(
-        uart,
-        Id::default(),
-        timer,
-        Duration::from_millis(0),
-        Duration::from_millis(0),
-    );
+    let mut device = JsyMk194g::new(uart, Id::default());
 
     loop {
         match device.get_system_parameters() {
