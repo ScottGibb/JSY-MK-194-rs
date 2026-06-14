@@ -21,17 +21,22 @@ pub struct SystemConfigurationParameterRegister {
 /// Supported serial baud rates reported by the device.
 pub enum Baudrate {
     /// 1200 baud.
+    #[cfg_attr(feature = "serde", serde(alias = "1200"))]
     _1200 = 3,
     /// 2400 baud.
+    #[cfg_attr(feature = "serde", serde(alias = "2400"))]
     _2400 = 4,
     /// 4800 baud.
     #[default]
     _4800 = 5,
     /// 9600 baud.
+    #[cfg_attr(feature = "serde", serde(alias = "9600"))]
     _9600 = 6,
     /// 19200 baud.
+    #[cfg_attr(feature = "serde", serde(alias = "19200"))]
     _19200 = 7,
     /// 38400 baud.
+    #[cfg_attr(feature = "serde", serde(alias = "38400"))]
     _38400 = 8,
 }
 
