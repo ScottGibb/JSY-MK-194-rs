@@ -15,6 +15,8 @@ pub struct SystemConfigurationParameterRegister {
 
 #[derive(Debug, PartialEq, Clone, Default)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "snake_case"))]
 #[repr(u8)]
 /// Supported serial baud rates reported by the device.
 pub enum Baudrate {

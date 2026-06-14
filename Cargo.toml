@@ -13,7 +13,7 @@ rust-version = "1.85.1"
 features = ["std-sync"]
 
 [features]
-default = ["std-sync", "advanced"]
+default = ["std-sync", "advanced", "serde"]
 
 # Required embedded-hal for the Delay construct
 std-sync = ["maybe-async/is_sync", "dep:embedded-hal"]
@@ -22,7 +22,10 @@ tokio-async = ["dep:embedded-hal-async", "dep:tokio"]
 sync = ["maybe-async/is_sync", "dep:embedded-io", "dep:embedded-hal"]
 async = ["dep:embedded-io-async", "dep:embedded-hal-async"]
 defmt = ["dep:defmt"]
-advanced = []                                                         # Used to enable Register Access
+# Used to enable Register Access
+advanced = []
+serde = ["dep:serde"]
+
 
 [dependencies]
 uom = { version = "0.38", default-features = false, features = [
@@ -44,6 +47,9 @@ embedded-io-async = { version = "0.7", optional = true, features = ["defmt"] }
 
 # Std Deps
 tokio = { version = "1", features = ["io-util", "time"], optional = true }
+
+# Serde Derive Support
+serde = { version = "1", features = ["derive"], optional = true }
 
 [dev-dependencies]
 # Serial Ports
