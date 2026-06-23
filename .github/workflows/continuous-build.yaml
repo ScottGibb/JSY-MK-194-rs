@@ -16,7 +16,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y pkg-config libudev-dev
       - name: Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -42,7 +42,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y pkg-config libudev-dev
       - name: Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -70,7 +70,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y pkg-config libudev-dev
       - name: Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -98,7 +98,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y pkg-config libudev-dev
       - name: Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -124,7 +124,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y pkg-config libudev-dev
       - name: Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -142,7 +142,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -164,7 +164,7 @@ jobs:
       - name: Install Rust 1.95.0
         uses: dtolnay/rust-toolchain@1.95.0
       - name: Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -186,7 +186,7 @@ jobs:
       - name: Install Rust 1.95.0
         uses: dtolnay/rust-toolchain@1.95.0
       - name: Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
