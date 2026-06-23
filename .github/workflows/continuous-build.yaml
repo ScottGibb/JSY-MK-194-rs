@@ -10,7 +10,7 @@ jobs:
     name: Docs and doctests (std-sync)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -35,7 +35,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
@@ -63,7 +63,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
@@ -91,7 +91,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
@@ -117,7 +117,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
@@ -140,7 +140,7 @@ jobs:
     name: Build for ESP32-C3 target
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Cache
         uses: actions/cache@v6
         with:
@@ -160,7 +160,7 @@ jobs:
     name: Build for STM32F103 target
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install Rust 1.95.0
         uses: dtolnay/rust-toolchain@1.95.0
       - name: Cache
@@ -182,7 +182,7 @@ jobs:
     name: Build for RP2040 target
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install Rust 1.95.0
         uses: dtolnay/rust-toolchain@1.95.0
       - name: Cache
