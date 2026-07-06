@@ -28,6 +28,7 @@ pub enum Baudrate {
     _2400 = 4,
     /// 4800 baud.
     #[default]
+    #[cfg_attr(feature = "serde", serde(alias = "4800"))]
     _4800 = 5,
     /// 9600 baud.
     #[cfg_attr(feature = "serde", serde(alias = "9600"))]
