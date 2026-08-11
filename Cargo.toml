@@ -1,7 +1,7 @@
 [package]
 keywords = ["async", "sync", "no-std", "tokio", "embedded"]
 name = "jsy-mk-194-rs"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2024"
 authors = ["Scott Gibb <ssmgibb@yahoo.com>"]
 description = "A Rust driver for the JSY MK-194 power monitor IC, supporting both synchronous and asynchronous operation modes."
